@@ -1,0 +1,158 @@
+/*
+ * Copyright 2018 Sergej Schaefer
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package client;
+
+import com.google.common.collect.ImmutableMap;
+import dao.ElsaDAO;
+import jsonmapper.JsonMapperLibrary;
+import model.ElsaModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+
+/** Creates a map to retrieve DAO classes for registered models. */
+public class DaoMapCreator {
+
+    private static final Logger logger = LoggerFactory.getLogger(DaoMapCreator.class);
+    
+    // ------------------------------------------------------------------------------------------ //
+    //  FIELDS
+    // ------------------------------------------------------------------------------------------ //
+    
+    private final ElsaClient elsa;
+    private final ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
+    private final JsonMapperLibrary jsonMapperLibrary;
+    
+    // ------------------------------------------------------------------------------------------ //
+    // CONFIGURATOR
+    // ------------------------------------------------------------------------------------------ //
+    
+    @FunctionalInterface
+    protected interface Config {
+    
+        static Builder createBuilderWithDefaults() {
+            return new Builder();
+        }
+    
+        void applyCustomConfig(Builder builder);
+    
+        default void validate(final Builder builder) {
+            Objects.requireNonNull(builder.elsa, "ElsaClient must not be NULL.");
+            Objects.requireNonNull(builder.registeredModels, "RegisteredModels must not be NULL.");
+            Objects.requireNonNull(builder.jsonMapperLibrary, "JsonMapperLibrary must not be NULL.");
+        }
+    
+        static Builder createBuilder(final Config config) {
+            final Builder builder = createBuilderWithDefaults();
+            config.applyCustomConfig(builder);
+            config.validate(builder);
+            return builder;
+        }
+    }
+    
+    
+    // ------------------------------------------------------------------------------------------ //
+    // BUILD
+    // ------------------------------------------------------------------------------------------ //
+    
+    DaoMapCreator(final Config config) {
+        final Builder builder = Config.createBuilder(config);
+        this.elsa = builder.elsa;
+        this.registeredModels = builder.registeredModels;
+        this.jsonMapperLibrary = builder.jsonMapperLibrary;
+    }
+    
+    
+    // ------------------------------------------------------------------------------------------ //
+    // BUILDER
+    // ------------------------------------------------------------------------------------------ //
+    
+    public static class Builder {
+        private Builder() {}
+        
+        private ElsaClient elsa;
+        private ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
+        private JsonMapperLibrary jsonMapperLibrary;
+    
+        public Builder elsa(final ElsaClient mandatorySetting) {
+            this.elsa = mandatorySetting;
+            return this;
+        }
+
+        public Builder registeredModels(final ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> mandatorySetting) {
+            this.registeredModels = mandatorySetting;
+            return this;
+        }
+
+        public Builder jsonMapperLibrary(final JsonMapperLibrary mandatorySetting) {
+            this.jsonMapperLibrary = mandatorySetting;
+            return this;
+        }
+    
+    }
+
+    // ------------------------------------------------------------------------------------------ //
+    // METHODS
+    // ------------------------------------------------------------------------------------------ //
+
+    public ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> create() {
+        final Map<Class<? extends ElsaModel>, ElsaDAO> map = new HashMap<>();
+        for (final Entry<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> entry : registeredModels.entrySet()) {
+
+            final Class<? extends ElsaModel> modelClass = entry.getKey();
+            final Class<? extends ElsaDAO> daoClass = entry.getValue();
+
+            this.ensureElsaIndexDataInModelIsNotNull(modelClass);
+            this.ensureGetIdAndSetIdInModelWorkProperly(modelClass);
+
+            try {
+                map.put(modelClass, daoClass.getConstructor(Class.class, ElsaClient.class, JsonMapperLibrary.class).newInstance(modelClass, this.elsa, this.jsonMapperLibrary));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                logger.error("Can't instantiate DAOMap for ElsaClient. Problem with " + modelClass + " or " + daoClass, e);
+            }
+        }
+        return ImmutableMap.copyOf(map);
+    }
+
+    private void ensureElsaIndexDataInModelIsNotNull(final Class<? extends ElsaModel> modelClass) {
+        try {
+            if (modelClass.newInstance().getIndexConfig() == null) {
+                throw new IllegalStateException("IndexConfig was not instantiated in model: " + modelClass);
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            logger.error("Can't instantiate ElsaModel for ElsaClient. Caused by " + modelClass);
+        }
+    }
+
+    private void ensureGetIdAndSetIdInModelWorkProperly(final Class<? extends ElsaModel> modelClass) {
+        try {
+            final ElsaModel model = modelClass.newInstance();
+            final String id = "qwer1234";
+            model.setId(id);
+            if (!model.getId().equals(id)) {
+                throw new IllegalStateException("Methods getId() or setId() was not implemented properly in model: " + modelClass);
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            logger.error("Can't instantiate ElsaModel for ElsaClient. Problem with " + modelClass);
+        }
+    }
+}

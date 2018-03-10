@@ -1,0 +1,55 @@
+{
+
+  // (Optional) Proceed when conflicts occur, just count them.
+  "conflicts": "proceed",
+
+  // (Optional) Limit the total amount of documents which shall be transferred
+  "size": 1000,
+
+  // (Mandatory) Configuration for the source index which shall be reindexed
+  "source": {
+    // (Optional) Settings for reindexing from a remote Elasticsearch cluster
+    "remote": {
+      "host": "http://otherhost:9200",
+      "username": "user",
+      "password": "pass",
+      "socket_timeout": "1m",
+      "connect_timeout": "10s"
+    },
+    // (Mandatory) Source index which shall be reindexed
+    "index": "twitter",
+    // (Optional) Determines the batch size of a scroll operation, i.e. amount of documents to process at once. Default is 1000.
+    "size": 100,
+    // (Optional) Determines the order in which documents will be reindex
+    "sort": {
+      "date": "desc",
+      "name": "asc"
+    },
+    // (Optional) Select explicitly the fields of source index which shall be moved
+    "_source": ["user", "email"],
+    // (Optional) Query to select explicitly particular documents
+    "query": {
+      "term": {
+        "name": {
+          "value": "kimchy",
+          "boost": 1.0
+        }
+      }
+    }
+  },
+
+  // (Mandatory) Configuration for the target index which shall be filled
+  "dest": {
+    // (Mandatory) Name of the target index which shall be filled
+    "index": "new_twitter",
+    // (Optional) How to handle different document versions. Default is 'internal'.
+    "version_type": "external"
+  },
+
+  // (Optional) Script to apply to the reindexation process
+  "script": {
+    "source": "if (ctx._source.foo == 'bar') {ctx._version++; ctx._source.remove('foo')}",
+    "lang": "painless"
+  }
+
+}

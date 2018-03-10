@@ -1,0 +1,166 @@
+/*
+ * Copyright 2018 Sergej Schaefer
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package model;
+
+import org.elasticsearch.common.unit.TimeValue;
+
+public class IndexConfig {
+
+    // ------------------------------------------------------------------------------------------ //
+    // CONFIGURATOR
+    // ------------------------------------------------------------------------------------------ //
+
+    @FunctionalInterface
+    public interface Configurator {
+
+        default Config loadDefaults() {
+            return new Config()
+                    .allowDynamicIndexNaming(false);
+        }
+
+        default void validate(final Config config) {
+            evaluateIndexName(config.indexName);
+            evaluateShards(config.shards);
+            evaluateReplicas(config.replicas);
+        }
+
+        default Config applyCustomConfig(final Configurator configurator) {
+            final Config config = configurator.loadDefaults();
+            configurator.configure(config);
+            configurator.validate(config);
+            return config;
+        }
+
+        void configure(Config config);
+    }
+
+
+    // ------------------------------------------------------------------------------------------ //
+    //  FIELDS
+    // ------------------------------------------------------------------------------------------ //
+
+    private String indexName;
+    private final Integer shards;
+    private final Integer replicas;
+    private final boolean allowDynamicIndexNaming;
+    private final TimeValue refreshInterval;
+
+
+    // ------------------------------------------------------------------------------------------ //
+    // CONSTRUCTOR
+    // ------------------------------------------------------------------------------------------ //
+
+    public IndexConfig(final Configurator configurator) {
+        final Config config = configurator.applyCustomConfig(configurator);
+        this.indexName = config.indexName;
+        this.shards = config.shards;
+        this.replicas = config.replicas;
+        this.allowDynamicIndexNaming = config.allowDynamicIndexNaming;
+        this.refreshInterval = config.refreshInterval;
+    }
+
+
+    // ------------------------------------------------------------------------------------------ //
+    // CONFIG
+    // ------------------------------------------------------------------------------------------ //
+
+    public static class Config {
+        private Config() {}
+
+        private String indexName;
+        private Integer shards;
+        private Integer replicas;
+        private boolean allowDynamicIndexNaming = false;
+        private TimeValue refreshInterval = TimeValue.timeValueSeconds(1);
+
+        public Config indexName(final String mandatorySetting) {
+            this.indexName = mandatorySetting;
+            return this;
+        }
+
+        public Config shards(final Integer mandatorySetting) {
+            this.shards = mandatorySetting;
+            return this;
+        }
+
+        public Config replicas(final Integer mandatorySetting) {
+            this.replicas = mandatorySetting;
+            return this;
+        }
+
+        public Config allowDynamicIndexNaming(final boolean defaultIsFalse) {
+            this.allowDynamicIndexNaming = defaultIsFalse;
+            return this;
+        }
+
+        public Config refreshInterval(final TimeValue defaultIs1s) {
+            this.refreshInterval = defaultIs1s;
+            return this;
+        }
+
+    }
+
+    private static void evaluateIndexName(final String value) {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalStateException("IndexName must not be empty or NULL, got: " + value);
+        }
+    }
+
+    private static void evaluateShards(final Integer value) {
+        if (value <= 0) {
+            throw new IllegalStateException("Shards can't be 0 or negative, got: " + value);
+        }
+    }
+
+    private static void evaluateReplicas(final Integer value) {
+        if (value < 0) {
+            throw new IllegalStateException("Replicas can't be less than 0, got: " + value);
+        }
+    }
+
+    public synchronized String getIndexName() {
+        return indexName;
+    }
+
+    public synchronized void setIndexName(final String indexName) {
+        if (this.allowDynamicIndexNaming) {
+            this.indexName = indexName;
+        } else {
+            throw new IllegalStateException("" +
+                    "One of your registered models doesn't explicitly allow to set the indexName dynamically. " +
+                    "This is disallowed by default. " +
+                    "Check the IndexConfig implementations of the registered models. ");
+        }
+    }
+
+    public int getShards() {
+        return shards;
+    }
+
+    public int getReplicas() {
+        return replicas;
+    }
+
+    public TimeValue getRefreshInterval() {
+        return refreshInterval;
+    }
+
+    public boolean isDynamicIndexNamingAllowed() {
+        return allowDynamicIndexNaming;
+    }
+
+}
