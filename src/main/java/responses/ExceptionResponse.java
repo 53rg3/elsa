@@ -16,13 +16,10 @@
 
 package responses;
 
-import responses.ExceptionResponse.ErrorHolder.Cause;
+import responses.ExceptionResponse.Error.Cause;
 import statics.ElsaStatics;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 
 public class ExceptionResponse {
@@ -40,6 +37,7 @@ public class ExceptionResponse {
 
         default void validate(final Config config) {
             Objects.requireNonNull(config.status, "Status must not be NULL.");
+            Objects.requireNonNull(config.error, "Error must not be NULL.");
             Objects.requireNonNull(config.error, "Error must not be NULL.");
         }
 
@@ -59,7 +57,8 @@ public class ExceptionResponse {
     // ------------------------------------------------------------------------------------------ //
 
     private final Integer status;
-    private final ErrorHolder error;
+    private final Error error;
+    private final Exception exception;
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -70,29 +69,33 @@ public class ExceptionResponse {
         final Config config = configurator.applyCustomConfig(configurator);
         this.status = config.status;
         this.error = config.error;
+        this.exception = config.exception;
     }
 
-    public static ExceptionResponse createFromThrowable(final Throwable throwable) {
+    public static ExceptionResponse createFromThrowable(final Throwable throwable, Exception exception) {
         final Matcher matcher = ElsaStatics.jsonExtractorPattern.matcher(throwable.getMessage());
         if (matcher.find()) {
             return ElsaStatics.GSON.fromJson(matcher.group(0), ExceptionResponse.class);
         } else {
             return new ExceptionResponse(c -> c
                     .status(-1)
-                    .errorHolder("Could not extract ResponseException.", "Could not extract ResponseException."));
+                    .error("Could not extract ResponseException.", "Could not extract ResponseException.")
+                    .exception(exception));
         }
     }
 
-    public static ExceptionResponse createConnectionRefused() {
+    public static ExceptionResponse createConnectionRefused(Exception exception) {
         return new ExceptionResponse(c->c
                 .status(503)
-                .errorHolder("ConnectException", "Connection refused. Either cluster is offline or it refused your request."));
+                .error("ConnectException", "Connection refused. Either cluster is offline or it refused your request.")
+                .exception(exception));
     }
 
-    public static ExceptionResponse createUncategorizedCause(Exception e) {
+    public static ExceptionResponse createUncategorizedCause(Exception exception) {
         return new ExceptionResponse(c->c
                 .status(-1)
-                .errorHolder(e.getClass().toString(), e.getMessage()+" - Check logs at "+new Date()));
+                .error(exception.getClass().toString(), exception.getMessage()+" - Check logs at "+new Date())
+                .exception(exception));
     }
 
 
@@ -105,30 +108,35 @@ public class ExceptionResponse {
         }
 
         private Integer status;
-        private ErrorHolder error;
+        private Error error;
+        private Exception exception;
 
         public Config status(final Integer defaultIsPlaceholder) {
             this.status = defaultIsPlaceholder;
             return this;
         }
 
-        public Config errorHolder(final String type, final String reason) {
-            final ErrorHolder errorHolder = new ErrorHolder();
-            errorHolder.type = type;
-            errorHolder.reason = reason;
-            errorHolder.root_cause = this.createSingleCause(type, reason);
-            this.error = errorHolder;
+        public Config error(final String type, final String reason) {
+            final Error error = new Error();
+            error.type = type;
+            error.reason = reason;
+            error.root_cause = this.createSingleCause(type, reason);
+            this.error = error;
+            return this;
+        }
+
+        public Config exception(final Exception mandatorySetting) {
+            this.exception = mandatorySetting;
             return this;
         }
 
         private List<Cause> createSingleCause(final String type, final String reason) {
-            return Arrays.asList(new Cause(type, reason));
-
+            return Collections.singletonList(new Cause(type, reason));
         }
 
     }
 
-    public static class ErrorHolder {
+    public static class Error {
         private String type;
         private String reason;
         private List<Cause> root_cause;
@@ -170,7 +178,11 @@ public class ExceptionResponse {
         return this.status;
     }
 
-    public ErrorHolder getError() {
+    public Error getError() {
         return this.error;
+    }
+
+    public Exception getException() {
+        return exception;
     }
 }

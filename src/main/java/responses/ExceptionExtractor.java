@@ -29,11 +29,11 @@ public class ExceptionExtractor {
         // Handle ResponseException
         Throwable throwable = findResponseException(exception);
         if(throwable != null) {
-            return ExceptionResponse.createFromThrowable(throwable);
+            return ExceptionResponse.createFromThrowable(throwable, exception);
         }
 
         if(exception instanceof ConnectException) {
-            return ExceptionResponse.createConnectionRefused();
+            return ExceptionResponse.createConnectionRefused(exception);
         }
 
         return ExceptionResponse.createUncategorizedCause(exception);

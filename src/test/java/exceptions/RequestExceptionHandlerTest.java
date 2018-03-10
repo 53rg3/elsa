@@ -43,6 +43,8 @@ import static junit.framework.TestCase.assertTrue;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.search.builder.SearchSourceBuilder.searchSource;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
@@ -103,6 +105,7 @@ public class RequestExceptionHandlerTest {
 
         assertThat(exceptionHandler.getInfo().getStatus(), is(400));
         assertTrue(regex.matcher(exceptionHandler.getInfo().getError().getReason()).find());
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         elsa.admin.deleteIndex(testIndexName);
     }
@@ -132,6 +135,7 @@ public class RequestExceptionHandlerTest {
 
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
     }
 
     @Test
@@ -142,6 +146,7 @@ public class RequestExceptionHandlerTest {
         daoForInvalid.index(modelInvalid2, exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(400));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         elsa.admin.deleteIndex(FakerModelForExceptionTesting.getIndexName());
     }
@@ -153,11 +158,13 @@ public class RequestExceptionHandlerTest {
         dao.get("someId", exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         dao.getRawResponse("someId", exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
     }
 
     @Test
@@ -169,6 +176,7 @@ public class RequestExceptionHandlerTest {
 
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
     }
 
     @Test
@@ -180,6 +188,7 @@ public class RequestExceptionHandlerTest {
 
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
         elsa.admin.deleteIndex(model.getIndexConfig().getIndexName());
     }
 
@@ -196,6 +205,7 @@ public class RequestExceptionHandlerTest {
 
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
     }
 
     @Test
@@ -212,6 +222,7 @@ public class RequestExceptionHandlerTest {
         elsa.scroller.initialize(request, scrollManager, exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         // With existing index
         exceptionHandler = new ExceptionHandlerWithExtractor();
@@ -222,11 +233,13 @@ public class RequestExceptionHandlerTest {
 
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(400));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         elsa.scroller.clearScroll(scrollManagerFake, exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(400));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         elsa.admin.deleteIndex(FakerModelForExceptionTesting.class);
     }
@@ -243,6 +256,7 @@ public class RequestExceptionHandlerTest {
 
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
     }
 
     @Test
@@ -265,18 +279,21 @@ public class RequestExceptionHandlerTest {
         elsa.snapshotter.getRepositoryByName("repo_does_not_exist", exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         elsa.snapshotter.getSnapshots("repo_does_not_exist", exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         elsa.snapshotter.getSnapshotByName("repo_does_not_exist", "snapshot_does_exist", exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
     }
 
     @Test
@@ -296,6 +313,7 @@ public class RequestExceptionHandlerTest {
         System.out.println(exceptionHandler.getInfo());
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
@@ -305,18 +323,21 @@ public class RequestExceptionHandlerTest {
                 .snapshotName("does_not_exist")), exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         elsa.snapshotter.deleteSnapshot("does_not_exist", "does_not_exist", exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         elsa.snapshotter.deleteRepository("does_not_exist", exceptionHandler);
         assertTrue(exceptionHandler.wasCalled());
         assertThat(exceptionHandler.getInfo().getStatus(), is(404));
+        assertThat(exceptionHandler.getException(), notNullValue());
     }
 
     @Test
@@ -335,6 +356,7 @@ public class RequestExceptionHandlerTest {
 
         assertThat(exceptionHandler.getInfo().getStatus(), is(400));
         assertTrue(regex.matcher(exceptionHandler.getInfo().getError().getReason()).find());
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         elsa.admin.deleteIndex(FakerModelForExceptionTesting.class);
     }
@@ -356,18 +378,22 @@ public class RequestExceptionHandlerTest {
         ExceptionHandlerWithExtractor exceptionHandler = new ExceptionHandlerWithExtractor();
         dao.search(request, exceptionHandler);
         assertThat(exceptionHandler.getInfo().getStatus(), is(503));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         dao.searchAndMapFirstHit(request, exceptionHandler);
         assertThat(exceptionHandler.getInfo().getStatus(), is(503));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         dao.searchAndMapToList(request, exceptionHandler);
         assertThat(exceptionHandler.getInfo().getStatus(), is(503));
+        assertThat(exceptionHandler.getException(), notNullValue());
 
         exceptionHandler = new ExceptionHandlerWithExtractor();
         dao.searchAndMapToStream(request, exceptionHandler);
         assertThat(exceptionHandler.getInfo().getStatus(), is(503));
+        assertThat(exceptionHandler.getException(), notNullValue());
     }
     
     @Test(expected = IllegalStateException.class)
