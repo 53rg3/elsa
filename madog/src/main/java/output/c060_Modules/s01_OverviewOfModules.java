@@ -41,12 +41,12 @@ public class s01_OverviewOfModules extends Output {
                 "CRUD operations for indices, e.g. `.deleteIndex()`, `.createIndex()`, `.indexExists()`, `.updateMapping()`.");
         list.entry("BulkProcessor", "" +
                 "Exposes Elasticsearch's native BulkProcessor (see" +
-                Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html", " here")+".) " +
-                "For an usage example see "+
+                Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html", " here")+"). " +
+                "For a usage example see "+
         Ref.internalPath("/src/test/java/bulkprocessor/BulkProcessorTest.java", "BulkProcessorTest.java"));
         list.entry("Scroller", "" +
                 "Abstraction for Elasticsearch's scrolling functionality (see "+
-                Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html", " here")+".)"+"), " +
+                Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html", " here")+".)"+", " +
                 "i.e. retrieval of `SearchRequest` with big result sets. " +
                 "For example you can scroll over the whole index with the `QueryBuilders.matchAllQuery()`. For a usage example see "+
                 Ref.internalPath("/src/test/java/scroller/ScrollerTest.java", "ScrollerTest.java"));
@@ -62,7 +62,7 @@ public class s01_OverviewOfModules extends Output {
                 Ref.internalPath("/src/test/java/reindexer/ReindexerTest.java", "ReindexerTest.java"));
         list.entry("GSON", "" +
                 "Exposes the internal JSON mapper library with the settings made in the ElsaClient instantiation. Can be used to parse raw Elasticsearch " +
-                "responses from the Low Level REST Client. See also section "+Ref.outputClass(s00_Helpers.class));
+                "responses from the Low Level REST Client. See also section "+Ref.outputClass(s00_Helpers.class, "Helpers")+".");
 
         Print.wrapped(list.getAsMarkdown());
 

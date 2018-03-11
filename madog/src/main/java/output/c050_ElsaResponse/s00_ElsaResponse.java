@@ -29,9 +29,22 @@ public class s00_ElsaResponse extends Output {
 
         Print.h1("ElsaResponse");
 
-
-
-
+        Print.wrapped("All requests to Elasticsearch can throw exceptions in case the cluster is offline, an index " +
+                "does not exist, a request is malformed, etc. These exceptions mostly have JSON inside the message with additional " +
+                "information. ELSA tries to parse the message and to pass them back to the caller. `ElsaResponse` is an " +
+                "imitation of Java's `Optional` and encapsulates successful responses as well as Exceptions and provides " +
+                "a convenient way to react to both without try-catch blocks.\n\n" +
+                "Example:");
+        Print.codeBlock("" +
+                "DeleteIndexResponse response = elsa.admin.deleteIndex(\"does_not_exist\")\n" +
+                "            .orElseThrow(IllegalStateException::new);\n" +
+                "ElsaResponse<DeleteIndexResponse> response = elsa.admin.deleteIndex(\"does_not_exist\");\n" +
+                "if(response.hasException()) {\n" +
+                "   ExceptionResponse exceptionResponse = response.getExceptionResponse();" +
+                "}" +
+                "if(response.isPresent()) {\n" +
+                "   YourModel model = response.get();" +
+                "}");
 
     }
 

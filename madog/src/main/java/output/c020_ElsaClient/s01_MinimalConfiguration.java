@@ -25,7 +25,7 @@ public class s01_MinimalConfiguration extends Output {
     @Override
     public void addMarkDownAsCode() {
 
-        Print.h1("Minimal configuration");
+        Print.h2("Minimal configuration");
 
         Print.codeBlock("" +
                 "private final HttpHost[] httpHosts = {new HttpHost(\"localhost\", 9200, \"http\")};\n" +

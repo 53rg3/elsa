@@ -16,7 +16,7 @@ The [SearchDAO](/src/main/java/dao/SearchDAO.java) handles Elasticsearch's nativ
 * All DAOs must extend ElsaDAO.
 * Use `.getElsa()` to access the ELSA instance in which a DAO is registered, i.e. for the Low Level and High Level REST Client.
 * Use `.getJsonMapper()` to map your models `.toJson()` to send it to Elasticsearch or `.fromJson()` to map a Elasticsearch response to your model.
-* Use `.getModelClass()` to access the Class to which an DAO instance is bound to.
+* Use `.getModelClass()` to access the `Class` to which an DAO instance is bound to.
 * Use `.getSearchResponseMapper()` to conveniently map Elasticsearch's `SearchResponses` to your model.
 
 

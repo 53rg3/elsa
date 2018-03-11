@@ -2,7 +2,7 @@
 [1. Models](#models)<br>
 # Models
 
-For a usage example see [TestModel.java](/src/test/java/assets/TestModel.java)
+For a usage example see [TestModel.java](/src/test/java/assets/TestModelWithAddedMappings.java)
 
 
 **Requirements**

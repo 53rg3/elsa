@@ -29,7 +29,7 @@ public class s00_Models extends Output {
 
         Print.h1("Models");
 
-        Print.wrapped("For a usage example see "+Ref.internalPath("/src/test/java/assets/TestModel.java", "TestModel.java"));
+        Print.wrapped("For a usage example see "+Ref.internalPath("/src/test/java/assets/TestModelWithAddedMappings.java", "TestModel.java"));
 
         Print.wrapped("**Requirements**");
         List list = new List();

@@ -20,38 +20,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 public class Search {
-
-//    @FunctionalInterface
-//    public interface SearchRequestConfigurator {
-//
-//        default SearchRequest applyCustomConfig(SearchRequestConfigurator searchRequestConfigurator) {
-//            SearchRequest searchRequest = new SearchRequest();
-//            searchRequestConfigurator.configure(searchRequest);
-//            return searchRequest;
-//        }
-//
-//        void configure(SearchRequest searchRequest);
-//    }
-//
-//    @FunctionalInterface
-//    public interface SearchSourceConfigurator {
-//
-//        default SearchSourceBuilder applyCustomConfig(SearchSourceConfigurator searchSourceConfigurator) {
-//            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-//            searchSourceConfigurator.configure(searchSourceBuilder);
-//            return searchSourceBuilder;
-//        }
-//
-//        void configure(SearchSourceBuilder searchSourceBuilder);
-//    }
-//
-//    public static SearchRequest req(SearchRequestConfigurator useFunctionLambda) {
-//        return useFunctionLambda.applyCustomConfig(useFunctionLambda);
-//    }
-//
-//    public static SearchSourceBuilder src(SearchSourceConfigurator useFunctionLambda) {
-//        return useFunctionLambda.applyCustomConfig(useFunctionLambda);
-//    }
+    private Search() {}
 
     public static SearchRequest req() {
         return new SearchRequest();

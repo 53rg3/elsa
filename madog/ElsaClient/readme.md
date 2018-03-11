@@ -1,9 +1,9 @@
 ## Table of Contents
 [1. Create an ElsaClient instance](#create-an-elsaclient-instance)<br>
-[2. Minimal configuration](#minimal-configuration)<br>
-[3. Minimal configuration](#minimal-configuration)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Minimal configuration](#minimal-configuration)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Minimal configuration](#minimal-configuration)<br>
 # Create an ElsaClient instance
-# Minimal configuration
+## Minimal configuration
 
 ```JAVA
 private final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
@@ -12,7 +12,7 @@ private final ElsaClient elsa = new ElsaClient(c -> c
         .registerModel(YourModel.class, CrudDAO.class));
 ```
 
-# Minimal configuration
+## Minimal configuration
 
 **BAD CONFIGURATION. DO NOT COPY & PASTE**
 

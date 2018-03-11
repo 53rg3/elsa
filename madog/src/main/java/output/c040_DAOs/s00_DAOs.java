@@ -54,7 +54,7 @@ public class s00_DAOs extends Output {
         list.entry("Use `.getElsa()` to access the ELSA instance in which a DAO is registered, i.e. for the Low Level and High Level REST Client.");
         list.entry("Use `.getJsonMapper()` to map your models `.toJson()` to send it to Elasticsearch or `.fromJson()` to map a Elasticsearch response " +
                 "to your model.");
-        list.entry("Use `.getModelClass()` to access the Class to which an DAO instance is bound to.");
+        list.entry("Use `.getModelClass()` to access the `Class` to which an DAO instance is bound to.");
         list.entry("Use `.getSearchResponseMapper()` to conveniently map Elasticsearch's `SearchResponses` to your model.");
         Print.wrapped(list.getAsMarkdown());
 
