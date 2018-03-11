@@ -26,7 +26,7 @@ SearchRequest request = Search.req()
 Offers salvation from the dreaded `XContentBuilder` to build JSON-strings, `Map<String,Object>` and `XContentBuilder` itself.
 
 ```java
-XContentBuilder easyXContentBuilder = new XJson()
+Date date = new Date();XContentBuilder easyXContentBuilder = new XJson()
         .field("field1", "value1")
         .array("field2", 1, 2, 3)
         .field("field3", date)

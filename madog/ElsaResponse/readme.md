@@ -12,7 +12,11 @@ DeleteIndexResponse response = elsa.admin.deleteIndex("does_not_exist")
             .orElseThrow(IllegalStateException::new);
 ElsaResponse<DeleteIndexResponse> response = elsa.admin.deleteIndex("does_not_exist");
 if(response.hasException()) {
-   ExceptionResponse exceptionResponse = response.getExceptionResponse();}if(response.isPresent()) {
-   YourModel model = response.get();}
+   ExceptionResponse exceptionResponse = response.getExceptionResponse();
+}
+if(response.isPresent()) {
+   YourModel model = response.get();
+}
+
 ```
 

@@ -20,6 +20,7 @@ import com.sun.deploy.ref.Helpers;
 import madog.core.Output;
 import madog.core.Print;
 import madog.core.Ref;
+import madog.markdown.Icon;
 import madog.markdown.List;
 import output.c070_Helpers.s00_Helpers;
 
@@ -43,7 +44,9 @@ public class s01_OverviewOfModules extends Output {
                 "Exposes Elasticsearch's native BulkProcessor (see" +
                 Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html", " here")+"). " +
                 "For a usage example see "+
-        Ref.internalPath("/src/test/java/bulkprocessor/BulkProcessorTest.java", "BulkProcessorTest.java"));
+        Ref.internalPath("/src/test/java/bulkprocessor/BulkProcessorTest.java", "BulkProcessorTest.java")+". " +
+                Icon.BANG+ "Tip: Max out the amount of cores your CPU offers with `.setConcurrentRequests()`. Makes bulk indexing A LOT faster. " +
+                "Default is just '1'.");
         list.entry("Scroller", "" +
                 "Abstraction for Elasticsearch's scrolling functionality (see "+
                 Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html", " here")+".)"+", " +

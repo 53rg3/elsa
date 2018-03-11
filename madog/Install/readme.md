@@ -1,5 +1,6 @@
 ## Table of Contents
 [1. Install](#install)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Compatibility](#compatibility)<br>
 # Install
 
 Clone the repository
@@ -28,4 +29,8 @@ Add the dependency in the POM. Make sure the versions match (see pom.xml in repo
     <version>0.1</version>
 </dependency>
 ```
+
+## Compatibility
+
+Works with **Elasticsearch 6.2**.
 

@@ -45,6 +45,9 @@ public class s00_Install extends Output {
                 "</dependency>" +
                 "", Syntax.XML);
 
+        Print.h2("Compatibility");
+        Print.wrapped("Works with **Elasticsearch 6.2**.");
+
     }
 
 }

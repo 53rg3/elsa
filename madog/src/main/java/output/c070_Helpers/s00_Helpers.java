@@ -55,6 +55,7 @@ public class s00_Helpers extends Output {
                 "Offers salvation from the dreaded `XContentBuilder` to build JSON-strings, `Map<String,Object>` " +
                 "and `XContentBuilder` itself.\n\n" +
                 "```java\n" +
+                "Date date = new Date();" +
                 "XContentBuilder easyXContentBuilder = new XJson()\n" +
                 "        .field(\"field1\", \"value1\")\n" +
                 "        .array(\"field2\", 1, 2, 3)\n" +

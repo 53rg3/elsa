@@ -12,7 +12,7 @@ Instance of Elasticsearch native High Level REST Client. This gives you also acc
 * **Admin**<br>
 CRUD operations for indices, e.g. `.deleteIndex()`, `.createIndex()`, `.indexExists()`, `.updateMapping()`.
 * **BulkProcessor**<br>
-Exposes Elasticsearch's native BulkProcessor (see[ here](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html)). For a usage example see [BulkProcessorTest.java](/src/test/java/bulkprocessor/BulkProcessorTest.java)
+Exposes Elasticsearch's native BulkProcessor (see[ here](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html)). For a usage example see [BulkProcessorTest.java](/src/test/java/bulkprocessor/BulkProcessorTest.java). :heavy_exclamation_mark: Tip: Max out the amount of cores your CPU offers with `.setConcurrentRequests()`. Makes bulk indexing A LOT faster. Default is just '1'.
 * **Scroller**<br>
 Abstraction for Elasticsearch's scrolling functionality (see [ here](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html).), i.e. retrieval of `SearchRequest` with big result sets. For example you can scroll over the whole index with the `QueryBuilders.matchAllQuery()`. For a usage example see [ScrollerTest.java](/src/test/java/scroller/ScrollerTest.java)
 * **Snapshotter**<br>

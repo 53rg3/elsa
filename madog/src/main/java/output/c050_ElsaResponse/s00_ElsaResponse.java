@@ -40,11 +40,11 @@ public class s00_ElsaResponse extends Output {
                 "            .orElseThrow(IllegalStateException::new);\n" +
                 "ElsaResponse<DeleteIndexResponse> response = elsa.admin.deleteIndex(\"does_not_exist\");\n" +
                 "if(response.hasException()) {\n" +
-                "   ExceptionResponse exceptionResponse = response.getExceptionResponse();" +
-                "}" +
+                "   ExceptionResponse exceptionResponse = response.getExceptionResponse();\n" +
+                "}\n" +
                 "if(response.isPresent()) {\n" +
-                "   YourModel model = response.get();" +
-                "}");
+                "   YourModel model = response.get();\n" +
+                "}\n");
 
     }
 

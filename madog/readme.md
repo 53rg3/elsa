@@ -1,4 +1,5 @@
 [1. Install](/madog/Install/readme.md#install)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Compatibility](/madog/Install/readme.md#compatibility)<br>
 [2. Create an ElsaClient instance](/madog/ElsaClient/readme.md#create-an-elsaclient-instance)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.1 Minimal configuration](/madog/ElsaClient/readme.md#minimal-configuration)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2 Minimal configuration](/madog/ElsaClient/readme.md#minimal-configuration)<br>
