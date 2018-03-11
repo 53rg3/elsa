@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package output.c090_Bookmarks;
+package output.c020_ElsaClient;
 
 import madog.core.Output;
 import madog.core.Print;
-import madog.core.Ref;
-import madog.markdown.List;
 
 
-public class c00_Bookmarks extends Output {
+public class s01_MinimalConfiguration extends Output {
 
     @Override
     public void addMarkDownAsCode() {
 
-        Print.h1("Bookmarks");
+        Print.h1("Minimal configuration");
 
-        List list = new List();
-        list.entry("Transport-Client & REST-Client Benchmarking",
-                Ref.externalURL("https://www.elastic.co/blog/benchmarking-rest-client-transport-client"));
-
-        Print.wrapped(list.getAsMarkdown());
-
+        Print.codeBlock("" +
+                "private final HttpHost[] httpHosts = {new HttpHost(\"localhost\", 9200, \"http\")};\n" +
+                "private final ElsaClient elsa = new ElsaClient(c -> c\n" +
+                "        .setClusterNodes(httpHosts)\n" +
+                "        .registerModel(YourModel.class, CrudDAO.class));" +
+                "");
     }
 
 }

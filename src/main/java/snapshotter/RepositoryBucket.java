@@ -17,7 +17,6 @@
 package snapshotter;
 
 import client.ElsaClient;
-import org.elasticsearch.client.Response;
 import responses.ConfirmationResponse;
 import responses.ElsaResponse;
 
@@ -31,7 +30,7 @@ public class RepositoryBucket {
     //  FIELDS
     // ------------------------------------------------------------------------------------------ //
 
-    private final Map<String, SnapshotRepository> bucket;
+    private final Map<String, SnapshotRepository> repositoryBucket;
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -70,7 +69,7 @@ public class RepositoryBucket {
         } else {
             builder = Config.createBuilder(config);
         }
-        this.bucket = builder.bucket;
+        this.repositoryBucket = builder.bucket;
     }
 
 
@@ -103,7 +102,7 @@ public class RepositoryBucket {
     // ------------------------------------------------------------------------------------------ //
 
     public void registerRepositories(final ElsaClient elsa) {
-        this.getBucket().forEach((key, value) -> {
+        this.getRepositoryBucket().forEach((key, value) -> {
             final ElsaResponse<ConfirmationResponse> response = elsa.snapshotter.createRepository(
                     new CreateRepositoryRequest(c -> c
                             .repositoryName(value.getRepositoryName())
@@ -119,7 +118,7 @@ public class RepositoryBucket {
     // GETTER
     // ------------------------------------------------------------------------------------------ //
 
-    public Map<String, SnapshotRepository> getBucket() {
-        return this.bucket;
+    public Map<String, SnapshotRepository> getRepositoryBucket() {
+        return this.repositoryBucket;
     }
 }

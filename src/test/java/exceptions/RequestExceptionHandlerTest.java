@@ -348,7 +348,7 @@ public class RequestExceptionHandlerTest {
                 .setClusterNodes(httpHosts)
                 .registerModel(FakerModelForExceptionTesting.class, CrudDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false)
-                .setRequestExceptionHandler(exceptionHandler));
+                .setDefaultRequestExceptionHandler(exceptionHandler));
         final Pattern regex = Pattern.compile("index.*already exists");
 
         elsa.admin.createIndex(FakerModelForExceptionTesting.class, exceptionHandler);
@@ -402,7 +402,7 @@ public class RequestExceptionHandlerTest {
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(httpHosts)
                 .registerModel(FakerModel.class, CrudDAO.class)
-                .setRequestExceptionHandler(new ThrowExceptionHandler()));
+                .setDefaultRequestExceptionHandler(new ThrowExceptionHandler()));
         elsa.admin.deleteIndex("does_not_exist");
     }
 }

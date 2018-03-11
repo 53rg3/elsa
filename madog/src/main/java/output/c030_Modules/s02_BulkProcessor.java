@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package output.c091_FeatureIdeas;
+package output.c030_Modules;
 
 import madog.core.Output;
 import madog.core.Print;
@@ -22,21 +22,17 @@ import madog.core.Ref;
 import madog.markdown.List;
 
 
-public class c00_FeatureIdeas extends Output {
+public class s02_BulkProcessor extends Output {
 
     @Override
     public void addMarkDownAsCode() {
 
-        Print.h1("Ideas for more features");
-        List list = new List();
+        Print.h2("BulkProcessor");
 
-        list.entry("Log / send notification when a node fails",
-                "" +
-                        "We can initialize the client with a `FailureListener`, see " +
-                        ""+ Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-low-usage-initialization.html", "here")+ ". " +
-                        "");
+        Print.wrapped("All modules can be directly accessed via the ElsaClient instance, e.g. `elsa.admin`, `elsa.scroller`.");
 
-        Print.wrapped(list.getAsMarkdown());
+
+
 
     }
 

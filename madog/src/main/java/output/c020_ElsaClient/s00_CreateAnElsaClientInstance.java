@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package output.c020_Initialization;
+package output.c020_ElsaClient;
 
 import madog.core.Output;
 import madog.core.Print;
-import madog.core.Ref;
 
 
-public class c00_Initialization extends Output {
+public class s00_CreateAnElsaClientInstance extends Output {
 
     @Override
     public void addMarkDownAsCode() {
-        Print.h1("Initialization");
 
-        Print.wrapped("See "+ Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-low-usage-initialization.html", "Elastic Docs") + " " +
-                "for current version and more details.");
+        Print.h1("Create an ElsaClient instance");
 
     }
 

@@ -221,7 +221,7 @@ public class ElsaClient {
          * In some cases the Elasticsearch cluster responds with Exceptions. You can a pass a default exception handler
          * which will be invoked if no custom handler was passed as argument to the request methods.
          */
-        public Config setRequestExceptionHandler(final RequestExceptionHandler defaultIsJustLogExceptionHandler) {
+        public Config setDefaultRequestExceptionHandler(final RequestExceptionHandler defaultIsJustLogExceptionHandler) {
             this.requestExceptionHandler = defaultIsJustLogExceptionHandler;
             return this;
         }
@@ -272,7 +272,6 @@ public class ElsaClient {
 
     @SuppressWarnings("Type is set in this.createDaoMap()")
     public <T extends ElsaDAO> T getDAO(final Class<? extends ElsaModel> modelClass) {
-
         return Objects.requireNonNull((T) this.daoMap.get(modelClass), "Requested DAO for model class does not exist. " +
                 "Make sure the following model was registered in the ElsaClient instantiation: " + modelClass);
     }
