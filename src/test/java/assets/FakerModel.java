@@ -56,13 +56,12 @@ public class FakerModel implements ElsaModel {
 
 
     public static FakerModel createModelWithRandomData() {
-        final FakerModel bulkModel = new FakerModel();
-
-        bulkModel.setName(faker.name().fullName());
-        bulkModel.setFavoritePokemons(Arrays.asList(faker.pokemon().name(), faker.pokemon().name(), faker.pokemon().name()));
-        bulkModel.setAge(createRandomInteger(14, 90));
-        bulkModel.setBiography(faker.lorem().sentence(createRandomInteger(50, 100)));
-        return bulkModel;
+        final FakerModel fakerModel = new FakerModel();
+        fakerModel.setName(faker.name().fullName());
+        fakerModel.setFavoritePokemons(Arrays.asList(faker.pokemon().name(), faker.pokemon().name(), faker.pokemon().name()));
+        fakerModel.setAge(createRandomInteger(14, 90));
+        fakerModel.setBiography(faker.lorem().sentence(createRandomInteger(50, 100)));
+        return fakerModel;
     }
 
     private static int createRandomInteger(final int min, final int max) {

@@ -1,4 +1,9 @@
 ./readme.md
 ./Install/readme.md
 ./ElsaClient/readme.md
+./Models/readme.md
+./DAOs/readme.md
+./ElsaResponse/readme.md
 ./Modules/readme.md
+./Helpers/readme.md
+./Bookmarks/readme.md

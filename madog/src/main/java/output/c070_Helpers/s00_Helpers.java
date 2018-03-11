@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package output.c030_Modules;
+package output.c070_Helpers;
 
 import madog.core.Output;
 import madog.core.Print;
-import madog.core.Ref;
-import madog.markdown.List;
 
 
-public class s02_BulkProcessor extends Output {
+public class s00_Helpers extends Output {
 
     @Override
     public void addMarkDownAsCode() {
 
-        Print.h2("BulkProcessor");
+        Print.h1("Helpers");
 
-        Print.wrapped("All modules can be directly accessed via the ElsaClient instance, e.g. `elsa.admin`, `elsa.scroller`.");
 
 
 
