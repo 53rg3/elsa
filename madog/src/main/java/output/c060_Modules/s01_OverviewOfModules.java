@@ -44,7 +44,7 @@ public class s01_OverviewOfModules extends Output {
                 "Exposes Elasticsearch's native BulkProcessor (see" +
                 Ref.externalURL("https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html", " here")+"). " +
                 "For a usage example see "+
-        Ref.internalPath("/src/test/java/bulkprocessor/BulkProcessorTest.java", "BulkProcessorTest.java")+". \n" +
+        Ref.internalPath("/src/test/java/bulkprocessor/BulkProcessorTest.java", "BulkProcessorTest.java")+". <br>" +
                 Icon.BANG+ "Tip: Max out the amount of cores your CPU offers with `.setConcurrentRequests()`. Makes bulk indexing A LOT faster. " +
                 "Default is just '1'.");
         list.entry("Scroller", "" +
