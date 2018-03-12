@@ -5,7 +5,7 @@
 # DAOs
 ## Using ELSA's DAOs
 
-Get the via `CrudDAO<YourModel> dao = elsa.getDAO(YourModel.class);`. 
+Get registered DAO via `CrudDAO<YourModel> dao = elsa.getDAO(YourModel.class);`. 
 
 
 * **CrudDAO**<br>
