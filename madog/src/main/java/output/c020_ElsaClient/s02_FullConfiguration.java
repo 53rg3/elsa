@@ -27,7 +27,7 @@ public class s02_FullConfiguration extends Output {
     @Override
     public void addMarkDownAsCode() {
 
-        Print.h2("Minimal configuration");
+        Print.h2("Full configuration");
 
         Print.wrapped("**BAD CONFIGURATION. DO NOT COPY & PASTE**");
 

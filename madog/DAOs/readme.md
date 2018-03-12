@@ -5,6 +5,9 @@
 # DAOs
 ## Using ELSA's DAOs
 
+Get the via `CrudDAO<YourModel> dao = elsa.getDAO(YourModel.class);`. 
+
+
 * **CrudDAO**<br>
 The [CrudDAO](/src/main/java/dao/CrudDAO.java) offers CRUD operations. All operations can be executed asynchronously, can send individual headers and can use individual `RequestExceptionHandler`. `CrudDAO` extends `SearchDAO` and offers all of its methods. Async methods must implement the object mapping manually in an instance of the native `ActionListener` of Elasticsearch, see [official docs](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-supported-apis.html).
 * **SearchDAO**<br>

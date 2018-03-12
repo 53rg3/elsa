@@ -1,7 +1,7 @@
 ## Table of Contents
 [1. Create an ElsaClient instance](#create-an-elsaclient-instance)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Minimal configuration](#minimal-configuration)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Minimal configuration](#minimal-configuration)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Full configuration](#full-configuration)<br>
 # Create an ElsaClient instance
 ## Minimal configuration
 
@@ -12,7 +12,7 @@ private final ElsaClient elsa = new ElsaClient(c -> c
         .registerModel(YourModel.class, CrudDAO.class));
 ```
 
-## Minimal configuration
+## Full configuration
 
 **BAD CONFIGURATION. DO NOT COPY & PASTE**
 

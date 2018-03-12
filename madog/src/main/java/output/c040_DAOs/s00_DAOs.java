@@ -30,6 +30,7 @@ public class s00_DAOs extends Output {
         Print.h1("DAOs");
 
         Print.h2("Using ELSA's DAOs");
+        Print.wrapped("Get the via `CrudDAO<YourModel> dao = elsa.getDAO(YourModel.class);`. ");
         List daos = new List();
         daos.entry("CrudDAO", "" +
                 "The "+Ref.internalPath("/src/main/java/dao/CrudDAO.java", "CrudDAO")+ " offers CRUD operations. All operations " +
