@@ -59,10 +59,6 @@ public class s00_DAOs extends Output {
         list.entry("Use `.getSearchResponseMapper()` to conveniently map Elasticsearch's `SearchResponses` to your model.");
         Print.wrapped(list.getAsMarkdown());
 
-
-
-
-
     }
 
 }

@@ -11,7 +11,8 @@
 [6. Modules](/madog/Modules/readme.md#modules)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[6.1 Overview](/madog/Modules/readme.md#overview)<br>
 [7. Helpers](/madog/Helpers/readme.md#helpers)<br>
-[8. Bookmarks](/madog/Bookmarks/readme.md#bookmarks)<br>
+[8. NoClassDefFoundError for Log4J](/madog/EncounteredProblems/readme.md#noclassdeffounderror-for-log4j)<br>
+[9. Bookmarks](/madog/Bookmarks/readme.md#bookmarks)<br>
 
 
 
