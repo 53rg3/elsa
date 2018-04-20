@@ -26,7 +26,7 @@ public class c00_EncounteredProblems extends Output {
     public void addMarkDownAsCode() {
         Print.h1("NoClassDefFoundError for Log4J");
         Print.wrapped("`java.lang.NoClassDefFoundError: org/apache/logging/log4j/util/MultiFormatStringBuilderFormattable`<br/>" +
-                "No idea, no time to solve it. Start the cluster before testing and it's suddenly no problem... -__-");
+                "`log4j-api` must be added to `pom.xml`.");
     }
 
 }
