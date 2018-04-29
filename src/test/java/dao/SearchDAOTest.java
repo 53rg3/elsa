@@ -34,9 +34,12 @@ import responses.ElsaResponse;
 import java.util.List;
 
 import static helpers.Search.src;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class SearchDAOTest {
 
@@ -75,22 +78,39 @@ public class SearchDAOTest {
     @Test
     public void search() {
         final ElsaResponse<SearchResponse> response = dao.search(this.request);
+        assertThat(response.hasResult(), is(true));
         assertThat(response.get().getHits().getHits().length, greaterThan(1));
     }
 
     @Test
     public void searchAndMapFirstHit() {
         final ElsaResponse<FakerModel> fakerModel = dao.searchAndMapFirstHit(this.request);
+        assertThat(fakerModel.hasResult(), is(true));
         assertThat(fakerModel.get().getId(), notNullValue());
     }
 
     @Test
     public void searchAndMapToList() {
         final ElsaResponse<List<FakerModel>> list = dao.searchAndMapToList(this.request);
+        assertThat(list.hasResult(), is(true));
         assertThat(list.get().size(), greaterThan(1));
         for (final FakerModel fakerModel : list.get()) {
             assertThat(fakerModel.getId(), notNullValue());
         }
+    }
+
+    @Test
+    public void searchHasNoResults() {
+        final SearchRequest ageHasNoResultsRequest = Search.req()
+                .indices(IndexName.of(FakerModel.class))
+                .source(src()
+                        .size(3)
+                        .query(QueryBuilders.rangeQuery("age")
+                                .gt(111)));
+        final ElsaResponse<FakerModel> response1 = dao.searchAndMapFirstHit(ageHasNoResultsRequest);
+        assertThat(response1.hasResult(), is(false));
+        final ElsaResponse<List<FakerModel>> response2 = dao.searchAndMapToList(ageHasNoResultsRequest);
+        assertThat(response2.hasResult(), is(false));
     }
 
     @Test

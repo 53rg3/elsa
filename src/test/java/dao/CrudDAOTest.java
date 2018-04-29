@@ -170,6 +170,7 @@ public class CrudDAOTest {
     @Test
     public void get_nonExistingDocument_nullResult() {
         final ElsaResponse<TestModel> newDoc = this.testDAO.get("nonExistingId");
+        assertThat(newDoc.hasResult(), is(false));
         assertThat(newDoc.isPresent(), is(false));
     }
 

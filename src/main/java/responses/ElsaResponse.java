@@ -16,6 +16,7 @@
 
 package responses;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -29,8 +30,8 @@ public final class ElsaResponse<T> {
     private final ExceptionResponse exceptionResponse;
     private static final ElsaResponse<?> EMPTY = new ElsaResponse<>();
 
-    private static final String NO_RESULT = "No response present, i.e. the request was successful, " +
-            "but returned no result. Check with .isPresent() first.";
+    private static final String NO_RESULT = "No response present, i.e. the search request was successful, " +
+            "but returned no result. Check with .hasResult() first.";
     private static final String HAS_EXCEPTION = "Can't get response, because it was returned with an exception. " +
             "Check with .hasException() first. You can also access it via .getExceptionResponse().";
 
@@ -94,12 +95,30 @@ public final class ElsaResponse<T> {
         return response;
     }
 
+    /**
+     * The request was successful. In case of a search request in combination with SearchDAO.searchAndMapFirstHit or
+     * CrudDAO.get() this can be null. Check with hasResult() instead in these cases.
+     */
     public boolean isPresent() {
         return response != null;
     }
 
+    /**
+     * The Elasticsearch cluster returned the request with an exception.
+     */
     public boolean hasException() {
         return exceptionResponse != null;
+    }
+
+    /**
+     * Used for SearchRequests which can be an empty list or in case of or SearchDAO.searchAndMapFirstHit and CrudDAO.get()
+     * can be null.
+     */
+    public boolean hasResult() {
+        if(this.response instanceof Collection) {
+            return !((Collection) this.response).isEmpty() && this.exceptionResponse == null;
+        }
+        return this.response != null && this.exceptionResponse == null;
     }
 
     public void ifPresent(final Consumer<? super T> consumer) {
