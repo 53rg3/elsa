@@ -33,8 +33,7 @@ public class c00_EncounteredProblems extends Output {
                 "`log4j-api` must be added to `pom.xml`.");
 
 
-        Print.h2("Saving Arrays: \"object mapping for [arrayField] tried to parse field [null] as object, but found a concrete value]\"");
-        Print.wrapped("Using the following:");
+        Print.h2("Saving Arrays:");
         Print.codeBlock("" +
                 "@Field(type = FieldType.Object)\n" +
                 "private List<String> arrayField;");
