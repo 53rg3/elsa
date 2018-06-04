@@ -1,7 +1,7 @@
 ## Table of Contents
 [1. Encountered Problems](#encountered-problems)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.1 NoClassDefFoundError for Log4J](#noclassdeffounderror-for-log4j)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Saving Arrays:](#saving-arrays)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Saving Arrays](#saving-arrays)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.3 Using bulk processor leads to TimeoutException](#using-bulk-processor-leads-to-timeoutexception)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.4 Gson.toJson causes StackOverflowError](#gsontojson-causes-stackoverflowerror)<br>
 # Encountered Problems
@@ -9,7 +9,7 @@
 
 `java.lang.NoClassDefFoundError: org/apache/logging/log4j/util/MultiFormatStringBuilderFormattable`<br/>`log4j-api` must be added to `pom.xml`.
 
-## Saving Arrays:
+## Saving Arrays
 
 ```JAVA
 @Field(type = FieldType.Object)

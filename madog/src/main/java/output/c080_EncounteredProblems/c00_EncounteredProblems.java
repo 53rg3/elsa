@@ -33,7 +33,7 @@ public class c00_EncounteredProblems extends Output {
                 "`log4j-api` must be added to `pom.xml`.");
 
 
-        Print.h2("Saving Arrays:");
+        Print.h2("Saving Arrays");
         Print.codeBlock("" +
                 "@Field(type = FieldType.Object)\n" +
                 "private List<String> arrayField;");
