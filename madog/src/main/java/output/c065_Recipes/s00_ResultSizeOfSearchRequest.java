@@ -29,8 +29,9 @@ public class s00_ResultSizeOfSearchRequest extends Output {
     @Override
     public void addMarkDownAsCode() {
 
-        Print.h1("Getting the Result Size of a SearchRequest");
+        Print.h1("Cookbook Recipes");
 
+        Print.h2("Getting the Result Size of a SearchRequest");
         Print.wrapped("Use `SearchDAO.search` to execute any `SearchRequest`. Use the returning `SearchResponse` to " +
                 "get the hits count. Use `SearchResponseMapper` to map the `SearchResponse` to your model.");
 
