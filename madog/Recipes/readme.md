@@ -2,6 +2,7 @@
 [1. Cookbook Recipes](#cookbook-recipes)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Getting the Result Size of a SearchRequest](#getting-the-result-size-of-a-searchrequest)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Creating a separate context of ELSA in Play for testing](#creating-a-separate-context-of-elsa-in-play-for-testing)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2.1 Injecting static fields & methods](#injecting-static-fields--methods)<br>
 # Cookbook Recipes
 ## Getting the Result Size of a SearchRequest
 
@@ -119,4 +120,19 @@ public class TryOuts {
 
 
 Guice will now use our `ElsaTest.class` for the injection.
+
+### Injecting static fields & methods
+
+Add `requestStaticInjection(ClassWithStaticInjections.class)` to your module.
+
+
+```JAVA
+public class Module extends AbstractModule {
+    @Override
+    protected void configure() {
+        bind(Elsa.class).to(ElsaProd.class);
+        requestStaticInjection(StaticHelpers.class);
+    }
+}
+```
 

@@ -121,6 +121,18 @@ public class s01_PlayFrameworkTestingContext extends Output {
 
         Print.wrapped("Guice will now use our `ElsaTest.class` for the injection.");
 
+
+        Print.h3("Injecting static fields & methods");
+        Print.wrapped("Add `requestStaticInjection(ClassWithStaticInjections.class)` to your module.");
+        Print.codeBlock("" +
+                "public class Module extends AbstractModule {\n" +
+                "    @Override\n" +
+                "    protected void configure() {\n" +
+                "        bind(Elsa.class).to(ElsaProd.class);\n" +
+                "        requestStaticInjection(StaticHelpers.class);\n" +
+                "    }\n" +
+                "}");
+
     }
 
 }
