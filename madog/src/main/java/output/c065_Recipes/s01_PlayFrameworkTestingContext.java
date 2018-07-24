@@ -18,6 +18,7 @@ package output.c065_Recipes;
 
 import madog.core.Output;
 import madog.core.Print;
+import madog.core.Ref;
 
 
 public class s01_PlayFrameworkTestingContext extends Output {
@@ -132,6 +133,7 @@ public class s01_PlayFrameworkTestingContext extends Output {
                 "        requestStaticInjection(StaticHelpers.class);\n" +
                 "    }\n" +
                 "}");
+        Print.wrapped("But it's should be considered as a crutch: "+ Ref.externalURL("https://stackoverflow.com/a/28517826/4179212"));
 
     }
 

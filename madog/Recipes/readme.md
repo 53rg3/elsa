@@ -136,3 +136,6 @@ public class Module extends AbstractModule {
 }
 ```
 
+
+But it's should be considered as a crutch: [https://stackoverflow.com/a/28517826/4179212](https://stackoverflow.com/a/28517826/4179212)
+
