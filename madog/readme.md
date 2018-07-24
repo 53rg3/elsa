@@ -12,6 +12,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[6.1 Overview](/madog/Modules/readme.md#overview)<br>
 [7. Cookbook Recipes](/madog/Recipes/readme.md#cookbook-recipes)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[7.1 Getting the Result Size of a SearchRequest](/madog/Recipes/readme.md#getting-the-result-size-of-a-searchrequest)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[7.2 Creating a separate context of ELSA in Play for testing](/madog/Recipes/readme.md#creating-a-separate-context-of-elsa-in-play-for-testing)<br>
 [8. Helpers](/madog/Helpers/readme.md#helpers)<br>
 [9. Encountered Problems](/madog/EncounteredProblems/readme.md#encountered-problems)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[9.1 NoClassDefFoundError for Log4J](/madog/EncounteredProblems/readme.md#noclassdeffounderror-for-log4j)<br>

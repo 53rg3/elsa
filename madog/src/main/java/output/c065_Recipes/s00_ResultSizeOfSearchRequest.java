@@ -35,7 +35,6 @@ public class s00_ResultSizeOfSearchRequest extends Output {
         Print.wrapped("Use `SearchDAO.search` to execute any `SearchRequest`. Use the returning `SearchResponse` to " +
                 "get the hits count. Use `SearchResponseMapper` to map the `SearchResponse` to your model.");
 
-
     }
 
 }
