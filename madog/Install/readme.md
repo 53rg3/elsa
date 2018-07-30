@@ -32,5 +32,5 @@ Add the dependency in the POM. Make sure the versions match (see pom.xml in repo
 
 ## Compatibility
 
-Works with **Elasticsearch 6.2**.
+Works with **Elasticsearch 6.3.2**.
 
