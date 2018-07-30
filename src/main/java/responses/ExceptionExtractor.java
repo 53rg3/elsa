@@ -32,7 +32,7 @@ public class ExceptionExtractor {
             return ExceptionResponse.createFromThrowable(throwable, exception);
         }
 
-        if(exception instanceof ConnectException) {
+        if(exception instanceof ConnectException || exception.getMessage().contains("Connection refused")) {
             return ExceptionResponse.createConnectionRefused(exception);
         }
 

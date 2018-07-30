@@ -3,6 +3,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Getting the Result Size of a SearchRequest](#getting-the-result-size-of-a-searchrequest)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Creating a separate context of ELSA in Play for testing](#creating-a-separate-context-of-elsa-in-play-for-testing)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2.1 Injecting static fields & methods](#injecting-static-fields--methods)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.3 Using the Bulk API](#using-the-bulk-api)<br>
 # Cookbook Recipes
 ## Getting the Result Size of a SearchRequest
 
@@ -138,4 +139,14 @@ public class Module extends AbstractModule {
 
 
 But it's should be considered as a crutch: [https://stackoverflow.com/a/28517826/4179212](https://stackoverflow.com/a/28517826/4179212)
+
+## Using the Bulk API
+
+The BulkProcessor can only handle `IndexRequest` and `DeleteRequest`. If we need `UpdateRequest` we need to use the `Bulk API`.
+
+
+:mag_right:  Note: If we have the model with an ID, then we can simply use `IndexRequest` for updates, which will override the existing document.
+
+
+Examples can be found here: [/madog/src/test/java/tryouts/BulkRequestTest.java](/madog/src/test/java/tryouts/BulkRequestTest.java)
 

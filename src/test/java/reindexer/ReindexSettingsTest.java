@@ -19,9 +19,9 @@ package reindexer;
 import assets.FakerModel;
 import assets.TestModel;
 import helpers.IndexName;
-import helpers.ModelClass;
 import helpers.XJson;
 import model.ElsaModel;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Test;
@@ -71,23 +71,23 @@ public class ReindexSettingsTest {
                         .script("if (ctx._source.foo == 'bar') {ctx._version++; ctx._source.remove('foo')}"))
                 .build();
 
-        JSONAssert.assertEquals(expected, reindexSettings.getXContentBuilder().string(), true);
+        JSONAssert.assertEquals(expected, Strings.toString(reindexSettings.getXContentBuilder()), true);
 
     }
 
     @Test
     public void build_withClassesAsArguments_pass() throws Exception {
 
-        final String expected = "{\"source\":{\"index\":\""+ IndexName.of(fromIndexClass) +"\"},\"dest\":{\"index\":\""+ IndexName.of(intoIndexClass) +"\"}}";
+        final String expected = "{\"source\":{\"index\":\""+ IndexName.of(this.fromIndexClass) +"\"},\"dest\":{\"index\":\""+ IndexName.of(this.intoIndexClass) +"\"}}";
 
         final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
                 .configureSource(c -> c
-                        .fromIndex(fromIndexClass))
+                        .fromIndex(this.fromIndexClass))
                 .configureDestination(c -> c
-                        .intoIndex(intoIndexClass))
+                        .intoIndex(this.intoIndexClass))
                 .build();
 
-        final String result = reindexSettings.getXContentBuilder().string();
+        final String result = Strings.toString(reindexSettings.getXContentBuilder());
 
         assertThat(result, is(expected));
 
@@ -97,10 +97,10 @@ public class ReindexSettingsTest {
     public void build_sourceIndexWithClassAndString_throw() {
         final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
                 .configureSource(c -> c
-                        .fromIndex(fromIndexClass)
+                        .fromIndex(this.fromIndexClass)
                         .fromIndex("asdf"))
                 .configureDestination(c -> c
-                        .intoIndex(intoIndexClass))
+                        .intoIndex(this.intoIndexClass))
                 .build();
     }
 
@@ -108,9 +108,9 @@ public class ReindexSettingsTest {
     public void build_destinationIndexWithClassAndString_throw() {
         final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
                 .configureSource(c -> c
-                        .fromIndex(fromIndexClass))
+                        .fromIndex(this.fromIndexClass))
                 .configureDestination(c -> c
-                        .intoIndex(intoIndexClass)
+                        .intoIndex(this.intoIndexClass)
                         .intoIndex("asdf"))
                 .build();
     }

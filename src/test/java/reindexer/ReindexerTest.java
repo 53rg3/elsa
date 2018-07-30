@@ -106,7 +106,7 @@ public class ReindexerTest {
 
         int minAge = 0;
         for (final FakerModel fakerModel : list.get()) {
-            assertTrue(fakerModel.getAge() > minAge);
+            assertTrue(fakerModel.getAge() >= minAge);
             assertTrue(fakerModel.getName().contains("Ms") || fakerModel.getName().contains("Mr"));
             minAge = fakerModel.getAge();
         }

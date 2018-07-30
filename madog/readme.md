@@ -14,6 +14,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[7.1 Getting the Result Size of a SearchRequest](/madog/Recipes/readme.md#getting-the-result-size-of-a-searchrequest)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[7.2 Creating a separate context of ELSA in Play for testing](/madog/Recipes/readme.md#creating-a-separate-context-of-elsa-in-play-for-testing)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[7.2.1 Injecting static fields & methods](/madog/Recipes/readme.md#injecting-static-fields--methods)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[7.3 Using the Bulk API](/madog/Recipes/readme.md#using-the-bulk-api)<br>
 [8. Helpers](/madog/Helpers/readme.md#helpers)<br>
 [9. Encountered Problems](/madog/EncounteredProblems/readme.md#encountered-problems)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[9.1 NoClassDefFoundError for Log4J](/madog/EncounteredProblems/readme.md#noclassdeffounderror-for-log4j)<br>

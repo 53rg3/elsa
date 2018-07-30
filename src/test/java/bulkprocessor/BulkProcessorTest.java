@@ -21,6 +21,7 @@ import assets.TestBulkResponseListener;
 import client.ElsaClient;
 import dao.CrudDAO;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 import org.junit.Test;
 

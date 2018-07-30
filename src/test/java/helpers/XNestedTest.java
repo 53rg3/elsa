@@ -16,6 +16,7 @@
 
 package helpers;
 
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
@@ -42,7 +43,7 @@ public class XNestedTest {
                         .end())
                 .field("message", "trying out Elasticsearch")
                 .endObject();
-        assertThat(xContentBuilder.string(), is(expectedOutput));
+        assertThat(Strings.toString(xContentBuilder), is(expectedOutput));
     }
 
 }

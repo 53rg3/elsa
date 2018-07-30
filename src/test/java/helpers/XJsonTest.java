@@ -17,8 +17,7 @@
 package helpers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -63,7 +62,7 @@ public class XJsonTest {
                     .endObject()
                     .endObject();
 
-            assertThat(retardedXContentBuilder.string(), is(easyXContentBuilder.string()));
+            assertThat(Strings.toString(retardedXContentBuilder), is(Strings.toString(easyXContentBuilder)));
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -86,12 +85,8 @@ public class XJsonTest {
                         .end());
         final XContentBuilder xContentBuilder = xJson.toXContentBuilder();
 
-        try {
-            assertThat(xJson.toJson(), is(expected));
-            assertThat(xContentBuilder.string(), is(expected));
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        assertThat(xJson.toJson(), is(expected));
+        assertThat(Strings.toString(xContentBuilder), is(expected));
     }
 
     @Test

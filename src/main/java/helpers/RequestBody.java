@@ -18,6 +18,7 @@ package helpers;
 
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +34,7 @@ public class RequestBody {
 
 
     public static NStringEntity asJson(final XContentBuilder xContentBuilder) {
-        try {
-            return new NStringEntity(xContentBuilder.string(), ContentType.APPLICATION_JSON);
-        } catch (final IOException e) {
-            logger.error(ExceptionMsg.XCONTENTBUILDER_FAILED_TO_CREATE_JSON, e);
-        }
-        throw new IllegalStateException(ExceptionMsg.XCONTENTBUILDER_FAILED_TO_CREATE_JSON);
+        return new NStringEntity(Strings.toString(xContentBuilder), ContentType.APPLICATION_JSON);
     }
 
     public static NStringEntity asJson(final Object object) {

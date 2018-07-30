@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 
 import admin.entities.*;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.Test;
 
@@ -41,7 +42,7 @@ public class MappingBuilderTest {
 				"\"analyzer\":\"standard\"}}}}";
 
 		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(SampleTransientEntity.class, "mapping", "id", null);
-		assertThat(xContentBuilder.string(), is(expected));
+		assertThat(Strings.toString(xContentBuilder), is(expected));
 	}
 
 	@Test
@@ -53,14 +54,14 @@ public class MappingBuilderTest {
 		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(StockPrice.class, "mapping", "id", null);
 
 		//Then
-		assertThat(xContentBuilder.string(), is(expected));
+		assertThat(Strings.toString(xContentBuilder), is(expected));
 	}
 
 	@Test
 	public void shouldCreateMappingForSpecifiedParentType() throws IOException {
 		final String expected = "{\"mapping\":{\"_parent\":{\"type\":\"parentType\"},\"properties\":{}}}";
 		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(MinimalEntity.class, "mapping", "id", "parentType");
-		assertThat(xContentBuilder.string(), is(expected));
+		assertThat(Strings.toString(xContentBuilder), is(expected));
 	}
 
 	@Test
@@ -71,7 +72,7 @@ public class MappingBuilderTest {
 				"\"type\":\"date\",\"index\":false}}}}";
 
 		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(SampleInheritedEntity.class, "mapping", "id", null);
-		assertThat(xContentBuilder.string(), is(expected));
+		assertThat(Strings.toString(xContentBuilder), is(expected));
 	}
 
 	@Test
@@ -87,7 +88,7 @@ public class MappingBuilderTest {
 		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(GeoEntity.class, "mapping", "id", null);
 
 		//then
-		final String result = xContentBuilder.string();
+		final String result = Strings.toString(xContentBuilder);
 
 		assertThat(result, containsString("\"pointA\":{\"type\":\"geo_point\""));
 		assertThat(result, containsString("\"pointB\":{\"type\":\"geo_point\""));
