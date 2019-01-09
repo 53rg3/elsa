@@ -21,11 +21,11 @@ import client.ElsaClient;
 import dao.CrudDAO;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class ExceptionExtractorTest {
 
@@ -38,7 +38,7 @@ public class ExceptionExtractorTest {
     @Test
     public void extract_badRequestException_pass() {
         elsa.admin.createIndex(FakerModel.class);
-        ElsaResponse<CreateIndexResponse> response = elsa.admin.createIndex(FakerModel.class);
+        final ElsaResponse<CreateIndexResponse> response = elsa.admin.createIndex(FakerModel.class);
 
         assertThat(response.isPresent(), is(false));
         assertThat(response.hasException(), is(true));
@@ -49,7 +49,7 @@ public class ExceptionExtractorTest {
 
     @Test
     public void extract_notFoundException_pass() {
-        ElsaResponse<DeleteIndexResponse> response = elsa.admin.deleteIndex("does_not_exist");
+        final ElsaResponse<AcknowledgedResponse> response = elsa.admin.deleteIndex("does_not_exist");
 
         assertThat(response.isPresent(), is(false));
         assertThat(response.hasException(), is(true));
@@ -58,13 +58,13 @@ public class ExceptionExtractorTest {
 
     @Test
     public void extract_connectionRefusedException_pass() {
-        HttpHost[] httpHosts = {new HttpHost("localhost", 1111, "http")};
-        ElsaClient elsa = new ElsaClient(c -> c
+        final HttpHost[] httpHosts = {new HttpHost("localhost", 1111, "http")};
+        final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(httpHosts)
                 .registerModel(FakerModel.class, CrudDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false));
 
-        ElsaResponse<DeleteIndexResponse> response = elsa.admin.deleteIndex("cluster_is_offline");
+        final ElsaResponse<AcknowledgedResponse> response = elsa.admin.deleteIndex("cluster_is_offline");
         assertThat(response.isPresent(), is(false));
         assertThat(response.hasException(), is(true));
         assertThat(response.getExceptionResponse().getStatus(), is(503));

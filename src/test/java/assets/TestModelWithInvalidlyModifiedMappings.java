@@ -35,10 +35,10 @@ public class TestModelWithInvalidlyModifiedMappings implements ElsaModel {
 
     private String id;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String stringField;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String integerField;
 
     @Field(type = FieldType.Object)

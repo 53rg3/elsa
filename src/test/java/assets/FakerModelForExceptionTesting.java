@@ -42,16 +42,16 @@ public class FakerModelForExceptionTesting implements ElsaModel {
     @Id
     private transient String id;
 
-    @Field(type = FieldType.text, analyzer = "standard")
+    @Field(type = FieldType.Text, analyzer = "standard")
     private String name;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private List<String> favoritePokemons;
 
     @Field(type = FieldType.Integer)
     private int age;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String biography;
 
 

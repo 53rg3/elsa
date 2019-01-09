@@ -37,13 +37,13 @@ public class TestModel implements ElsaModel {
     @Id
     private transient String id;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String stringField;
 
     @Field(type = FieldType.Integer)
     private int integerField;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private List<String> arrayField;
 
     private transient String transientField;

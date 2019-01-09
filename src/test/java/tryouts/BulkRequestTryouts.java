@@ -6,12 +6,13 @@ import dao.CrudDAO;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class BulkRequestTest {
+public class BulkRequestTryouts {
 
     private final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
     private final ElsaClient elsa = new ElsaClient(c -> c
@@ -34,7 +35,7 @@ public class BulkRequestTest {
         bulkRequest.add(this.dao.buildIndexRequest(this.fakerModel1));
         bulkRequest.add(this.dao.buildIndexRequest(this.fakerModel2));
         bulkRequest.add(this.dao.buildIndexRequest(this.fakerModel3));
-        BulkResponse response = this.elsa.client.bulk(bulkRequest);
+        BulkResponse response = this.elsa.client.bulk(bulkRequest, RequestOptions.DEFAULT);
         assertThat(response.hasFailures(), is(false));
         assertThat(dao.get(id1).get().getName(), is("Alice1"));
         assertThat(dao.get(id2).get().getName(), is("Bob1"));
@@ -48,7 +49,7 @@ public class BulkRequestTest {
         bulkRequest.add(this.dao.buildUpdateRequest(this.fakerModel1));
         bulkRequest.add(this.dao.buildUpdateRequest(this.fakerModel2));
         bulkRequest.add(this.dao.buildUpdateRequest(this.fakerModel3));
-        response = this.elsa.client.bulk(bulkRequest);
+        response = this.elsa.client.bulk(bulkRequest, RequestOptions.DEFAULT);
         assertThat(response.hasFailures(), is(false));
         assertThat(dao.get(id1).get().getName(), is("Alice2"));
         assertThat(dao.get(id2).get().getName(), is("Bob2"));
@@ -59,7 +60,7 @@ public class BulkRequestTest {
         bulkRequest.add(this.dao.buildDeleteRequest(this.fakerModel1));
         bulkRequest.add(this.dao.buildDeleteRequest(this.fakerModel2));
         bulkRequest.add(this.dao.buildDeleteRequest(this.fakerModel3));
-        response = this.elsa.client.bulk(bulkRequest);
+        response = this.elsa.client.bulk(bulkRequest, RequestOptions.DEFAULT);
         assertThat(response.hasFailures(), is(false));
         assertThat(dao.get(id1).hasResult(), is(false));
         assertThat(dao.get(id2).hasResult(), is(false));

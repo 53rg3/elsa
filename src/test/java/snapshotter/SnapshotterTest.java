@@ -23,8 +23,7 @@ import dao.CrudDAO;
 import helpers.IndexName;
 import helpers.XJson;
 import org.apache.http.HttpHost;
-import org.elasticsearch.action.admin.cluster.snapshots.delete.DeleteSnapshotResponse;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,14 +32,12 @@ import responses.ElsaResponse;
 import responses.RepositoryInfoResponse;
 import responses.SnapshotInfoResponse;
 
-import java.util.Date;
 import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 
 public class SnapshotterTest {
 
@@ -82,12 +79,12 @@ public class SnapshotterTest {
     @AfterClass
     public static void tearDown() {
 //        // Delete indices
-        ElsaResponse<DeleteIndexResponse> deleteIndexResponse = elsa.admin.deleteIndex(FakerModel.getIndexName());
+        ElsaResponse<AcknowledgedResponse> deleteIndexResponse = elsa.admin.deleteIndex(FakerModel.getIndexName());
         assertThat(deleteIndexResponse.get().isAcknowledged(), is(true));
         deleteIndexResponse = elsa.admin.deleteIndex(restoredIndexName);
         assertThat(deleteIndexResponse.get().isAcknowledged(), is(true));
 
-        ElsaResponse<ConfirmationResponse> deleteRepository = elsa.snapshotter.deleteRepository(repository3);
+        final ElsaResponse<ConfirmationResponse> deleteRepository = elsa.snapshotter.deleteRepository(repository3);
         assertThat(deleteRepository.get().hasSucceeded(), is(true));
     }
 
@@ -123,14 +120,14 @@ public class SnapshotterTest {
 
 
         // Get repository1
-        ElsaResponse<RepositoryInfoResponse> getRepositoryByName = elsa.snapshotter.getRepositoryByName(repository1);
+        final ElsaResponse<RepositoryInfoResponse> getRepositoryByName = elsa.snapshotter.getRepositoryByName(repository1);
         assertThat(getRepositoryByName.get().getName(), is(repository1));
         assertThat(getRepositoryByName.get().getType(), is("fs"));
         assertThat(getRepositoryByName.get().getSettings().getLocation(), is(repositoryLocation_EXISTS));
         assertThat(getRepositoryByName.get().getSettings().getCompress(), is(true));
 
         // Get all repositories
-        ElsaResponse<List<RepositoryInfoResponse>> getRepositories = elsa.snapshotter.getRepositories();
+        final ElsaResponse<List<RepositoryInfoResponse>> getRepositories = elsa.snapshotter.getRepositories();
         assertThat(getRepositories.get().size(), is(3));
 
 
@@ -173,7 +170,7 @@ public class SnapshotterTest {
         assertThat(getSnapshotByName.get().getShards().getFailed(), is(0));
         assertThat(getSnapshotByName.get().getEndTimeInMillis(), notNullValue());
 
-        ElsaResponse<List<SnapshotInfoResponse>> getSnapshots = elsa.snapshotter.getSnapshots(repository1);
+        final ElsaResponse<List<SnapshotInfoResponse>> getSnapshots = elsa.snapshotter.getSnapshots(repository1);
         assertThat(getSnapshots.get().size(), is(2));
 
         getSnapshotByName = elsa.snapshotter.getSnapshotByName(repository1, snapshot1+"does_not_exist");

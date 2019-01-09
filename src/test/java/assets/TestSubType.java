@@ -21,10 +21,10 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 public class TestSubType {
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String qwer;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String asdf;
 
     public String getQwer() {

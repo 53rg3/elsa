@@ -18,6 +18,7 @@ package admin;
 
 import client.ElsaClient;
 import endpoints.Endpoint;
+import exceptions.RequestExceptionHandler;
 import helpers.IndexName;
 import helpers.ModelClass;
 import helpers.RequestBody;
@@ -25,17 +26,16 @@ import model.ElsaModel;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import exceptions.RequestExceptionHandler;
 import responses.ConfirmationResponse;
 import responses.ElsaResponse;
 import responses.ResponseFactory;
+import statics.ElsaStatics;
 import statics.Messages.ExceptionMsg;
 import statics.Method;
-import statics.ElsaStatics;
 import statics.UrlParams;
 
 public class IndexAdmin {
@@ -84,7 +84,7 @@ public class IndexAdmin {
         try {
             final String indexName = IndexName.of(modelClass);
             final XContentBuilder xContentBuilder = MappingBuilder.buildMapping(modelClass, "_doc", "", "");
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest(
                     Method.PUT,
                     Endpoint.INDEX_MAPPING.update(indexName),
                     UrlParams.NONE,
@@ -125,7 +125,7 @@ public class IndexAdmin {
     }
 
 
-    public ElsaResponse<DeleteIndexResponse> deleteIndex(final String indexName, final RequestExceptionHandler handler) {
+    public ElsaResponse<AcknowledgedResponse> deleteIndex(final String indexName, final RequestExceptionHandler handler) {
         try {
             return ElsaResponse.of(this.elsa.client.indices().delete(new DeleteIndexRequest(indexName)));
         } catch (final Exception e) {
@@ -134,15 +134,15 @@ public class IndexAdmin {
         }
     }
 
-    public ElsaResponse<DeleteIndexResponse> deleteIndex(final String indexName) {
+    public ElsaResponse<AcknowledgedResponse> deleteIndex(final String indexName) {
         return this.deleteIndex(indexName, this.elsa.getRequestExceptionHandler());
     }
 
-    public ElsaResponse<DeleteIndexResponse> deleteIndex(final Class<? extends ElsaModel> modelClass, final RequestExceptionHandler handler) {
+    public ElsaResponse<AcknowledgedResponse> deleteIndex(final Class<? extends ElsaModel> modelClass, final RequestExceptionHandler handler) {
         return this.deleteIndex(IndexName.of(modelClass), handler);
     }
 
-    public ElsaResponse<DeleteIndexResponse> deleteIndex(final Class<? extends ElsaModel> modelClass) {
+    public ElsaResponse<AcknowledgedResponse> deleteIndex(final Class<? extends ElsaModel> modelClass) {
         return this.deleteIndex(IndexName.of(modelClass));
     }
 }
