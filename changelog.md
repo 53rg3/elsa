@@ -21,3 +21,5 @@ Last valid commit: https://github.com/53rg3/elsa/commit/15c7b82f82451b11553a3b7c
 * Elastic changed `DeleteIndexResponse` to `AcknowledgedResponse`. Does it look like our confirmation response? Yes, it does.
 * Elastic deprecated `restHighLevelClient.bulk(bulkRequest)`, we now need to use `restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT)`.
   `RequestOptions` is some advanced stuff we don't need, see [here](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-hight-getting-started-request-options.html)  
+
+# NOTE: Aww shit, they deprecated more methods in favor for their RequestOptions.DEFAULT stuff 
