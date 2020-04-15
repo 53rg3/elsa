@@ -17,6 +17,7 @@
 package dao;
 
 import client.ElsaClient;
+import exceptions.RequestExceptionHandler;
 import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 import model.IndexConfig;
@@ -30,10 +31,10 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import exceptions.RequestExceptionHandler;
 import responses.ElsaResponse;
 import statics.ElsaStatics;
 import statics.Messages.ExceptionMsg;
@@ -66,7 +67,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
         return this.index(model, this.getElsa().getRequestExceptionHandler(), headers);
     }
 
-    public ElsaResponse<IndexResponse> index(final T model, RequestExceptionHandler handler, final Header... headers) {
+    public ElsaResponse<IndexResponse> index(final T model, final RequestExceptionHandler handler, final Header... headers) {
         Objects.requireNonNull(model, "Model must not be NULL.");
         try {
             return ElsaResponse.of(this.getElsa().client.index(this.buildIndexRequest(model), headers));
@@ -109,7 +110,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
         return this.get(id, this.getElsa().getRequestExceptionHandler());
     }
 
-    public ElsaResponse<T> get(final String id, RequestExceptionHandler handler) {
+    public ElsaResponse<T> get(final String id, final RequestExceptionHandler handler) {
         try {
             final GetResponse response = this.getElsa().client.get(new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id));
             T model = null;
@@ -132,7 +133,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
         return this.getRawResponse(id, this.getElsa().getRequestExceptionHandler());
     }
 
-    public ElsaResponse<GetResponse> getRawResponse(final String id, RequestExceptionHandler handler) {
+    public ElsaResponse<GetResponse> getRawResponse(final String id, final RequestExceptionHandler handler) {
         final GetRequest request = new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id);
         try {
             return ElsaResponse.of(this.getElsa().client.get(request));
@@ -153,23 +154,26 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     // ------------------------------------------------------------------------------------------ //
 
     public ElsaResponse<DeleteResponse> delete(final T model) {
-        return this.delete(model, this.getElsa().getRequestExceptionHandler());
+        return this.delete(model, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<DeleteResponse> delete(final T model, RequestExceptionHandler handler) {
+    public ElsaResponse<DeleteResponse> delete(final T model, final RequestOptions requestOptions) {
         final DeleteRequest request = this.buildDeleteRequest(model);
         try {
-            return ElsaResponse.of(this.getElsa().client.delete(request));
+            return ElsaResponse.of(this.getElsa().client.delete(request, requestOptions));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
 
     /** This deletes the document asynchronously. DeleteResponse will be send to the Listener. */
+    public void deleteAsync(final T model, final RequestOptions requestOptions, final ActionListener<DeleteResponse> listener) {
+        this.getElsa().client.deleteAsync(this.buildDeleteRequest(model), requestOptions, listener);
+    }
+    /** This deletes the document asynchronously. DeleteResponse will be send to the Listener. Uses RequestOptions.DEFAULT */
     public void deleteAsync(final T model, final ActionListener<DeleteResponse> listener) {
-        this.getElsa().client.deleteAsync(this.buildDeleteRequest(model), listener);
+        this.deleteAsync(model, RequestOptions.DEFAULT, listener);
     }
 
     public DeleteRequest buildDeleteRequest(final T model) {
@@ -183,15 +187,14 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
 
     /** Updating a non-existing documents causes an exception. */
     public ElsaResponse<UpdateResponse> update(final T model) {
-        return this.update(model, this.getElsa().getRequestExceptionHandler());
+        return this.update(model, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<UpdateResponse> update(final T model, RequestExceptionHandler handler) {
+    public ElsaResponse<UpdateResponse> update(final T model, final RequestOptions requestOptions) {
         final UpdateRequest request = this.buildUpdateRequest(model);
         try {
-            return ElsaResponse.of(this.getElsa().client.update(request));
+            return ElsaResponse.of(this.getElsa().client.update(request, requestOptions));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }

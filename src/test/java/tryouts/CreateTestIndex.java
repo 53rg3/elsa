@@ -19,9 +19,8 @@
 //import static org.elasticsearch.search.builder.SearchSourceBuilder.searchSource;
 //
 //public class CreateTestIndex {
-//    private final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
 //    private final ElsaClient elsa = new ElsaClient(c -> c
-//            .setClusterNodes(httpHosts)
+//            .setClusterNodes(TEST_CLUSTER_HOSTS)
 //            .registerModel(FakerModel.class, CrudDAO.class)
 //            .configureBulkProcessor(config -> config
 //                    .setFlushInterval(TimeValue.timeValueSeconds(10))

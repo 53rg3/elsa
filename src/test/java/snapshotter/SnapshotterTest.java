@@ -34,6 +34,7 @@ import responses.SnapshotInfoResponse;
 
 import java.util.List;
 
+import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -57,9 +58,8 @@ public class SnapshotterTest {
     // ------------------------------------------------------------------------------------------ //
     // CLIENT
     // ------------------------------------------------------------------------------------------ //
-    private static final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
     private static final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(httpHosts)
+            .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(FakerModel.class, CrudDAO.class)
             .registerSnapshotRepositories(d -> d
                     .add(new SnapshotRepository(repository3, repositoryLocation_EXISTS))));

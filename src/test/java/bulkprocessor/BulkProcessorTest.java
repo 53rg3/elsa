@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -35,9 +36,8 @@ public class BulkProcessorTest {
     private final int bulkSize = 66;
     private final AtomicInteger totalRequests = new AtomicInteger();
     private final AtomicInteger totalResponses = new AtomicInteger();
-    private final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
     private final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(httpHosts)
+            .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(FakerModel.class, CrudDAO.class)
             .configureBulkProcessor(config -> config
                     .setBulkActions(66)

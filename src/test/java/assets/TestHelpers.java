@@ -16,6 +16,7 @@
 
 package assets;
 
+import org.apache.http.HttpHost;
 import org.elasticsearch.client.Response;
 
 import java.io.BufferedReader;
@@ -24,6 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class TestHelpers {
+
+    public static final HttpHost[] TEST_CLUSTER_HOSTS = {new HttpHost("127.0.0.1", 7777, "http")};
 
     public static void sleep(int ms) {
         try {

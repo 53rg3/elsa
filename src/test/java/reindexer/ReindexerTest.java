@@ -39,6 +39,7 @@ import responses.ReindexResponse;
 
 import java.util.List;
 
+import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
@@ -51,9 +52,8 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class ReindexerTest {
 
-    private static final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
     private static final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(httpHosts)
+            .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(FakerModel.class, CrudDAO.class)
             .stifleThreadUntilClusterIsOnline(true));
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);

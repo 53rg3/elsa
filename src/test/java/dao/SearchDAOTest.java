@@ -33,6 +33,7 @@ import responses.ElsaResponse;
 
 import java.util.List;
 
+import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static helpers.Search.src;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
@@ -43,9 +44,8 @@ import static org.junit.Assert.assertTrue;
 
 public class SearchDAOTest {
 
-    private static final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
     private static final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(httpHosts)
+            .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(FakerModel.class, CrudDAO.class)
             .createIndexesAndEnsureMappingConsistency(false));
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);

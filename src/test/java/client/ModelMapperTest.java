@@ -34,14 +34,14 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class ModelMapperTest {
 
-    private static final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
     private static final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(httpHosts)
+            .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(DateModel.class, CrudDAO.class)
             .configureGson(d->d
                     .registerTypeAdapter(Date.class, new DummyGsonUTCDateAdapter("yyyy", Locale.UK, "UTC")))

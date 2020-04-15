@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import java.util.NoSuchElementException;
 
+import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static helpers.Search.src;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.hamcrest.core.Is.is;
@@ -38,9 +39,8 @@ import static org.junit.Assert.assertThat;
 
 public class ElsaResponseTest {
 
-    private static final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
     private static final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(httpHosts)
+            .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(FakerModel.class, CrudDAO.class)
             .createIndexesAndEnsureMappingConsistency(false));
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);

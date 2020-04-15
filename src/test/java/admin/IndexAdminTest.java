@@ -18,19 +18,16 @@ package admin;
 
 import assets.*;
 import client.ElsaClient;
-import helpers.ResponseParser;
-import org.apache.http.HttpHost;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.client.Response;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import responses.ConfirmationResponse;
 import responses.ElsaResponse;
 
+import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -43,9 +40,8 @@ public class IndexAdminTest {
     // Tests need to be executed sequentially, we use @FixMethodOrder(MethodSorters.NAME_ASCENDING)
     // Once tests failed nonetheless, can't replicate it. Simply repeat the test if this happens again.
 
-    private final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
     private final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(httpHosts)
+            .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(TestModel.class, TestDAO.class)
             .createIndexesAndEnsureMappingConsistency(false));
 
@@ -100,7 +96,7 @@ public class IndexAdminTest {
 
     @Test
     public void deleteIndexViaClass_indexDoesNotExist_throw() {
-        ExceptionHandlerWithExtractor handler = new ExceptionHandlerWithExtractor();
+        final ExceptionHandlerWithExtractor handler = new ExceptionHandlerWithExtractor();
         this.elsa.admin.deleteIndex(TestModel.class, handler);
         assertTrue(handler.getException() instanceof ElasticsearchStatusException);
     }
@@ -116,7 +112,7 @@ public class IndexAdminTest {
 
     @Test
     public void deleteIndexViaString_indexDoesNotExist_throw() {
-        ExceptionHandlerWithExtractor handler = new ExceptionHandlerWithExtractor();
+        final ExceptionHandlerWithExtractor handler = new ExceptionHandlerWithExtractor();
         final TestModel testModel = new TestModel();
         this.elsa.admin.deleteIndex(testModel.getIndexConfig().getIndexName(), handler);
         assertTrue(handler.getException() instanceof ElasticsearchStatusException);
@@ -124,8 +120,8 @@ public class IndexAdminTest {
 
     @Test
     public void createIndex_withDynamicNaming_pass() {
-        TestModel testModel1 = new TestModel();
-        TestModel testModel2 = new TestModel();
+        final TestModel testModel1 = new TestModel();
+        final TestModel testModel2 = new TestModel();
         assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
 
         this.elsa.admin.createIndex(TestModel.class);
@@ -143,8 +139,8 @@ public class IndexAdminTest {
 
     @Test
     public void changeIndexName_appliesToInstancesOfModel_pass() {
-        TestModel testModel1 = new TestModel();
-        TestModel testModel2 = new TestModel();
+        final TestModel testModel1 = new TestModel();
+        final TestModel testModel2 = new TestModel();
         assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
 
         testModel2.getIndexConfig().setIndexName("new_name");

@@ -37,13 +37,12 @@ import statics.Headers;
 
 import java.util.NoSuchElementException;
 
+import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ElsaClientTest {
-
-    private static final HttpHost[] httpHosts = {new HttpHost("localhost", 9200, "http")};
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -65,7 +64,7 @@ public class ElsaClientTest {
     public void builder_fullClient_noError() {
         final Header[] defaultHeaders = {new BasicHeader("name", "value")};
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .configureLowLevelClient(d -> d
                         .setDefaultHeaders(defaultHeaders)
                         .setFailureListener(new FailureListener())
@@ -89,7 +88,7 @@ public class ElsaClientTest {
         final String prefix = "test_";
 
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .configureLowLevelClient(d -> d
                         .setDefaultHeaders(Headers.EMPTY))
                 .registerModel(TestModel.class, TestDAO.class)
@@ -113,12 +112,12 @@ public class ElsaClientTest {
     @Test
     public void builder_ensureIndexMappingConsistencyWithValidUpdate_pass() {
         final ElsaClient elsa = new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class));
         assertThat(elsa.admin.indexExists(TestModel.class), is(true));
 
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModelWithAddedMappings.class, TestDAO.class));
         // Throws if invalid, no assertion
 
@@ -129,12 +128,12 @@ public class ElsaClientTest {
     @Test(expected = IllegalStateException.class)
     public void builder_ensureIndexMappingConsistencyWithInValidUpdate_throw() {
         final ElsaClient elsa = new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class));
         assertThat(elsa.admin.indexExists(TestModel.class), is(true));
 
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModelWithInvalidlyModifiedMappings.class, TestDAO.class));
 
         elsa.admin.deleteIndex(TestModel.class);
@@ -144,7 +143,7 @@ public class ElsaClientTest {
     @Test(expected = IllegalStateException.class)
     public void builder_duplicateModel_throw() {
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .configureLowLevelClient(d -> d
                         .setDefaultHeaders(Headers.EMPTY))
                 .registerModel(TestModel.class, TestDAO.class)
@@ -152,22 +151,10 @@ public class ElsaClientTest {
                 .createIndexesAndEnsureMappingConsistency(false));
     }
 
-    @Test
-    @Ignore("setJsonMapperLibrary is a postponed feature.")
-    public void builder_withCustomJsonMapper_throw() {
-//        ElsaClient elsa = new ElsaClient(c -> c
-//                .setClusterNodes(httpHosts)
-//                .registerModel(TestModel.class, TestDAO.class)
-//                .createIndexesAndEnsureMappingConsistency(false)
-//                .setJsonMapperLibrary(JsonMapperLibrary.GSON));
-//        TestDAO testDAO = elsa.getDAO(TestModel.class);
-//        assertThat(testDAO.getJsonMapper() instanceof GsonAdapter, is(true));
-    }
-
     @Test(expected = IllegalStateException.class)
     public void builder_elsaIndexDataIsNullInModel_throw() {
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(InvalidModelIndexDataIsNull.class, ElsaDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false));
     }
@@ -175,11 +162,12 @@ public class ElsaClientTest {
     @Test(expected = IllegalStateException.class)
     public void builder_modelHasInvalidIdGetterOrSetter_throw() {
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(InvalidModelIdAccessorsWrong.class, ElsaDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false));
     }
 
+    // todo delete. stifleThreadUntilClusterIsOnline is gay.
     @Test(timeout = 1000)
     @Ignore("In ElsaClientTest: We need to mock ping()")
     public void waitTillClusterIsOnline_clusterIsOnline_pass() {
@@ -216,14 +204,14 @@ public class ElsaClientTest {
     @Test
     public void construct_ensureMappingConsistency_pass() {
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void constructWithSnapshotRepository_repoIsDuplicate_throw() {
         final ElsaClient elsa = new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false)
                 .registerSnapshotRepositories(d -> d
@@ -237,7 +225,7 @@ public class ElsaClientTest {
     @Test(expected = NoSuchElementException.class)
     public void withSnapshotRepository_repositoryNotConfiguredExternally_throw() {
         new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false)
                 .registerSnapshotRepositories(d -> d
@@ -247,7 +235,7 @@ public class ElsaClientTest {
     @Test(expected = NullPointerException.class)
     public void getDao_modelNotRegistered_throw() {
         final ElsaClient elsa = new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false));
         elsa.getDAO(FakerModel.class);
@@ -256,7 +244,7 @@ public class ElsaClientTest {
     @Test(expected = ClassCastException.class)
     public void getDao_daoTypeIsNotCompatible_throw() {
         final ElsaClient elsa = new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, ElsaDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false));
         final CrudDAO<TestModel> dao = elsa.getDAO(TestModel.class);
