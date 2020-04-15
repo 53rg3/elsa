@@ -52,7 +52,7 @@ public class ReindexSettings {
         try {
             return XContentFactory.jsonBuilder().value(map);
         } catch (final IOException e) {
-            logger.error("", e);
+            logger.error("", e); // todo dafuq is this?! throw here.
         }
         throw new IllegalStateException("Couldn't create XContentBuilder.");
     }
