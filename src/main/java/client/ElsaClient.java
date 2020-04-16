@@ -22,7 +22,6 @@ import client.BulkProcessorCreator.BulkProcessorConfigurator;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import dao.ElsaDAO;
-import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkProcessor;
@@ -53,7 +52,6 @@ public class ElsaClient {
 
     private final ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
     private final ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> daoMap;
-    private final JsonMapperLibrary jsonMapperLibrary;
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -65,10 +63,7 @@ public class ElsaClient {
 
         static Config loadDefaults() {
             final Config config = new Config();
-            config.indexNamePrefix = "";
-            config.jsonMapperLibrary = JsonMapperLibrary.GSON;
             config.bulkResponseListener = new DefaultBulkResponseListener();
-            config.stifleThreadUntilClusterIsOnline = false;
             config.createIndexesAndEnsureMappingConsistency = true;
             config.modelMapper = new ModelMapper();
             return config;
@@ -101,11 +96,9 @@ public class ElsaClient {
         final Config config = Configurator.create(configurator);
         this.client = RestClientConfig.create(config.httpHosts, config.restClientConfig);
         this.gson = config.modelMapper.getGsonBuilder().create();
-        this.jsonMapperLibrary = config.jsonMapperLibrary;
         this.registeredModels = ImmutableMap.copyOf(config.registeredModels);
         this.daoMap = new DaoMapCreator(c -> c
                 .elsa(this)
-                .jsonMapperLibrary(this.jsonMapperLibrary)
                 .registeredModels(this.registeredModels))
                 .create();
         final RepositoryBucket repositoryBucket = new RepositoryBucket(config.repositoryBucketConfig);
@@ -121,8 +114,6 @@ public class ElsaClient {
         this.snapshotter = new Snapshotter(this, repositoryBucket);
 
         // METHODS
-        ThreadStifler.waitTillClusterIsOnline(config.stifleThreadUntilClusterIsOnline, this.client);
-        IndexNamePrepender.setPrefixes(config.indexNamePrefix, this.registeredModels);
         IndexCreator.createIndicesOrEnsureMappingConsistency(
                 config.createIndexesAndEnsureMappingConsistency,
                 this.registeredModels,
@@ -144,10 +135,7 @@ public class ElsaClient {
 
         // OPTIONAL SETTINGS
         private RestClientConfig restClientConfig;
-        private String indexNamePrefix;
-        private JsonMapperLibrary jsonMapperLibrary;
         private Listener bulkResponseListener;
-        private boolean stifleThreadUntilClusterIsOnline;
         private boolean createIndexesAndEnsureMappingConsistency;
         private BulkProcessorConfigurator bulkProcessorConfigurator;
         private RepositoryBucket.Config repositoryBucketConfig;
@@ -161,14 +149,6 @@ public class ElsaClient {
 
         public Config configureLowLevelClient(final RestClientConfig restClientConfig) {
             this.restClientConfig = restClientConfig;
-            return this;
-        }
-
-        /**
-         * Thread will sleep if cluster is offline and try to reconnect every second.
-         */
-        public Config stifleThreadUntilClusterIsOnline(final boolean defaultIsFalse) {
-            this.stifleThreadUntilClusterIsOnline = defaultIsFalse;
             return this;
         }
 
@@ -223,21 +203,9 @@ public class ElsaClient {
          * This will try to register the repositories for snapshots on start-up, so you can be sure to have
          * set up the `path.repo` variable in the config file elasticsearch.yml properly, before doing any operations.
          * The repositories will be registered with the default config (compress=true, type=fs).
-         */
+         */ // todo why return value never used?
         public Config registerSnapshotRepositories(final RepositoryBucket.Config configurator) {
             this.repositoryBucketConfig = configurator;
-            return this;
-        }
-
-        /**
-         * <h1>CAUTION:</h1>
-         * This will prepend a custom string to the index name of every registered model (which allows it) on instantiation.
-         * This option is meant to be used for unit testing on the same cluster. If you have two instances of Elsa running,
-         * using the same models for whatever reason, this will change the index names for both clients because they are static
-         * variables. <b>THIS CAN SCREW UP YOUR INDEX.</b>
-         */
-        public Config setIndexNamePrefix(final String indexNamePrefix) {
-            this.indexNamePrefix = indexNamePrefix;
             return this;
         }
 

@@ -18,12 +18,11 @@ package assets;
 
 import client.ElsaClient;
 import dao.CrudDAO;
-import jsonmapper.JsonMapperLibrary;
 
 public class TestDAO extends CrudDAO<TestModel> {
 
-    public TestDAO(Class<TestModel> model, ElsaClient elsa, JsonMapperLibrary jsonMapperLibrary) {
-        super(model, elsa, jsonMapperLibrary);
+    public TestDAO(final Class<TestModel> model, final ElsaClient elsa) {
+        super(model, elsa);
     }
 
 }

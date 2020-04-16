@@ -17,7 +17,6 @@
 package dao;
 
 import client.ElsaClient;
-import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchRequest;
@@ -30,8 +29,8 @@ import java.util.stream.Stream;
 
 public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
 
-    public SearchDAO(final Class<T> model, final ElsaClient elsa, final JsonMapperLibrary jsonMapperLibrary) {
-        super(model, elsa, jsonMapperLibrary);
+    public SearchDAO(final Class<T> model, final ElsaClient elsa) {
+        super(model, elsa);
     }
 
     public ElsaResponse<SearchResponse> search(final SearchRequest searchRequest, final RequestOptions options) {

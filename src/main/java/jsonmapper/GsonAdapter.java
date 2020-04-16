@@ -16,7 +16,6 @@
 
 package jsonmapper;
 
-import client.ElsaClient;
 import com.google.gson.Gson;
 import model.ElsaModel;
 
@@ -27,23 +26,23 @@ public class GsonAdapter<T extends ElsaModel> implements JsonMapper<T> {
     private final Gson gson;
     private final Class<T> clazz;
 
-    public GsonAdapter(Class<T> clazz, Gson gson) {
+    public GsonAdapter(final Class<T> clazz, final Gson gson) {
         this.clazz = clazz;
         this.gson = gson;
     }
 
     @Override
-    public String toJson(ElsaModel model) {
+    public String toJson(final ElsaModel model) {
         return this.gson.toJson(model);
     }
 
     @Override
-    public T fromJson(String json) {
+    public T fromJson(final String json) {
         return this.gson.fromJson(json, this.clazz);
     }
 
     @Override
-    public T fromJson(Map<String, Object> map) {
+    public T fromJson(final Map<String, Object> map) {
         return this.gson.fromJson(this.gson.toJsonTree(map), this.clazz);
     }
 

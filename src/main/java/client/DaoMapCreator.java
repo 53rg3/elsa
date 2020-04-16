@@ -18,7 +18,6 @@ package client;
 
 import com.google.common.collect.ImmutableMap;
 import dao.ElsaDAO;
-import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,6 @@ public class DaoMapCreator {
     
     private final ElsaClient elsa;
     private final ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
-    private final JsonMapperLibrary jsonMapperLibrary;
     
     // ------------------------------------------------------------------------------------------ //
     // CONFIGURATOR
@@ -58,7 +56,6 @@ public class DaoMapCreator {
         default void validate(final Builder builder) {
             Objects.requireNonNull(builder.elsa, "ElsaClient must not be NULL.");
             Objects.requireNonNull(builder.registeredModels, "RegisteredModels must not be NULL.");
-            Objects.requireNonNull(builder.jsonMapperLibrary, "JsonMapperLibrary must not be NULL.");
         }
     
         static Builder createBuilder(final Config config) {
@@ -78,7 +75,6 @@ public class DaoMapCreator {
         final Builder builder = Config.createBuilder(config);
         this.elsa = builder.elsa;
         this.registeredModels = builder.registeredModels;
-        this.jsonMapperLibrary = builder.jsonMapperLibrary;
     }
     
     
@@ -91,7 +87,6 @@ public class DaoMapCreator {
         
         private ElsaClient elsa;
         private ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
-        private JsonMapperLibrary jsonMapperLibrary;
     
         public Builder elsa(final ElsaClient mandatorySetting) {
             this.elsa = mandatorySetting;
@@ -100,11 +95,6 @@ public class DaoMapCreator {
 
         public Builder registeredModels(final ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> mandatorySetting) {
             this.registeredModels = mandatorySetting;
-            return this;
-        }
-
-        public Builder jsonMapperLibrary(final JsonMapperLibrary mandatorySetting) {
-            this.jsonMapperLibrary = mandatorySetting;
             return this;
         }
     
@@ -116,7 +106,7 @@ public class DaoMapCreator {
 
     public ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> create() {
         final Map<Class<? extends ElsaModel>, ElsaDAO> map = new HashMap<>();
-        for (final Entry<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> entry : registeredModels.entrySet()) {
+        for (final Entry<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> entry : this.registeredModels.entrySet()) {
 
             final Class<? extends ElsaModel> modelClass = entry.getKey();
             final Class<? extends ElsaDAO> daoClass = entry.getValue();
@@ -125,8 +115,8 @@ public class DaoMapCreator {
             this.ensureGetIdAndSetIdInModelWorkProperly(modelClass);
 
             try {
-                map.put(modelClass, daoClass.getConstructor(Class.class, ElsaClient.class, JsonMapperLibrary.class).newInstance(modelClass, this.elsa, this.jsonMapperLibrary));
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                map.put(modelClass, daoClass.getConstructor(Class.class, ElsaClient.class).newInstance(modelClass, this.elsa));
+            } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 logger.error("Can't instantiate DAOMap for ElsaClient. Problem with " + modelClass + " or " + daoClass, e);
             }
         }
@@ -138,7 +128,7 @@ public class DaoMapCreator {
             if (modelClass.newInstance().getIndexConfig() == null) {
                 throw new IllegalStateException("IndexConfig was not instantiated in model: " + modelClass);
             }
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (final InstantiationException | IllegalAccessException e) {
             logger.error("Can't instantiate ElsaModel for ElsaClient. Caused by " + modelClass);
         }
     }
@@ -151,7 +141,7 @@ public class DaoMapCreator {
             if (!model.getId().equals(id)) {
                 throw new IllegalStateException("Methods getId() or setId() was not implemented properly in model: " + modelClass);
             }
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (final InstantiationException | IllegalAccessException e) {
             logger.error("Can't instantiate ElsaModel for ElsaClient. Problem with " + modelClass);
         }
     }

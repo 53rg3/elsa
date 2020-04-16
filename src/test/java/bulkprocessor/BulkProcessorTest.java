@@ -20,8 +20,6 @@ import assets.FakerModel;
 import assets.TestBulkResponseListener;
 import client.ElsaClient;
 import dao.CrudDAO;
-import org.apache.http.HttpHost;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 import org.junit.Test;
 
@@ -42,26 +40,26 @@ public class BulkProcessorTest {
             .configureBulkProcessor(config -> config
                     .setBulkActions(66)
                     .setFlushInterval(TimeValue.timeValueSeconds(10)))
-            .setBulkResponseListener(new TestBulkResponseListener(bulkSize, totalRequests, totalResponses))
-            .stifleThreadUntilClusterIsOnline(true));
-    private final CrudDAO<FakerModel> crudDAO = elsa.getDAO(FakerModel.class);
+            .setBulkResponseListener(new TestBulkResponseListener(this.bulkSize, this.totalRequests, this.totalResponses))
+    );
+    private final CrudDAO<FakerModel> crudDAO = this.elsa.getDAO(FakerModel.class);
 
     @Test
     public void bulkProcessor_10x66Requests_noErrorsCountsAreCorrect() {
 
-        for (int i = 0; i < bulkSize*10; i++) {
-            this.elsa.bulkProcessor.add(crudDAO.buildIndexRequest(FakerModel.createModelWithRandomData()));
+        for (int i = 0; i < this.bulkSize *10; i++) {
+            this.elsa.bulkProcessor.add(this.crudDAO.buildIndexRequest(FakerModel.createModelWithRandomData()));
         }
 
         // We need wait for the responses
         try {
             Thread.sleep(500);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
 
-        assertThat(this.totalRequests.get(), is(bulkSize*10));
-        assertThat(this.totalResponses.get(), is(bulkSize*10));
+        assertThat(this.totalRequests.get(), is(this.bulkSize *10));
+        assertThat(this.totalResponses.get(), is(this.bulkSize *10));
 
         this.elsa.admin.deleteIndex(FakerModel.class);
     }

@@ -29,7 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.MethodSorters;
-import org.junit.runners.model.TestTimedOutException;
 import responses.ConfirmationResponse;
 import responses.ElsaResponse;
 import snapshotter.SnapshotRepository;
@@ -77,36 +76,6 @@ public class ElsaClientTest {
                                 .setConnectTimeout(1000)))
                 .registerModel(TestModel.class, TestDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false));
-    }
-
-    @Test
-    public void builder_withIndexNamePrefix_pass() {
-        final TestModel model1 = new TestModel();
-        final TestModelWithAddedMappings model2 = new TestModelWithAddedMappings();
-        final TestModelWithInvalidlyModifiedMappings model3 = new TestModelWithInvalidlyModifiedMappings();
-        final String indexNameWithoutPrefix = model1.getIndexConfig().getIndexName();
-        final String prefix = "test_";
-
-        new ElsaClient(c -> c
-                .setClusterNodes(TEST_CLUSTER_HOSTS)
-                .configureLowLevelClient(d -> d
-                        .setDefaultHeaders(Headers.EMPTY))
-                .registerModel(TestModel.class, TestDAO.class)
-                .registerModel(TestModelWithAddedMappings.class, TestDAO.class)
-                .registerModel(TestModelWithInvalidlyModifiedMappings.class, TestDAO.class)
-                .createIndexesAndEnsureMappingConsistency(false)
-                .setIndexNamePrefix(prefix));
-
-        // Dynamic indexNames allowed, prefix applied
-        assertThat(model1.getIndexConfig().getIndexName(), is(prefix + indexNameWithoutPrefix));
-        assertThat(model3.getIndexConfig().getIndexName(), is(prefix + indexNameWithoutPrefix));
-
-        // Dynamic indexNames NOT allowed, no prefix added
-        assertThat(model2.getIndexConfig().getIndexName(), is(indexNameWithoutPrefix));
-
-        // Reset indexName
-        model1.getIndexConfig().setIndexName(indexNameWithoutPrefix);
-        model3.getIndexConfig().setIndexName(indexNameWithoutPrefix);
     }
 
     @Test
@@ -167,7 +136,7 @@ public class ElsaClientTest {
                 .createIndexesAndEnsureMappingConsistency(false));
     }
 
-    // todo delete. stifleThreadUntilClusterIsOnline is gay.
+    // todo delete. replace with test that test correct behavior when cluster is offline
     @Test(timeout = 1000)
     @Ignore("In ElsaClientTest: We need to mock ping()")
     public void waitTillClusterIsOnline_clusterIsOnline_pass() {
@@ -178,20 +147,6 @@ public class ElsaClientTest {
 //                .build();
 //        // Dirty, but if it ever reaches this, then the cluster is online
 //        assertThat(elsa, is(notNullValue()));
-    }
-
-
-    @Test(timeout = 1000)
-    public void waitTillClusterIsOnline_clusterIsOffline_timeoutException() {
-        // If it can't connect in 1sec then then we can assume that the cluster is offline
-        // Non-existing cluster
-        thrown.expect(TestTimedOutException.class);
-        final HttpHost[] httpHosts = {new HttpHost("localhost", 9201, "http")};
-        new ElsaClient(c -> c
-                .setClusterNodes(httpHosts)
-                .stifleThreadUntilClusterIsOnline(true)
-                .registerModel(TestModel.class, TestDAO.class)
-                .createIndexesAndEnsureMappingConsistency(false));
     }
 
     @Test(expected = NullPointerException.class)

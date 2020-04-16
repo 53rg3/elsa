@@ -17,9 +17,8 @@
 package dao;
 
 import client.ElsaClient;
+import jsonmapper.GsonAdapter;
 import jsonmapper.JsonMapper;
-import jsonmapper.JsonMapperFactory;
-import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 
 public class ElsaDAO<T extends ElsaModel> {
@@ -29,10 +28,10 @@ public class ElsaDAO<T extends ElsaModel> {
     private final Class<T> model;
     private final SearchResponseMapper<T> searchResponseMapper;
 
-    public ElsaDAO(final Class<T> model, final ElsaClient elsa, final JsonMapperLibrary jsonMapperLibrary) {
+    public ElsaDAO(final Class<T> model, final ElsaClient elsa) {
         this.elsa = elsa;
         this.model = model;
-        this.jsonMapper = new JsonMapperFactory<T>().createJsonMapper(jsonMapperLibrary, model, elsa.gson);
+        this.jsonMapper = new GsonAdapter<T>(model, elsa.gson);
         this.searchResponseMapper = new SearchResponseMapper<>(this);
     }
 

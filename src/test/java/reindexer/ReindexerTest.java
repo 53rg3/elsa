@@ -21,12 +21,8 @@ import assets.FakerModelInvalidMapping;
 import assets.TestHelpers;
 import client.ElsaClient;
 import dao.CrudDAO;
-import helpers.IndexName;
-import helpers.ResponseParser;
 import helpers.XJson;
-import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.client.Response;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -40,12 +36,9 @@ import responses.ReindexResponse;
 import java.util.List;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.search.builder.SearchSourceBuilder.searchSource;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +48,7 @@ public class ReindexerTest {
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(FakerModel.class, CrudDAO.class)
-            .stifleThreadUntilClusterIsOnline(true));
+    );
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
     private static final FakerModel fakerModel = new FakerModel();
     private static final String oldIndex = fakerModel.getIndexConfig().getIndexName();
@@ -94,7 +87,7 @@ public class ReindexerTest {
                 .configureDestination(c -> c
                         .intoIndex(FakerModel.class))
                 .build();
-        ElsaResponse<ReindexResponse> response = elsa.reindexer.execute(reindexSettings, ReindexMode.CREATE_NEW_INDEX_FROM_MODEL_IN_DESTINATION);
+        final ElsaResponse<ReindexResponse> response = elsa.reindexer.execute(reindexSettings, ReindexMode.CREATE_NEW_INDEX_FROM_MODEL_IN_DESTINATION);
         assertThat(response.isPresent(), is(true));
         TestHelpers.sleep(1000);
 
@@ -125,7 +118,7 @@ public class ReindexerTest {
                 .configureDestination(c -> c
                         .intoIndex(FakerModelInvalidMapping.class))
                 .build();
-        ElsaResponse<ReindexResponse> response = elsa.reindexer.execute(reindexSettings, ReindexMode.ABORT_IF_MAPPING_INCORRECT);
+        final ElsaResponse<ReindexResponse> response = elsa.reindexer.execute(reindexSettings, ReindexMode.ABORT_IF_MAPPING_INCORRECT);
         assertThat(response.isPresent(), is(false));
         assertThat(response.hasException(), is(true));
         fakerModel.getIndexConfig().setIndexName(oldIndex);

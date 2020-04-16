@@ -17,7 +17,6 @@
 package dao;
 
 import client.ElsaClient;
-import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 import model.IndexConfig;
 import org.elasticsearch.action.ActionListener;
@@ -44,8 +43,8 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(CrudDAO.class);
 
-    public CrudDAO(final Class<T> model, final ElsaClient elsa, final JsonMapperLibrary jsonMapperLibrary) {
-        super(model, elsa, jsonMapperLibrary);
+    public CrudDAO(final Class<T> model, final ElsaClient elsa) {
+        super(model, elsa);
         this.indexConfig = this.setIndexConfig(model);
     }
 
