@@ -70,14 +70,14 @@ public class AsyncCrudDAOTest {
     public void asyncChain_indexGetSearchUpdateDelete_pass() {
 
         // Index
-        crudDAO.indexAsync(model1, new AsyncIndexListener(this.indexCheck1, elsa));
-        crudDAO.indexAsync(model2, new AsyncIndexListener(this.indexCheck2, elsa));
+        crudDAO.indexAsync(model1, RequestOptions.DEFAULT, new AsyncIndexListener(this.indexCheck1, elsa));
+        crudDAO.indexAsync(model2, RequestOptions.DEFAULT, new AsyncIndexListener(this.indexCheck2, elsa));
         this.sleep(100);
         assertThat(this.indexCheck1.wasSuccessful(), is(true));
         assertThat(this.indexCheck2.wasSuccessful(), is(true));
 
         // Get
-        crudDAO.getAsync("2", new AsyncGetListener(this.getCheck, elsa));
+        crudDAO.getAsync("2", RequestOptions.DEFAULT, new AsyncGetListener(this.getCheck, elsa));
         this.sleep(100);
         assertThat(this.getCheck.wasSuccessful(), is(true));
 
@@ -87,13 +87,13 @@ public class AsyncCrudDAOTest {
                 .source(SearchSourceBuilder.searchSource()
                         .query(QueryBuilders.matchAllQuery()));
         this.sleep(1000); // Needs time to make indexation...
-        crudDAO.searchAsync(searchRequest, new AsyncSearchListener(this.searchCheck, elsa));
+        crudDAO.searchAsync(searchRequest, RequestOptions.DEFAULT, new AsyncSearchListener(this.searchCheck, elsa));
         this.sleep(100);
         assertThat(this.searchCheck.wasSuccessful(), is(true));
 
         // Update
         model1.setName("Jane");
-        crudDAO.updateAsync(model1, new AsyncUpdateListener(this.updateCheck, elsa));
+        crudDAO.updateAsync(model1, RequestOptions.DEFAULT, new AsyncUpdateListener(this.updateCheck, elsa));
         this.sleep(100);
         final ElsaResponse<FakerModelAsync> updatedResult = crudDAO.get("1");
         assertThat(this.updateCheck.wasSuccessful(), is(true));

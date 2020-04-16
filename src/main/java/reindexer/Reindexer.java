@@ -18,21 +18,16 @@ package reindexer;
 
 import client.ElsaClient;
 import endpoints.Endpoint;
-import exceptions.RequestExceptionHandler;
+import helpers.RequestBody;
+import model.ElsaModel;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.Response;
+import reindexer.ReindexOptions.ReindexMode;
 import responses.ElsaResponse;
 import responses.ReindexResponse;
 import responses.ResponseFactory;
-import statics.Messages.ExceptionMsg;
-import helpers.RequestBody;
-import statics.UrlParams;
-import model.ElsaModel;
-import org.elasticsearch.client.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import reindexer.ReindexOptions.ReindexMode;
 import statics.Method;
-
-import javax.annotation.Nullable;
+import statics.UrlParams;
 
 public class Reindexer {
 
@@ -42,7 +37,7 @@ public class Reindexer {
         this.elsa = elsa;
     }
 
-    public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings, final ReindexMode reindexMode, RequestExceptionHandler handler) {
+    public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings, final ReindexMode reindexMode, final RequestOptions options) {
 
         switch (reindexMode) {
             case CREATE_NEW_INDEX_FROM_MODEL_IN_DESTINATION:
@@ -60,20 +55,19 @@ public class Reindexer {
         }
 
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo Request
                     Method.POST,
                     Endpoint.REINDEX,
                     UrlParams.NONE,
                     RequestBody.asJson(reindexSettings.getXContentBuilder()));
             return ElsaResponse.of(ResponseFactory.createReindexResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings, final ReindexMode reindexMode) {
-        return this.execute(reindexSettings, reindexMode, this.elsa.getRequestExceptionHandler());
+        return this.execute(reindexSettings, reindexMode, RequestOptions.DEFAULT);
     }
 
     private void ensureDestinationModelClassExists(final Class<? extends ElsaModel> modelClass) {

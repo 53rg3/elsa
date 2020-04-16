@@ -18,11 +18,8 @@ package scroller;
 
 import client.ElsaClient;
 import org.elasticsearch.action.search.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import exceptions.RequestExceptionHandler;
+import org.elasticsearch.client.RequestOptions;
 import responses.ElsaResponse;
-import statics.Messages.ExceptionMsg;
 
 public class Scroller {
 
@@ -32,52 +29,49 @@ public class Scroller {
         this.elsa = elsa;
     }
 
-    public ElsaResponse<SearchResponse> initialize(final SearchRequest searchRequest, final ScrollManager scrollManager, final RequestExceptionHandler handler) {
+    public ElsaResponse<SearchResponse> initialize(final SearchRequest searchRequest, final ScrollManager scrollManager, final RequestOptions options) {
         try {
-            final SearchResponse searchResponse = this.elsa.client.search(searchRequest.scroll(scrollManager.getScroll()));
+            final SearchResponse searchResponse = this.elsa.client.search(searchRequest.scroll(scrollManager.getScroll()), options);
             scrollManager.updateScrollId(searchResponse);
             return ElsaResponse.of(searchResponse);
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<SearchResponse> initialize(final ScrollManager scrollManager, final SearchRequest searchRequest) {
-        return this.initialize(searchRequest, scrollManager, this.elsa.getRequestExceptionHandler());
+        return this.initialize(searchRequest, scrollManager, RequestOptions.DEFAULT);
     }
 
     public boolean hasHits(final SearchResponse searchResponse) {
         return searchResponse.getHits().getHits() != null && searchResponse.getHits().getHits().length > 0;
     }
 
-    public ElsaResponse<SearchResponse> getNext(final ScrollManager scrollManager, final SearchResponse lastSearchResponse, final RequestExceptionHandler handler) {
+    public ElsaResponse<SearchResponse> getNext(final ScrollManager scrollManager, final SearchResponse lastSearchResponse, final RequestOptions options) {
         try {
-            scrollManager.updateScrollId(lastSearchResponse);
-            return ElsaResponse.of(this.elsa.client.searchScroll(new SearchScrollRequest(scrollManager.getScrollId()).scroll(scrollManager.getScroll())));
+            scrollManager.updateScrollId(lastSearchResponse); // todo use .scroll(req, options)
+            return ElsaResponse.of(this.elsa.client.searchScroll(new SearchScrollRequest(scrollManager.getScrollId()).scroll(scrollManager.getScroll()), options));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<SearchResponse> getNext(final ScrollManager scrollManager, final SearchResponse lastSearchResponse) {
-        return this.getNext(scrollManager, lastSearchResponse, this.elsa.getRequestExceptionHandler());
+        return this.getNext(scrollManager, lastSearchResponse, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<ClearScrollResponse> clearScroll(final ScrollManager scrollManager, RequestExceptionHandler handler) {
+    public ElsaResponse<ClearScrollResponse> clearScroll(final ScrollManager scrollManager, final RequestOptions options) {
         try {
             final ClearScrollRequest clearScrollRequest = new ClearScrollRequest();
             clearScrollRequest.addScrollId(scrollManager.getScrollId());
-            return ElsaResponse.of(this.elsa.client.clearScroll(clearScrollRequest));
+            return ElsaResponse.of(this.elsa.client.clearScroll(clearScrollRequest, options));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<ClearScrollResponse> clearScroll(final ScrollManager scrollManager) {
-        return this.clearScroll(scrollManager, this.elsa.getRequestExceptionHandler());
+        return this.clearScroll(scrollManager, RequestOptions.DEFAULT);
     }
 
 }

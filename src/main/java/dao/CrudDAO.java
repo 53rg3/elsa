@@ -17,11 +17,9 @@
 package dao;
 
 import client.ElsaClient;
-import exceptions.RequestExceptionHandler;
 import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 import model.IndexConfig;
-import org.apache.http.Header;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -37,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import responses.ElsaResponse;
 import statics.ElsaStatics;
-import statics.Messages.ExceptionMsg;
 
 import java.util.Objects;
 
@@ -63,16 +60,15 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
      * Otherwise Elasticsearch set the ID automatically. <br>
      * If the ID exists then this will update the document.
      */
-    public ElsaResponse<IndexResponse> index(final T model, final Header... headers) {
-        return this.index(model, this.getElsa().getRequestExceptionHandler(), headers);
+    public ElsaResponse<IndexResponse> index(final T model) {
+        return this.index(model, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<IndexResponse> index(final T model, final RequestExceptionHandler handler, final Header... headers) {
+    public ElsaResponse<IndexResponse> index(final T model, final RequestOptions options) {
         Objects.requireNonNull(model, "Model must not be NULL.");
         try {
-            return ElsaResponse.of(this.getElsa().client.index(this.buildIndexRequest(model), headers));
+            return ElsaResponse.of(this.getElsa().client.index(this.buildIndexRequest(model), options));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
@@ -83,8 +79,8 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
      * Otherwise Elasticsearch set the ID automatically. <br>
      * If the ID exists then this will update the document.
      */
-    public void indexAsync(final T model, final ActionListener<IndexResponse> listener) {
-        this.getElsa().client.indexAsync(this.buildIndexRequest(model), listener);
+    public void indexAsync(final T model, final RequestOptions options, final ActionListener<IndexResponse> listener) {
+        this.getElsa().client.indexAsync(this.buildIndexRequest(model), options, listener);
     }
 
     public IndexRequest buildIndexRequest(final T model) {
@@ -107,20 +103,22 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
      * @return sub-type of ElsaModel or empty ElsaResponse
      */
     public ElsaResponse<T> get(final String id) {
-        return this.get(id, this.getElsa().getRequestExceptionHandler());
+        return this.get(id, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<T> get(final String id, final RequestExceptionHandler handler) {
+    public ElsaResponse<T> get(final String id, final RequestOptions options) {
         try {
-            final GetResponse response = this.getElsa().client.get(new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id));
+            final GetResponse response = this.getElsa().client.get(
+                    new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id),
+                    options
+            );
             T model = null;
             if (response.isExists()) {
-                model = this.getJsonMapper().fromJson(new String(response.getSourceAsBytes(), ElsaStatics.UTF_8));
+                model = this.getJsonMapper().fromJson(new String(response.getSourceAsBytes(), ElsaStatics.UTF_8)); // todo delete & replace
                 model.setId(response.getId());
             }
             return ElsaResponse.ofNullable(model);
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
@@ -130,22 +128,25 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
      * Object mapping must be done manually.
      * */
     public ElsaResponse<GetResponse> getRawResponse(final String id) {
-        return this.getRawResponse(id, this.getElsa().getRequestExceptionHandler());
+        return this.getRawResponse(id, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<GetResponse> getRawResponse(final String id, final RequestExceptionHandler handler) {
+    public ElsaResponse<GetResponse> getRawResponse(final String id, final RequestOptions options) {
         final GetRequest request = new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id);
         try {
-            return ElsaResponse.of(this.getElsa().client.get(request));
+            return ElsaResponse.of(this.getElsa().client.get(request, options));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     /** This retrieves the document asynchronously. GetResponse will be send to the Listener and needs to be mapped there. */
-    public void getAsync(final String id, final ActionListener<GetResponse> listener) {
-        this.getElsa().client.getAsync(new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id), listener);
+    public void getAsync(final String id, final RequestOptions options, final ActionListener<GetResponse> listener) {
+        this.getElsa().client.getAsync(
+                new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id),
+                options,
+                listener
+        );
     }
 
 
@@ -199,8 +200,8 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
         }
     }
 
-    public void updateAsync(final T model, final ActionListener<UpdateResponse> listener) {
-        this.getElsa().client.updateAsync(this.buildUpdateRequest(model), listener);
+    public void updateAsync(final T model, final RequestOptions options, final ActionListener<UpdateResponse> listener) {
+        this.getElsa().client.updateAsync(this.buildUpdateRequest(model), options, listener);
     }
 
     public UpdateRequest buildUpdateRequest(final T model) {
@@ -216,7 +217,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     private IndexConfig setIndexConfig(final Class<? extends ElsaModel> model) {
         try {
             return model.newInstance().getIndexConfig();
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (final InstantiationException | IllegalAccessException e) {
             logger.error("", e);
         }
         throw new IllegalStateException("Can't build object for model: " + model.getName());

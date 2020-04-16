@@ -18,7 +18,6 @@ package admin;
 
 import client.ElsaClient;
 import endpoints.Endpoint;
-import exceptions.RequestExceptionHandler;
 import helpers.IndexName;
 import helpers.ModelClass;
 import helpers.RequestBody;
@@ -27,6 +26,7 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -34,7 +34,6 @@ import responses.ConfirmationResponse;
 import responses.ElsaResponse;
 import responses.ResponseFactory;
 import statics.ElsaStatics;
-import statics.Messages.ExceptionMsg;
 import statics.Method;
 import statics.UrlParams;
 
@@ -51,7 +50,7 @@ public class IndexAdmin {
     // CREATE INDEX
     // ------------------------------------------------------------------------------------------ //
 
-    public ElsaResponse<CreateIndexResponse> createIndex(final Class<? extends ElsaModel> modelClass, final RequestExceptionHandler handler) {
+    public ElsaResponse<CreateIndexResponse> createIndex(final Class<? extends ElsaModel> modelClass, final RequestOptions options) {
         try {
             final ElsaModel model = ModelClass.createEmpty(modelClass);
             final XContentBuilder mapping = MappingBuilder.buildMapping(modelClass, ElsaStatics.DUMMY_TYPE, ElsaStatics.DEFAULT_ID_FIELD_NAME, "");
@@ -66,13 +65,12 @@ public class IndexAdmin {
             request.mapping(ElsaStatics.DUMMY_TYPE, mapping);
             return ElsaResponse.of(this.elsa.client.indices().create(request));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<CreateIndexResponse> createIndex(final Class<? extends ElsaModel> modelClass) {
-        return this.createIndex(modelClass, this.elsa.getRequestExceptionHandler());
+        return this.createIndex(modelClass, RequestOptions.DEFAULT);
     }
 
 
@@ -80,66 +78,63 @@ public class IndexAdmin {
     // UPDATE MAPPING
     // ------------------------------------------------------------------------------------------ //
 
-    public ElsaResponse<ConfirmationResponse> updateMapping(final Class<? extends ElsaModel> modelClass, final RequestExceptionHandler handler) {
+    public ElsaResponse<ConfirmationResponse> updateMapping(final Class<? extends ElsaModel> modelClass, final RequestOptions options) {
         try {
             final String indexName = IndexName.of(modelClass);
             final XContentBuilder xContentBuilder = MappingBuilder.buildMapping(modelClass, "_doc", "", "");
-            final Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo new Request
                     Method.PUT,
                     Endpoint.INDEX_MAPPING.update(indexName),
                     UrlParams.NONE,
                     RequestBody.asJson(xContentBuilder));
             return ElsaResponse.of(ResponseFactory.createConfirmationResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<ConfirmationResponse> updateMapping(final Class<? extends ElsaModel> modelClass) {
-        return this.updateMapping(modelClass, this.elsa.getRequestExceptionHandler());
+        return this.updateMapping(modelClass, RequestOptions.DEFAULT);
     }
 
 
-    public boolean indexExists(final String indexName, final RequestExceptionHandler handler) {
+    public boolean indexExists(final String indexName, final RequestOptions options) {
         final Response response;
         try {
-            response = this.elsa.client.getLowLevelClient().performRequest("HEAD", indexName);
+            response = this.elsa.client.getLowLevelClient().performRequest("HEAD", indexName); // todo as Request
             return response.getStatusLine().getStatusCode() == 200;
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
+            throw new IllegalStateException(e); // todo what to throw?!
         }
-        return false;
     }
 
     public boolean indexExists(final String indexName) {
-        return this.indexExists(indexName, this.elsa.getRequestExceptionHandler());
+        return this.indexExists(indexName, RequestOptions.DEFAULT);
     }
 
-    public boolean indexExists(final Class<? extends ElsaModel> modelClass, final RequestExceptionHandler handler) {
-        return this.indexExists(IndexName.of(modelClass), handler);
+    public boolean indexExists(final Class<? extends ElsaModel> modelClass, final RequestOptions options) {
+        return this.indexExists(IndexName.of(modelClass), options);
     }
 
     public boolean indexExists(final Class<? extends ElsaModel> modelClass) {
-        return this.indexExists(IndexName.of(modelClass), this.elsa.getRequestExceptionHandler());
+        return this.indexExists(IndexName.of(modelClass), RequestOptions.DEFAULT);
     }
 
 
-    public ElsaResponse<AcknowledgedResponse> deleteIndex(final String indexName, final RequestExceptionHandler handler) {
+    public ElsaResponse<AcknowledgedResponse> deleteIndex(final String indexName, final RequestOptions options) {
         try {
-            return ElsaResponse.of(this.elsa.client.indices().delete(new DeleteIndexRequest(indexName)));
+            return ElsaResponse.of(this.elsa.client.indices().delete(new DeleteIndexRequest(indexName), options));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<AcknowledgedResponse> deleteIndex(final String indexName) {
-        return this.deleteIndex(indexName, this.elsa.getRequestExceptionHandler());
+        return this.deleteIndex(indexName, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<AcknowledgedResponse> deleteIndex(final Class<? extends ElsaModel> modelClass, final RequestExceptionHandler handler) {
-        return this.deleteIndex(IndexName.of(modelClass), handler);
+    public ElsaResponse<AcknowledgedResponse> deleteIndex(final Class<? extends ElsaModel> modelClass, final RequestOptions options) {
+        return this.deleteIndex(IndexName.of(modelClass), options);
     }
 
     public ElsaResponse<AcknowledgedResponse> deleteIndex(final Class<? extends ElsaModel> modelClass) {

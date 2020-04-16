@@ -18,11 +18,10 @@ package snapshotter;
 
 import client.ElsaClient;
 import endpoints.Endpoint;
-import exceptions.RequestExceptionHandler;
 import helpers.RequestBody;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import responses.*;
-import statics.Messages.ExceptionMsg;
 import statics.Method;
 import statics.UrlParams;
 
@@ -42,74 +41,70 @@ public class Snapshotter {
     // ------------------------------------------------------------------------------------------ //
     // INFO
     // ------------------------------------------------------------------------------------------ //
-    public ElsaResponse<List<RepositoryInfoResponse>> getRepositories(final RequestExceptionHandler handler) {
+    public ElsaResponse<List<RepositoryInfoResponse>> getRepositories(final RequestOptions options) {
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.GET,
                     Endpoint.SNAPSHOT.INFO.getRepositories(),
                     UrlParams.NONE);
             return ElsaResponse.of(ResponseFactory.createRepositoryInfoListResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<List<RepositoryInfoResponse>> getRepositories() {
-        return this.getRepositories(this.elsa.getRequestExceptionHandler());
+        return this.getRepositories(RequestOptions.DEFAULT);
     }
 
 
-    public ElsaResponse<RepositoryInfoResponse> getRepositoryByName(final String repositoryName, final RequestExceptionHandler handler) {
+    public ElsaResponse<RepositoryInfoResponse> getRepositoryByName(final String repositoryName, final RequestOptions options) {
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.GET,
                     Endpoint.SNAPSHOT.INFO.getRepositoryByName(repositoryName),
                     UrlParams.NONE);
             return ElsaResponse.of(ResponseFactory.createRepositoryInfoResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<RepositoryInfoResponse> getRepositoryByName(final String repositoryName) {
-        return this.getRepositoryByName(repositoryName, this.elsa.getRequestExceptionHandler());
+        return this.getRepositoryByName(repositoryName, RequestOptions.DEFAULT);
     }
 
 
-    public ElsaResponse<List<SnapshotInfoResponse>> getSnapshots(final String repositoryName, final RequestExceptionHandler handler) {
+    public ElsaResponse<List<SnapshotInfoResponse>> getSnapshots(final String repositoryName, final RequestOptions options) {
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.GET,
                     Endpoint.SNAPSHOT.INFO.getSnapshots(repositoryName),
                     UrlParams.NONE);
             return ElsaResponse.of(ResponseFactory.createSnapshotInfoListResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<List<SnapshotInfoResponse>> getSnapshots(final String repositoryName) {
-        return this.getSnapshots(repositoryName, this.elsa.getRequestExceptionHandler());
+        return this.getSnapshots(repositoryName, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<SnapshotInfoResponse> getSnapshotByName(final String repositoryName, final String snapshotName, final RequestExceptionHandler handler) {
+    public ElsaResponse<SnapshotInfoResponse> getSnapshotByName(final String repositoryName, final String snapshotName, final RequestOptions options) {
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.GET,
                     Endpoint.SNAPSHOT.INFO.getSnapshotByName(repositoryName, snapshotName),
                     UrlParams.NONE);
             return ElsaResponse.of(ResponseFactory.createSnapshotInfoResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<SnapshotInfoResponse> getSnapshotByName(final String repositoryName, final String snapshotName) {
-        return this.getSnapshotByName(repositoryName, snapshotName, this.elsa.getRequestExceptionHandler());
+        return this.getSnapshotByName(repositoryName, snapshotName, RequestOptions.DEFAULT);
     }
 
 
@@ -117,40 +112,38 @@ public class Snapshotter {
     // CREATE
     // ------------------------------------------------------------------------------------------ //
 
-    public ElsaResponse<ConfirmationResponse> createRepository(final CreateRepositoryRequest request, final RequestExceptionHandler handler) {
+    public ElsaResponse<ConfirmationResponse> createRepository(final CreateRepositoryRequest request, final RequestOptions options) {
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.PUT,
                     Endpoint.SNAPSHOT.CREATE.createRepository(request.getRepositoryName()),
                     UrlParams.NONE,
                     RequestBody.asJson(request));
             return ElsaResponse.of(ResponseFactory.createConfirmationResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<ConfirmationResponse> createRepository(final CreateRepositoryRequest request) {
-        return this.createRepository(request, this.elsa.getRequestExceptionHandler());
+        return this.createRepository(request, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<ConfirmationResponse> createSnapshot(final CreateSnapshotRequest request, final RequestExceptionHandler handler) {
+    public ElsaResponse<ConfirmationResponse> createSnapshot(final CreateSnapshotRequest request, final RequestOptions options) {
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.PUT,
                     Endpoint.SNAPSHOT.CREATE.createSnapshot(request.getRepositoryName(), request.getSnapshotName()),
                     UrlParams.NONE,
                     RequestBody.asJson(request));
             return ElsaResponse.of(ResponseFactory.createConfirmationResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<ConfirmationResponse> createSnapshot(final CreateSnapshotRequest request) {
-        return this.createSnapshot(request, this.elsa.getRequestExceptionHandler());
+        return this.createSnapshot(request, RequestOptions.DEFAULT);
     }
 
 
@@ -158,22 +151,21 @@ public class Snapshotter {
     // RESTORE
     // ------------------------------------------------------------------------------------------ //
 
-    public ElsaResponse<ConfirmationResponse> restoreSnapshot(final RestoreSnapshotRequest request, final RequestExceptionHandler handler) {
+    public ElsaResponse<ConfirmationResponse> restoreSnapshot(final RestoreSnapshotRequest request, final RequestOptions options) {
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.POST,
                     Endpoint.SNAPSHOT.RESTORE.restoreSnapshot(request.getRepositoryName(), request.getSnapshotName()),
                     UrlParams.NONE,
                     RequestBody.asJson(request.getXJson()));
             return ElsaResponse.of(ResponseFactory.createConfirmationResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<ConfirmationResponse> restoreSnapshot(final RestoreSnapshotRequest request) {
-        return this.restoreSnapshot(request, this.elsa.getRequestExceptionHandler());
+        return this.restoreSnapshot(request, RequestOptions.DEFAULT);
     }
 
 
@@ -181,38 +173,36 @@ public class Snapshotter {
     // DELETE
     // ------------------------------------------------------------------------------------------ //
 
-    public ElsaResponse<ConfirmationResponse> deleteSnapshot(final String repositoryName, final String snapshotName, final RequestExceptionHandler handler) {
+    public ElsaResponse<ConfirmationResponse> deleteSnapshot(final String repositoryName, final String snapshotName, final RequestOptions options) {
         try {
-            Response response = this.elsa.client.getLowLevelClient().performRequest(
+            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.DELETE,
                     Endpoint.SNAPSHOT.DELETE.deleteSnapshot(repositoryName, snapshotName),
                     UrlParams.NONE);
             return ElsaResponse.of(ResponseFactory.createConfirmationResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<ConfirmationResponse> deleteSnapshot(final String repositoryName, final String snapshotName) {
-        return this.deleteSnapshot(repositoryName, snapshotName, this.elsa.getRequestExceptionHandler());
+        return this.deleteSnapshot(repositoryName, snapshotName, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<ConfirmationResponse> deleteRepository(final String repositoryName, final RequestExceptionHandler handler) {
+    public ElsaResponse<ConfirmationResponse> deleteRepository(final String repositoryName, final RequestOptions options) {
         try {
-            Response response =  this.elsa.client.getLowLevelClient().performRequest(
+            final Response response =  this.elsa.client.getLowLevelClient().performRequest( // todo use Request
                     Method.DELETE,
                     Endpoint.SNAPSHOT.DELETE.deleteRepository(repositoryName),
                     UrlParams.NONE);
             return ElsaResponse.of(ResponseFactory.createConfirmationResponse(response));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<ConfirmationResponse> deleteRepository(final String repositoryName) {
-        return this.deleteRepository(repositoryName, this.elsa.getRequestExceptionHandler());
+        return this.deleteRepository(repositoryName, RequestOptions.DEFAULT);
     }
 
 

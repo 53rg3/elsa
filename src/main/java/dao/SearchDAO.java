@@ -17,14 +17,13 @@
 package dao;
 
 import client.ElsaClient;
-import exceptions.RequestExceptionHandler;
 import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
 import responses.ElsaResponse;
-import statics.Messages.ExceptionMsg;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -35,24 +34,23 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
         super(model, elsa, jsonMapperLibrary);
     }
 
-    public ElsaResponse<SearchResponse> search(final SearchRequest searchRequest, final RequestExceptionHandler handler) {
+    public ElsaResponse<SearchResponse> search(final SearchRequest searchRequest, final RequestOptions options) {
         try {
-            return ElsaResponse.of(this.getElsa().client.search(searchRequest));
+            return ElsaResponse.of(this.getElsa().client.search(searchRequest, options));
         } catch (final Exception e) {
-            handler.process(e, ExceptionMsg.REQUEST_FAILED);
             return ElsaResponse.of(e);
         }
     }
 
     public ElsaResponse<SearchResponse> search(final SearchRequest searchRequest) {
-        return this.search(searchRequest, this.getElsa().getRequestExceptionHandler());
+        return this.search(searchRequest, RequestOptions.DEFAULT);
     }
 
     /**
      * Executes a SearchRequest asynchronously. Response is send to Listener.
      */
-    public void searchAsync(final SearchRequest searchRequest, final ActionListener<SearchResponse> listener) {
-        this.getElsa().client.searchAsync(searchRequest, listener);
+    public void searchAsync(final SearchRequest searchRequest, final RequestOptions options, final ActionListener<SearchResponse> listener) {
+        this.getElsa().client.searchAsync(searchRequest, options, listener);
     }
 
     /**
@@ -60,8 +58,8 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
      * If you need the meta data of the SearchResponse, then use the regular search method and parse the hits manually
      * with the SearchResponseMapper in this DAO.
      */
-    public ElsaResponse<T> searchAndMapFirstHit(final SearchRequest searchRequest, final RequestExceptionHandler handler) {
-        final ElsaResponse<SearchResponse> response = this.search(searchRequest, handler);
+    public ElsaResponse<T> searchAndMapFirstHit(final SearchRequest searchRequest, final RequestOptions options) {
+        final ElsaResponse<SearchResponse> response = this.search(searchRequest, options);
         if (response.isPresent()) {
             return ElsaResponse.ofNullable(this.getSearchResponseMapper().mapFirstHit(response.get()));
         }
@@ -69,7 +67,7 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
     }
 
     public ElsaResponse<T> searchAndMapFirstHit(final SearchRequest searchRequest) {
-        return this.searchAndMapFirstHit(searchRequest, this.getElsa().getRequestExceptionHandler());
+        return this.searchAndMapFirstHit(searchRequest, RequestOptions.DEFAULT);
     }
 
     /**
@@ -78,8 +76,8 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
      * with the SearchResponseMapper in this DAO.
      * @return Empty list if no results found
      */
-    public ElsaResponse<List<T>> searchAndMapToList(final SearchRequest searchRequest, final RequestExceptionHandler handler) {
-        final ElsaResponse<SearchResponse> response = this.search(searchRequest, handler);
+    public ElsaResponse<List<T>> searchAndMapToList(final SearchRequest searchRequest, final RequestOptions options) {
+        final ElsaResponse<SearchResponse> response = this.search(searchRequest, options);
         if (response.isPresent()) {
             return ElsaResponse.ofNullable(this.getSearchResponseMapper().mapHitsToList(response.get()));
         }
@@ -87,7 +85,7 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
     }
 
     public ElsaResponse<List<T>> searchAndMapToList(final SearchRequest searchRequest) {
-        return this.searchAndMapToList(searchRequest, this.getElsa().getRequestExceptionHandler());
+        return this.searchAndMapToList(searchRequest, RequestOptions.DEFAULT);
     }
 
     /**
@@ -96,9 +94,9 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
      * with the SearchResponseMapper in this DAO.
      * @return Empty list if no results found
      */
-    public ElsaResponse<Stream<T>> searchAndMapToStream(final SearchRequest searchRequest, final RequestExceptionHandler handler) {
+    public ElsaResponse<Stream<T>> searchAndMapToStream(final SearchRequest searchRequest, final RequestOptions options) {
 
-        final ElsaResponse<SearchResponse> response = this.search(searchRequest, handler);
+        final ElsaResponse<SearchResponse> response = this.search(searchRequest, options);
         if (response.hasException()) {
             return ElsaResponse.of(response.getExceptionResponse());
         }
@@ -112,7 +110,7 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
     }
 
     public ElsaResponse<Stream<T>> searchAndMapToStream(final SearchRequest searchRequest) {
-        return this.searchAndMapToStream(searchRequest, this.getElsa().getRequestExceptionHandler());
+        return this.searchAndMapToStream(searchRequest, RequestOptions.DEFAULT);
     }
 
 }

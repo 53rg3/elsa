@@ -16,13 +16,10 @@
 
 package dao;
 
-import assets.ExceptionHandlerWithExtractor;
 import assets.TestDAO;
 import assets.TestHelpers;
 import assets.TestModel;
 import client.ElsaClient;
-import org.apache.http.HttpHost;
-import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -39,7 +36,6 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.search.builder.SearchSourceBuilder.searchSource;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class CrudDAOTest {
@@ -53,7 +49,7 @@ public class CrudDAOTest {
             .registerModel(TestModel.class, TestDAO.class)
             .createIndexesAndEnsureMappingConsistency(false));
     private final TestDAO testDAO = elsa.getDAO(TestModel.class);
-    private static TestModel testModelWithoutId = new TestModel();
+    private static final TestModel testModelWithoutId = new TestModel();
     private static final TestModel testModelWithId = new TestModel();
     private static final String id = "someId123";
 
@@ -204,12 +200,12 @@ public class CrudDAOTest {
     public void update_partialValue_pass() {
         this.indexTestModelWithCustomId();
 
-        TestModel testModel = new TestModel();
+        final TestModel testModel = new TestModel();
         testModel.setId(id);
         testModel.setStringField("partial update");
 
         this.testDAO.update(testModel);
-        ElsaResponse<TestModel> testModel1 = this.testDAO.get(id);
+        final ElsaResponse<TestModel> testModel1 = this.testDAO.get(id);
         assertThat(testModel1.get().getStringField(), is("partial update"));
     }
 

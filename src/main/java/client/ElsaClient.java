@@ -22,8 +22,6 @@ import client.BulkProcessorCreator.BulkProcessorConfigurator;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import dao.ElsaDAO;
-import exceptions.JustLogExceptionHandler;
-import exceptions.RequestExceptionHandler;
 import jsonmapper.JsonMapperLibrary;
 import model.ElsaModel;
 import org.apache.http.HttpHost;
@@ -56,7 +54,6 @@ public class ElsaClient {
     private final ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
     private final ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> daoMap;
     private final JsonMapperLibrary jsonMapperLibrary;
-    private final RequestExceptionHandler requestExceptionHandler;
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -70,7 +67,6 @@ public class ElsaClient {
             final Config config = new Config();
             config.indexNamePrefix = "";
             config.jsonMapperLibrary = JsonMapperLibrary.GSON;
-            config.requestExceptionHandler = new JustLogExceptionHandler();
             config.bulkResponseListener = new DefaultBulkResponseListener();
             config.stifleThreadUntilClusterIsOnline = false;
             config.createIndexesAndEnsureMappingConsistency = true;
@@ -106,7 +102,6 @@ public class ElsaClient {
         this.client = RestClientConfig.create(config.httpHosts, config.restClientConfig);
         this.gson = config.modelMapper.getGsonBuilder().create();
         this.jsonMapperLibrary = config.jsonMapperLibrary;
-        this.requestExceptionHandler = config.requestExceptionHandler;
         this.registeredModels = ImmutableMap.copyOf(config.registeredModels);
         this.daoMap = new DaoMapCreator(c -> c
                 .elsa(this)
@@ -151,7 +146,6 @@ public class ElsaClient {
         private RestClientConfig restClientConfig;
         private String indexNamePrefix;
         private JsonMapperLibrary jsonMapperLibrary;
-        private RequestExceptionHandler requestExceptionHandler;
         private Listener bulkResponseListener;
         private boolean stifleThreadUntilClusterIsOnline;
         private boolean createIndexesAndEnsureMappingConsistency;
@@ -205,27 +199,6 @@ public class ElsaClient {
             return this;
         }
 
-//        /** Well... exchanging the JSON library for mapping of the models is a nice idea, because testing and shit,
-//         * but have you thought about the fact, that some field types require custom mapping functionality, e.g. dates
-//         * such? No you didn't. So we would need a shit load of adapters and stuff.
-//         * We take GSON, because the internet says that it faster than Jackson with smaller documents (<100kb), which
-//         * is mostly the case when working with Elasticsearch.
-//         * See https://blog.takipi.com/the-ultimate-json-library-json-simple-vs-gson-vs-jackson-vs-json/
-//         * https://dzone.com/articles/compare-json-api */
-//        public Config setJsonMapperLibrary(final JsonMapperLibrary defaultIsGson) {
-//            this.jsonMapperLibrary = defaultIsGson;
-//            return this;
-//        }
-
-        /**
-         * In some cases the Elasticsearch cluster responds with Exceptions. You can a pass a default exception handler
-         * which will be invoked if no custom handler was passed as argument to the request methods.
-         */
-        public Config setDefaultRequestExceptionHandler(final RequestExceptionHandler defaultIsJustLogExceptionHandler) {
-            this.requestExceptionHandler = defaultIsJustLogExceptionHandler;
-            return this;
-        }
-
         /**
          * This will add a custom listener to the BulkProcessor, see
          * <a href="https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html">here</a>
@@ -274,10 +247,6 @@ public class ElsaClient {
     public <T extends ElsaDAO> T getDAO(final Class<? extends ElsaModel> modelClass) {
         return Objects.requireNonNull((T) this.daoMap.get(modelClass), "Requested DAO for model class does not exist. " +
                 "Make sure the following model was registered in the ElsaClient instantiation: " + modelClass);
-    }
-
-    public RequestExceptionHandler getRequestExceptionHandler() {
-        return this.requestExceptionHandler;
     }
 
 }
