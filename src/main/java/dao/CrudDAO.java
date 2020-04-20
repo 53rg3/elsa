@@ -135,16 +135,18 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
      * This return the native GetResponse result of the GetRequest, which has additional fields and methods.
      * Object mapping must be done manually.
      * */
-    public ElsaResponse<GetResponse> getRawResponse(final String id) {
+    public GetResponse getRawResponse(final String id) throws ElsaException {
         return this.getRawResponse(id, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<GetResponse> getRawResponse(final String id, final RequestOptions options) {
+    public GetResponse getRawResponse(final String id, final RequestOptions options) throws ElsaException {
         final GetRequest request = new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id);
         try {
-            return ElsaResponse.of(this.getElsa().client.get(request, options));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.getElsa().client.get(request, options);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 

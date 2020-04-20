@@ -158,10 +158,10 @@ public class CrudDAOTest {
     @Test
     public void get_getAsGetResponse_pass() throws ElsaException {
         assertThat(this.indexTestModelWithCustomId().getResult().name(), is("CREATED"));
-        final ElsaResponse<GetResponse> response = this.testDAO.getRawResponse(id);
+        final GetResponse response = this.testDAO.getRawResponse(id);
 
         assertThat(response, notNullValue());
-        assertThat(response.get().getId(), is(id));
+        assertThat(response.getId(), is(id));
     }
 
     @Test
