@@ -21,7 +21,6 @@ import dao.ElsaDAO;
 import exceptions.ElsaException;
 import model.ElsaModel;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,7 +41,14 @@ public class IndexCreator {
                 throw new IllegalArgumentException("Registering interface ElsaModel.class as model is not allowed. Create a model which implements it.");
             }
 
-            if (!indexAdmin.indexExists(modelClass)) {
+            final boolean doesIndexExist;
+            try {
+                doesIndexExist = indexAdmin.indexExists(modelClass);
+            } catch (final ElsaException e) {
+                throw new IllegalStateException("Couldn't check if index exists", e);
+            }
+
+            if (!doesIndexExist) {
                 try {
                     indexAdmin.createIndex(modelClass);
                 } catch (final ElsaException e) {

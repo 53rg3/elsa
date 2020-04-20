@@ -107,25 +107,27 @@ public class IndexAdmin {
     }
 
 
-    public boolean indexExists(final String indexName, final RequestOptions options) {
+    public boolean indexExists(final String indexName, final RequestOptions options) throws ElsaException {
         final Response response;
         try {
             response = this.elsa.client.getLowLevelClient().performRequest("HEAD", indexName); // todo as Request
             return response.getStatusLine().getStatusCode() == 200;
-        } catch (final Exception e) {
-            throw new IllegalStateException(e); // todo what to throw?!
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public boolean indexExists(final String indexName) {
+    public boolean indexExists(final String indexName) throws ElsaException {
         return this.indexExists(indexName, RequestOptions.DEFAULT);
     }
 
-    public boolean indexExists(final Class<? extends ElsaModel> modelClass, final RequestOptions options) {
+    public boolean indexExists(final Class<? extends ElsaModel> modelClass, final RequestOptions options) throws ElsaException {
         return this.indexExists(IndexName.of(modelClass), options);
     }
 
-    public boolean indexExists(final Class<? extends ElsaModel> modelClass) {
+    public boolean indexExists(final Class<? extends ElsaModel> modelClass) throws ElsaException {
         return this.indexExists(IndexName.of(modelClass), RequestOptions.DEFAULT);
     }
 

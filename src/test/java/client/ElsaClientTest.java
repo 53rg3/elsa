@@ -19,6 +19,7 @@ package client;
 import assets.*;
 import dao.CrudDAO;
 import dao.ElsaDAO;
+import exceptions.ElsaException;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
@@ -79,7 +80,7 @@ public class ElsaClientTest {
     }
 
     @Test
-    public void builder_ensureIndexMappingConsistencyWithValidUpdate_pass() {
+    public void builder_ensureIndexMappingConsistencyWithValidUpdate_pass() throws ElsaException {
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class));
@@ -95,7 +96,7 @@ public class ElsaClientTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void builder_ensureIndexMappingConsistencyWithInValidUpdate_throw() {
+    public void builder_ensureIndexMappingConsistencyWithInValidUpdate_throw() throws ElsaException {
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class));

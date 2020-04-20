@@ -20,6 +20,7 @@ import assets.FakerModel;
 import assets.TestHelpers;
 import client.ElsaClient;
 import dao.CrudDAO;
+import exceptions.ElsaException;
 import helpers.IndexName;
 import helpers.XJson;
 import org.apache.http.HttpHost;
@@ -90,7 +91,7 @@ public class SnapshotterTest {
 
 
     @Test
-    public void completeProcedure_pass() {
+    public void completeProcedure_pass() throws ElsaException {
 
         // ------------------------------------------------------------------------------------------ //
         // CREATE REPOSITORIES
