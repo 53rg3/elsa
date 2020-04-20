@@ -30,7 +30,6 @@ import org.junit.*;
 import org.junit.runners.MethodSorters;
 import responses.ElsaResponse;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
@@ -79,7 +78,7 @@ public class CrudDAOTest {
         assertThat(deleteResponse.get().getResult().name(), either(is("DELETED")).or(is("NOT_FOUND")));
     }
 
-    private ElsaResponse<IndexResponse> indexTestModelWithCustomId() {
+    private IndexResponse indexTestModelWithCustomId() throws ElsaException {
         return this.testDAO.index(testModelWithId);
     }
 
@@ -95,37 +94,37 @@ public class CrudDAOTest {
     /* ------------------------------------------------------------------------- */
 
     @Test
-    public void index_withoutId_pass() {
-        final ElsaResponse<IndexResponse> indexResponse = this.testDAO.index(testModelWithoutId);
-        assertThat(indexResponse.get().getResult().name(), is("CREATED"));
+    public void index_withoutId_pass() throws ElsaException {
+        final IndexResponse indexResponse = this.testDAO.index(testModelWithoutId);
+        assertThat(indexResponse.getResult().name(), is("CREATED"));
     }
 
     @Test
-    public void index_withTransientField_fieldIsNullAfterGet() {
+    public void index_withTransientField_fieldIsNullAfterGet() throws ElsaException {
         testModelWithoutId.setTransientField("This should be null");
-        final ElsaResponse<IndexResponse> indexResponse = this.testDAO.index(testModelWithoutId);
-        assertThat(indexResponse.get().getResult().name(), is("CREATED"));
+        final IndexResponse indexResponse = this.testDAO.index(testModelWithoutId);
+        assertThat(indexResponse.getResult().name(), is("CREATED"));
 
-        final ElsaResponse<TestModel> testModel = this.testDAO.get(indexResponse.get().getId());
+        final ElsaResponse<TestModel> testModel = this.testDAO.get(indexResponse.getId());
         assertThat(testModel.get().getTransientField(), nullValue());
     }
 
     @Test
-    public void indexAndGet_customId_pass() {
-        assertThat(this.indexTestModelWithCustomId().get().getResult().name(), is("CREATED"));
+    public void indexAndGet_customId_pass() throws ElsaException {
+        assertThat(this.indexTestModelWithCustomId().getResult().name(), is("CREATED"));
 
         final ElsaResponse<TestModel> newDoc = this.testDAO.get(id);
         assertThat(newDoc.get().getId(), is(id));
     }
 
     @Test
-    public void indexAndUpdate_idFieldsAreNotPassedToSource_pass() {
+    public void indexAndUpdate_idFieldsAreNotPassedToSource_pass() throws ElsaException {
         // Index document without ID and get assigned auto-ID
-        final ElsaResponse<IndexResponse> response1 = this.testDAO.index(testModelWithoutId);
-        final String id = response1.get().getId();
+        final IndexResponse response1 = this.testDAO.index(testModelWithoutId);
+        final String id = response1.getId();
 
         // Assert that document was inserted
-        ElsaResponse<TestModel> model1 = this.testDAO.get(response1.get().getId());
+        ElsaResponse<TestModel> model1 = this.testDAO.get(response1.getId());
         assertThat(model1, notNullValue());
 
         // Index the model again and assert that ID hasn't been indexed in _source field, i.e. search returns null
@@ -140,7 +139,7 @@ public class CrudDAOTest {
         assertThat(model2.isPresent(), is(false));
 
         // Update the model and assert that ID hasn't been indexed in _source field, i.e. search returns null
-        model1 = this.testDAO.get(response1.get().getId());
+        model1 = this.testDAO.get(response1.getId());
         this.testDAO.update(model1.get());
         TestHelpers.sleep(500);
         final ElsaResponse<TestModel> model3 = this.testDAO.searchAndMapFirstHit(
@@ -157,8 +156,8 @@ public class CrudDAOTest {
     }
 
     @Test
-    public void get_getAsGetResponse_pass() {
-        assertThat(this.indexTestModelWithCustomId().get().getResult().name(), is("CREATED"));
+    public void get_getAsGetResponse_pass() throws ElsaException {
+        assertThat(this.indexTestModelWithCustomId().getResult().name(), is("CREATED"));
         final ElsaResponse<GetResponse> response = this.testDAO.getRawResponse(id);
 
         assertThat(response, notNullValue());
@@ -173,8 +172,8 @@ public class CrudDAOTest {
     }
 
     @Test
-    public void delete_newDocument_pass() {
-        assertThat(this.indexTestModelWithCustomId().get().getResult().name(), is("CREATED"));
+    public void delete_newDocument_pass() throws ElsaException {
+        assertThat(this.indexTestModelWithCustomId().getResult().name(), is("CREATED"));
         final ElsaResponse<TestModel> newDoc = this.testDAO.get(id);
         assertThat(newDoc, notNullValue());
         assertThat(newDoc.get().getId(), is(id));
@@ -184,7 +183,7 @@ public class CrudDAOTest {
     }
 
     @Test
-    public void update_singleValueInDoc_pass() {
+    public void update_singleValueInDoc_pass() throws ElsaException {
         this.indexTestModelWithCustomId();
 
         ElsaResponse<TestModel> newDoc = this.testDAO.get(id);
@@ -199,7 +198,7 @@ public class CrudDAOTest {
     }
 
     @Test
-    public void update_partialValue_pass() {
+    public void update_partialValue_pass() throws ElsaException {
         this.indexTestModelWithCustomId();
 
         final TestModel testModel = new TestModel();
@@ -211,13 +210,14 @@ public class CrudDAOTest {
         assertThat(testModel1.get().getStringField(), is("partial update"));
     }
 
-//    @Test todo rewrite test with new exception management -> ID does not exist exception
-//    public void update_nonExistingDocument_throw() {
+    @Test
+    @Ignore("rewrite test with new exception management -> ID does not exist exception")
+    public void update_nonExistingDocument_throw() {
 //        final ExceptionHandlerWithExtractor handler = new ExceptionHandlerWithExtractor();
 //        this.testDAO.update(testModelWithId, handler);
 //        ElsaResponse<TestModel> model = this.testDAO.get(id);
 //        assertThat(model.isPresent(), is(false));
 //        assertTrue(handler.getException() instanceof ElasticsearchStatusException);
-//    }
+    }
 
 }

@@ -17,8 +17,12 @@
 package dao;
 
 import client.ElsaClient;
+import exceptions.ElsaElasticsearchException;
+import exceptions.ElsaException;
+import exceptions.ElsaIOException;
 import model.ElsaModel;
 import model.IndexConfig;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -35,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import responses.ElsaResponse;
 import statics.ElsaStatics;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
@@ -59,16 +64,18 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
      * Otherwise Elasticsearch set the ID automatically. <br>
      * If the ID exists then this will update the document.
      */
-    public ElsaResponse<IndexResponse> index(final T model) {
+    public IndexResponse index(final T model) throws ElsaException {
         return this.index(model, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<IndexResponse> index(final T model, final RequestOptions options) {
+    public IndexResponse index(final T model, final RequestOptions options) throws ElsaException {
         Objects.requireNonNull(model, "Model must not be NULL.");
         try {
-            return ElsaResponse.of(this.getElsa().client.index(this.buildIndexRequest(model), options));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.getElsa().client.index(this.buildIndexRequest(model), options);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 

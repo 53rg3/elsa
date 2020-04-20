@@ -28,7 +28,6 @@ import org.junit.Test;
 import responses.ElsaResponse;
 import statics.ElsaStatics;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -67,9 +66,9 @@ public class ModelMapperTest {
         model.setDate(dateFormat.parse("2018-03-07T13:13:41.664Z"));
         final String expected  = "2018-01-01T00:00:00.000Z";
 
-        final ElsaResponse<IndexResponse> response = dao.index(model);
+        final IndexResponse response = dao.index(model);
         TestHelpers.sleep(100);
-        final ElsaResponse<DateModel> model2 = dao.get(response.get().getId());
+        final ElsaResponse<DateModel> model2 = dao.get(response.getId());
 
         assertThat(ElsaStatics.UTC_FORMAT.format(model2.get().getDate()), is(expected));
     }
