@@ -20,6 +20,7 @@ import assets.TestDAO;
 import assets.TestHelpers;
 import assets.TestModel;
 import client.ElsaClient;
+import exceptions.ElsaException;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -29,6 +30,7 @@ import org.junit.*;
 import org.junit.runners.MethodSorters;
 import responses.ElsaResponse;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
@@ -54,7 +56,7 @@ public class CrudDAOTest {
     private static final String id = "someId123";
 
     @BeforeClass
-    public static void createIndex() {
+    public static void createIndex() throws ElsaException {
         if(elsa.admin.indexExists(TestModel.class)) {
             elsa.admin.deleteIndex(TestModel.class);
         }

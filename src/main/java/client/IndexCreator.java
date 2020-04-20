@@ -18,8 +18,10 @@ package client;
 
 import admin.IndexAdmin;
 import dao.ElsaDAO;
+import exceptions.ElsaException;
 import model.ElsaModel;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -41,8 +43,10 @@ public class IndexCreator {
             }
 
             if (!indexAdmin.indexExists(modelClass)) {
-                if (!indexAdmin.createIndex(modelClass).isPresent()) {
-                    throw new IllegalStateException("Index creation failed. Check logs for details.");
+                try {
+                    indexAdmin.createIndex(modelClass);
+                } catch (final ElsaException e) {
+                    throw new IllegalStateException("Index creation failed", e);
                 }
             } else {
                 if (!indexAdmin.updateMapping(modelClass).isPresent()) {

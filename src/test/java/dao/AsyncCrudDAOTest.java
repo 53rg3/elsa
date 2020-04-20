@@ -18,6 +18,7 @@ package dao;
 
 import assets.*;
 import client.ElsaClient;
+import exceptions.ElsaException;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -50,7 +51,7 @@ public class AsyncCrudDAOTest {
     private final static String newIndexName = "async_test";
 
     @BeforeClass
-    public static void createIndex() {
+    public static void createIndex() throws ElsaException {
         model1.getIndexConfig().setIndexName(newIndexName);
         elsa.admin.createIndex(FakerModelAsync.class);
 

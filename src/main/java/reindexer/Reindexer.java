@@ -18,6 +18,7 @@ package reindexer;
 
 import client.ElsaClient;
 import endpoints.Endpoint;
+import exceptions.ElsaException;
 import helpers.RequestBody;
 import model.ElsaModel;
 import org.elasticsearch.client.RequestOptions;
@@ -37,12 +38,14 @@ public class Reindexer {
         this.elsa = elsa;
     }
 
-    public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings, final ReindexMode reindexMode, final RequestOptions options) {
+    public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings,
+                                                 final ReindexMode reindexMode,
+                                                 final RequestOptions options) throws ElsaException {
 
         switch (reindexMode) {
             case CREATE_NEW_INDEX_FROM_MODEL_IN_DESTINATION:
                 this.ensureDestinationModelClassExists(reindexSettings.getModelClass());
-                this.elsa.admin.createIndex(reindexSettings.getModelClass());
+                this.elsa.admin.createIndex(reindexSettings.getModelClass(), options);
                 break;
             case ABORT_IF_MAPPING_INCORRECT:
                 this.ensureDestinationModelClassExists(reindexSettings.getModelClass());
@@ -62,11 +65,12 @@ public class Reindexer {
                     RequestBody.asJson(reindexSettings.getXContentBuilder()));
             return ElsaResponse.of(ResponseFactory.createReindexResponse(response));
         } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return ElsaResponse.of(e); // TODO throw ElsaException
         }
     }
 
-    public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings, final ReindexMode reindexMode) {
+    public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings,
+                                                 final ReindexMode reindexMode) throws ElsaException {
         return this.execute(reindexSettings, reindexMode, RequestOptions.DEFAULT);
     }
 

@@ -20,10 +20,9 @@ import assets.FakerModel;
 import assets.TestHelpers;
 import client.ElsaClient;
 import dao.CrudDAO;
+import exceptions.ElsaException;
 import helpers.IndexName;
 import helpers.Search;
-import org.apache.http.HttpHost;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -54,7 +53,7 @@ public class ElsaResponseTest {
                             .lt(3322)));
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws ElsaException {
         elsa.admin.createIndex(FakerModel.class);
         for (int i = 0; i < 100; i++) {
             elsa.bulkProcessor.add(dao.buildIndexRequest(FakerModel.createModelWithRandomData()));
@@ -70,18 +69,18 @@ public class ElsaResponseTest {
         elsa.admin.deleteIndex(FakerModel.class);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void of_requestWithExceptions_throw() {
-        ElsaResponse<CreateIndexResponse> response = elsa.admin.createIndex(FakerModel.class);
-        assertThat(response.getExceptionResponse().getStatus(), is(400));
-        assertThat(response.hasException(), is(true));
-        assertThat(response.isPresent(), is(false));
-        response.get();
+        try {
+            elsa.admin.createIndex(FakerModel.class);
+        } catch (final ElsaException e) {
+            assertThat(e.getRestStatus().getStatus(), is(400));
+        }
     }
 
     @Test(expected = NoSuchElementException.class)
     public void ofNullable_getSearchResponse_throw() {
-        ElsaResponse<FakerModel> response = dao.searchAndMapFirstHit(request);
+        final ElsaResponse<FakerModel> response = dao.searchAndMapFirstHit(this.request);
         assertThat(response.hasException(), is(false));
         assertThat(response.isPresent(), is(false));
         response.get();

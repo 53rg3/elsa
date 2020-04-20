@@ -38,7 +38,6 @@ public class ExceptionResponse {
         default void validate(final Config config) {
             Objects.requireNonNull(config.status, "Status must not be NULL.");
             Objects.requireNonNull(config.error, "Error must not be NULL.");
-            Objects.requireNonNull(config.error, "Error must not be NULL.");
         }
 
         default Config applyCustomConfig(final Configurator configurator) {

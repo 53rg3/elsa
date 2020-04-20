@@ -19,13 +19,12 @@ package dao;
 import assets.FakerModel;
 import assets.TestHelpers;
 import client.ElsaClient;
+import exceptions.ElsaException;
 import helpers.IndexName;
 import helpers.Search;
-import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,9 +37,7 @@ import static helpers.Search.src;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class SearchDAOTest {
 
@@ -59,7 +56,7 @@ public class SearchDAOTest {
                             .lt(33)));
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws ElsaException {
         elsa.admin.createIndex(FakerModel.class);
         for (int i = 0; i < 1000; i++) {
             elsa.bulkProcessor.add(dao.buildIndexRequest(FakerModel.createModelWithRandomData()));

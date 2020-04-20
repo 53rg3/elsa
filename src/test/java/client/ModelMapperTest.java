@@ -20,6 +20,7 @@ import assets.DateModel;
 import assets.DummyGsonUTCDateAdapter;
 import assets.TestHelpers;
 import dao.CrudDAO;
+import exceptions.ElsaException;
 import org.elasticsearch.action.index.IndexResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -27,6 +28,7 @@ import org.junit.Test;
 import responses.ElsaResponse;
 import statics.ElsaStatics;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -48,7 +50,7 @@ public class ModelMapperTest {
     private static final CrudDAO<DateModel> dao = elsa.getDAO(DateModel.class);
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws ElsaException {
         elsa.admin.createIndex(DateModel.class);
     }
 

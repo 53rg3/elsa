@@ -21,6 +21,7 @@ import assets.FakerModelInvalidMapping;
 import assets.TestHelpers;
 import client.ElsaClient;
 import dao.CrudDAO;
+import exceptions.ElsaException;
 import helpers.XJson;
 import org.elasticsearch.action.search.SearchRequest;
 import org.junit.AfterClass;
@@ -33,6 +34,7 @@ import reindexer.ReindexSettings.ReindexSettingsBuilder;
 import responses.ElsaResponse;
 import responses.ReindexResponse;
 
+import java.io.IOException;
 import java.util.List;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
@@ -72,7 +74,7 @@ public class ReindexerTest {
     }
 
     @Test
-    public void create_modeCreateNewIndex_pass() {
+    public void create_modeCreateNewIndex_pass() throws ElsaException {
         fakerModel.getIndexConfig().setIndexName(newIndex);
 
         final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
@@ -109,7 +111,7 @@ public class ReindexerTest {
     }
 
     @Test
-    public void create_modeAbortIfMappingIncorrect_responseHasException() {
+    public void create_modeAbortIfMappingIncorrect_responseHasException() throws ElsaException {
         fakerModel.getIndexConfig().setIndexName(newIndex);
 
         final ReindexSettings reindexSettings = new ReindexSettingsBuilder()

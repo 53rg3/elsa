@@ -19,8 +19,8 @@ package responses;
 import assets.FakerModel;
 import client.ElsaClient;
 import dao.CrudDAO;
+import exceptions.ElsaException;
 import org.apache.http.HttpHost;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.junit.Test;
 
@@ -36,13 +36,14 @@ public class ExceptionExtractorTest {
             .createIndexesAndEnsureMappingConsistency(false));
 
     @Test
-    public void extract_badRequestException_pass() {
+    public void extract_badRequestException_pass() throws ElsaException{
         elsa.admin.createIndex(FakerModel.class);
-        final ElsaResponse<CreateIndexResponse> response = elsa.admin.createIndex(FakerModel.class);
 
-        assertThat(response.isPresent(), is(false));
-        assertThat(response.hasException(), is(true));
-        assertThat(response.getExceptionResponse().getStatus(), is(400));
+        try {
+            elsa.admin.createIndex(FakerModel.class);
+        } catch (final ElsaException e) {
+            assertThat(e.getRestStatus().getStatus(), is(400));
+        }
 
         elsa.admin.deleteIndex(FakerModel.class);
     }

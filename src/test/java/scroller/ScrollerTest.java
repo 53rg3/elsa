@@ -19,7 +19,7 @@ package scroller;
 import assets.FakerModel;
 import client.ElsaClient;
 import dao.CrudDAO;
-import org.apache.http.HttpHost;
+import exceptions.ElsaException;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.unit.TimeValue;
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class ScrollerTest {
 
@@ -45,10 +45,10 @@ public class ScrollerTest {
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws ElsaException {
         elsa.admin.createIndex(FakerModel.class);
         for (int i = 0; i < 100; i++) {
-            FakerModel fakerModel = FakerModel.createModelWithRandomData();
+            final FakerModel fakerModel = FakerModel.createModelWithRandomData();
             fakerModel.setId(String.valueOf(i));
             elsa.bulkProcessor.add(dao.buildIndexRequest(fakerModel));
         }
@@ -77,7 +77,7 @@ public class ScrollerTest {
 
         final ScrollManager scrollManager = new ScrollManager(TimeValue.timeValueMinutes(1L));
         ElsaResponse<SearchResponse> searchResponse = elsa.scroller.initialize(scrollManager, request);
-        AtomicInteger expectedId = new AtomicInteger(0);
+        final AtomicInteger expectedId = new AtomicInteger(0);
         if(!searchResponse.isPresent()) {
             throw new IllegalArgumentException("Search response is not present.");
         }

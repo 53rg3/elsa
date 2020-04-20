@@ -18,10 +18,14 @@ package admin;
 
 import client.ElsaClient;
 import endpoints.Endpoint;
+import exceptions.ElsaElasticsearchException;
+import exceptions.ElsaException;
+import exceptions.ElsaIOException;
 import helpers.IndexName;
 import helpers.ModelClass;
 import helpers.RequestBody;
 import model.ElsaModel;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -37,6 +41,8 @@ import statics.ElsaStatics;
 import statics.Method;
 import statics.UrlParams;
 
+import java.io.IOException;
+
 public class IndexAdmin {
 
     private final ElsaClient elsa;
@@ -50,7 +56,7 @@ public class IndexAdmin {
     // CREATE INDEX
     // ------------------------------------------------------------------------------------------ //
 
-    public ElsaResponse<CreateIndexResponse> createIndex(final Class<? extends ElsaModel> modelClass, final RequestOptions options) {
+    public CreateIndexResponse createIndex(final Class<? extends ElsaModel> modelClass, final RequestOptions options) throws ElsaException {
         try {
             final ElsaModel model = ModelClass.createEmpty(modelClass);
             final XContentBuilder mapping = MappingBuilder.buildMapping(modelClass, ElsaStatics.DUMMY_TYPE, ElsaStatics.DEFAULT_ID_FIELD_NAME, "");
@@ -63,13 +69,16 @@ public class IndexAdmin {
                     .build();
             request.settings(settings);
             request.mapping(ElsaStatics.DUMMY_TYPE, mapping);
-            return ElsaResponse.of(this.elsa.client.indices().create(request));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.elsa.client.indices().create(request, options);
+
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public ElsaResponse<CreateIndexResponse> createIndex(final Class<? extends ElsaModel> modelClass) {
+    public CreateIndexResponse createIndex(final Class<? extends ElsaModel> modelClass) throws ElsaException {
         return this.createIndex(modelClass, RequestOptions.DEFAULT);
     }
 
