@@ -73,9 +73,9 @@ public class CrudDAOTest {
     }
 
     @After
-    public void deleteTestModelWithCustomId(){
-        final ElsaResponse<DeleteResponse> deleteResponse = this.testDAO.delete(testModelWithId);
-        assertThat(deleteResponse.get().getResult().name(), either(is("DELETED")).or(is("NOT_FOUND")));
+    public void deleteTestModelWithCustomId() throws ElsaException {
+        final DeleteResponse deleteResponse = this.testDAO.delete(testModelWithId);
+        assertThat(deleteResponse.getResult().name(), either(is("DELETED")).or(is("NOT_FOUND")));
     }
 
     private IndexResponse indexTestModelWithCustomId() throws ElsaException {
@@ -177,8 +177,8 @@ public class CrudDAOTest {
         assertThat(newDoc, notNullValue());
         assertThat(newDoc.getId(), is(id));
 
-        final ElsaResponse<DeleteResponse> deleteResponse = this.testDAO.delete(testModelWithId);
-        assertThat(deleteResponse.get().getResult().name(), is("DELETED"));
+        final DeleteResponse deleteResponse = this.testDAO.delete(testModelWithId);
+        assertThat(deleteResponse.getResult().name(), is("DELETED"));
     }
 
     @Test

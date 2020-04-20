@@ -164,16 +164,18 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     // DELETE
     // ------------------------------------------------------------------------------------------ //
 
-    public ElsaResponse<DeleteResponse> delete(final T model) {
+    public DeleteResponse delete(final T model) throws ElsaException {
         return this.delete(model, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<DeleteResponse> delete(final T model, final RequestOptions requestOptions) {
+    public DeleteResponse delete(final T model, final RequestOptions requestOptions) throws ElsaException {
         final DeleteRequest request = this.buildDeleteRequest(model);
         try {
-            return ElsaResponse.of(this.getElsa().client.delete(request, requestOptions));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.getElsa().client.delete(request, requestOptions);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
