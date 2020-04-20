@@ -28,7 +28,6 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
-import responses.ElsaResponse;
 
 import java.util.Arrays;
 
@@ -131,23 +130,23 @@ public class CrudDAOTest {
         // (Indexing with an existing ID overrides the document.)
         this.testDAO.index(model1);
         TestHelpers.sleep(500);
-        final ElsaResponse<TestModel> model2 = this.testDAO.searchAndMapFirstHit(
+        final TestModel model2 = this.testDAO.searchAndMapFirstHit(
                 new SearchRequest()
                         .indices(model1.getIndexConfig().getIndexName())
                         .source(searchSource()
                                 .query(matchQuery("id", id))));
-        assertThat(model2.isPresent(), is(false));
+        assertThat(model2, nullValue());
 
         // Update the model and assert that ID hasn't been indexed in _source field, i.e. search returns null
         model1 = this.testDAO.get(response1.getId());
         this.testDAO.update(model1);
         TestHelpers.sleep(500);
-        final ElsaResponse<TestModel> model3 = this.testDAO.searchAndMapFirstHit(
+        final TestModel model3 = this.testDAO.searchAndMapFirstHit(
                 new SearchRequest()
                         .indices(model1.getIndexConfig().getIndexName())
                         .source(searchSource()
                                 .query(matchQuery("id", id))));
-        assertThat(model3.isPresent(), is(false));
+        assertThat(model3, nullValue());
     }
 
     @Test

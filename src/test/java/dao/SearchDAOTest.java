@@ -28,13 +28,13 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import responses.ElsaResponse;
 
 import java.util.List;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static helpers.Search.src;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -73,49 +73,47 @@ public class SearchDAOTest {
     }
 
     @Test
-    public void search() {
-        final ElsaResponse<SearchResponse> response = dao.search(this.request);
-        assertThat(response.hasResult(), is(true));
-        assertThat(response.get().getHits().getHits().length, greaterThan(1));
+    public void search() throws ElsaException {
+        final SearchResponse response = dao.search(this.request);
+        assertThat(response.getHits().getHits().length, greaterThan(1));
     }
 
     @Test
-    public void searchAndMapFirstHit() {
-        final ElsaResponse<FakerModel> fakerModel = dao.searchAndMapFirstHit(this.request);
-        assertThat(fakerModel.hasResult(), is(true));
-        assertThat(fakerModel.get().getId(), notNullValue());
+    public void searchAndMapFirstHit() throws ElsaException {
+        final FakerModel fakerModel = dao.searchAndMapFirstHit(this.request);
+        assertThat(fakerModel.getId(), notNullValue());
     }
 
     @Test
-    public void searchAndMapToList() {
-        final ElsaResponse<List<FakerModel>> list = dao.searchAndMapToList(this.request);
-        assertThat(list.hasResult(), is(true));
-        assertThat(list.get().size(), greaterThan(1));
-        for (final FakerModel fakerModel : list.get()) {
+    public void searchAndMapToList() throws ElsaException {
+        final List<FakerModel> list = dao.searchAndMapToList(this.request);
+        assertThat(list.size(), greaterThan(1));
+        for (final FakerModel fakerModel : list) {
             assertThat(fakerModel.getId(), notNullValue());
         }
     }
 
     @Test
-    public void searchHasNoResults() {
+    public void searchHasNoResults() throws ElsaException {
         final SearchRequest ageHasNoResultsRequest = Search.req()
                 .indices(IndexName.of(FakerModel.class))
                 .source(src()
                         .size(3)
                         .query(QueryBuilders.rangeQuery("age")
                                 .gt(111)));
-        final ElsaResponse<FakerModel> response1 = dao.searchAndMapFirstHit(ageHasNoResultsRequest);
-        assertThat(response1.hasResult(), is(false));
-        final ElsaResponse<List<FakerModel>> response2 = dao.searchAndMapToList(ageHasNoResultsRequest);
-        assertThat(response2.hasResult(), is(false));
+        final FakerModel response1 = dao.searchAndMapFirstHit(ageHasNoResultsRequest);
+        assertThat(response1, nullValue());
+        final List<FakerModel> response2 = dao.searchAndMapToList(ageHasNoResultsRequest);
+        assertThat(response2, notNullValue());
+        assertThat(response2.size(), is(0));
     }
 
     @Test
-    public void searchAndMapToStream() {
-        dao.searchAndMapToStream(this.request).get()
+    public void searchAndMapToStream() throws ElsaException {
+        dao.searchAndMapToStream(this.request)
                 .forEach(model -> assertThat(model.getId(), notNullValue()));
 
-        assertThat(dao.searchAndMapToStream(this.request).get()
+        assertThat(dao.searchAndMapToStream(this.request)
                 .count(), greaterThan(0L));
     }
 }

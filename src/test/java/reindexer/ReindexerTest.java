@@ -34,7 +34,6 @@ import reindexer.ReindexSettings.ReindexSettingsBuilder;
 import responses.ElsaResponse;
 import responses.ReindexResponse;
 
-import java.io.IOException;
 import java.util.List;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
@@ -94,13 +93,13 @@ public class ReindexerTest {
         TestHelpers.sleep(1000);
 
 
-        final ElsaResponse<List<FakerModel>> list = dao.searchAndMapToList(new SearchRequest()
+        final List<FakerModel> list = dao.searchAndMapToList(new SearchRequest()
                 .indices(FakerModel.getIndexName())
                 .source(searchSource()
                         .query(matchAllQuery())));
 
         int minAge = 0;
-        for (final FakerModel fakerModel : list.get()) {
+        for (final FakerModel fakerModel : list) {
             assertTrue(fakerModel.getAge() >= minAge);
             assertTrue(fakerModel.getName().contains("Ms") || fakerModel.getName().contains("Mr"));
             minAge = fakerModel.getAge();

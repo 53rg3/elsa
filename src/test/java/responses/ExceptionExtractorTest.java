@@ -41,7 +41,7 @@ public class ExceptionExtractorTest {
         try {
             elsa.admin.createIndex(FakerModel.class);
         } catch (final ElsaException e) {
-            assertThat(e.getRestStatus().getStatus(), is(400));
+            assertThat(e.getHttpStatus(), is(400));
         }
 
         elsa.admin.deleteIndex(FakerModel.class);
@@ -53,7 +53,7 @@ public class ExceptionExtractorTest {
         try {
             elsa.admin.deleteIndex("does_not_exist");
         } catch (final ElsaException e) {
-            assertThat(e.getRestStatus().getStatus(), is(404));
+            assertThat(e.getHttpStatus(), is(404));
         }
     }
 
@@ -68,7 +68,7 @@ public class ExceptionExtractorTest {
         try {
             elsa.admin.deleteIndex("cluster_is_offline");
         } catch (final ElsaException e) {
-            assertThat(e.getRestStatus().getStatus(), is(503)); // todo is code correct?
+            assertThat(e.getHttpStatus(), is(503)); // todo is code correct?
         }
     }
 

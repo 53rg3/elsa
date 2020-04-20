@@ -17,13 +17,17 @@
 package dao;
 
 import client.ElsaClient;
+import exceptions.ElsaElasticsearchException;
+import exceptions.ElsaException;
+import exceptions.ElsaIOException;
 import model.ElsaModel;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import responses.ElsaResponse;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -33,15 +37,17 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
         super(model, elsa);
     }
 
-    public ElsaResponse<SearchResponse> search(final SearchRequest searchRequest, final RequestOptions options) {
+    public SearchResponse search(final SearchRequest searchRequest, final RequestOptions options) throws ElsaException {
         try {
-            return ElsaResponse.of(this.getElsa().client.search(searchRequest, options));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.getElsa().client.search(searchRequest, options);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public ElsaResponse<SearchResponse> search(final SearchRequest searchRequest) {
+    public SearchResponse search(final SearchRequest searchRequest) throws ElsaException {
         return this.search(searchRequest, RequestOptions.DEFAULT);
     }
 
@@ -57,15 +63,12 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
      * If you need the meta data of the SearchResponse, then use the regular search method and parse the hits manually
      * with the SearchResponseMapper in this DAO.
      */
-    public ElsaResponse<T> searchAndMapFirstHit(final SearchRequest searchRequest, final RequestOptions options) {
-        final ElsaResponse<SearchResponse> response = this.search(searchRequest, options);
-        if (response.isPresent()) {
-            return ElsaResponse.ofNullable(this.getSearchResponseMapper().mapFirstHit(response.get()));
-        }
-        return ElsaResponse.of(response.getExceptionResponse());
+    public T searchAndMapFirstHit(final SearchRequest searchRequest, final RequestOptions options) throws ElsaException {
+        final SearchResponse response = this.search(searchRequest, options);
+        return this.getSearchResponseMapper().mapFirstHit(response);
     }
 
-    public ElsaResponse<T> searchAndMapFirstHit(final SearchRequest searchRequest) {
+    public T searchAndMapFirstHit(final SearchRequest searchRequest) throws ElsaException {
         return this.searchAndMapFirstHit(searchRequest, RequestOptions.DEFAULT);
     }
 
@@ -75,15 +78,12 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
      * with the SearchResponseMapper in this DAO.
      * @return Empty list if no results found
      */
-    public ElsaResponse<List<T>> searchAndMapToList(final SearchRequest searchRequest, final RequestOptions options) {
-        final ElsaResponse<SearchResponse> response = this.search(searchRequest, options);
-        if (response.isPresent()) {
-            return ElsaResponse.ofNullable(this.getSearchResponseMapper().mapHitsToList(response.get()));
-        }
-        return ElsaResponse.of(response.getExceptionResponse());
+    public List<T> searchAndMapToList(final SearchRequest searchRequest, final RequestOptions options) throws ElsaException {
+        final SearchResponse response = this.search(searchRequest, options);
+        return this.getSearchResponseMapper().mapHitsToList(response);
     }
 
-    public ElsaResponse<List<T>> searchAndMapToList(final SearchRequest searchRequest) {
+    public List<T> searchAndMapToList(final SearchRequest searchRequest) throws ElsaException {
         return this.searchAndMapToList(searchRequest, RequestOptions.DEFAULT);
     }
 
@@ -93,22 +93,19 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
      * with the SearchResponseMapper in this DAO.
      * @return Empty list if no results found
      */
-    public ElsaResponse<Stream<T>> searchAndMapToStream(final SearchRequest searchRequest, final RequestOptions options) {
+    public Stream<T> searchAndMapToStream(final SearchRequest searchRequest, final RequestOptions options) throws ElsaException {
 
-        final ElsaResponse<SearchResponse> response = this.search(searchRequest, options);
-        if (response.hasException()) {
-            return ElsaResponse.of(response.getExceptionResponse());
-        }
+        final SearchResponse response = this.search(searchRequest, options);
 
-        return ElsaResponse.of(Stream.of(response.get().getHits().getHits())
+        return Stream.of(response.getHits().getHits())
                 .map(hit -> {
                     final T model = this.getJsonMapper().fromJson(hit.getSourceAsString());
                     model.setId(hit.getId());
                     return model;
-                }));
+                });
     }
 
-    public ElsaResponse<Stream<T>> searchAndMapToStream(final SearchRequest searchRequest) {
+    public Stream<T> searchAndMapToStream(final SearchRequest searchRequest) throws ElsaException {
         return this.searchAndMapToStream(searchRequest, RequestOptions.DEFAULT);
     }
 

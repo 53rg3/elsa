@@ -17,11 +17,12 @@
 package snapshotter;
 
 import client.ElsaClient;
+import exceptions.ElsaException;
 import responses.ConfirmationResponse;
-import responses.ElsaResponse;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 public class RepositoryBucket {
@@ -101,16 +102,18 @@ public class RepositoryBucket {
     // PUBLIC METHODS
     // ------------------------------------------------------------------------------------------ //
 
-    public void registerRepositories(final ElsaClient elsa) {
-        this.getRepositoryBucket().forEach((key, value) -> {
-            final ElsaResponse<ConfirmationResponse> response = elsa.snapshotter.createRepository(
+    public void registerRepositories(final ElsaClient elsa) throws ElsaException {
+
+        for (final Entry<String, SnapshotRepository> entry : this.getRepositoryBucket().entrySet()) {
+            final ConfirmationResponse response = elsa.snapshotter.createRepository(
                     new CreateRepositoryRequest(c -> c
-                            .repositoryName(value.getRepositoryName())
-                            .pathToLocation(value.getPathToLocation())));
-            Objects.requireNonNull(response.get(), "" +
+                            .repositoryName(entry.getValue().getRepositoryName())
+                            .pathToLocation(entry.getValue().getPathToLocation())));
+            Objects.requireNonNull(response, "" +
                     "Couldn't create repository provided in your ElsaClient implementation. " +
                     "Check your elasticsearch.yml config if these are configured or check logs for more info.");
-        });
+        }
+
     }
 
 

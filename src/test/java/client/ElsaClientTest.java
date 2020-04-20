@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.MethodSorters;
 import responses.ConfirmationResponse;
-import responses.ElsaResponse;
 import snapshotter.SnapshotRepository;
 import statics.Headers;
 
@@ -165,7 +164,7 @@ public class ElsaClientTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void constructWithSnapshotRepository_repoIsDuplicate_throw() {
+    public void constructWithSnapshotRepository_repoIsDuplicate_throw() throws ElsaException {
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class)
@@ -174,11 +173,11 @@ public class ElsaClientTest {
                         .add(new SnapshotRepository("daily_backups", "/mnt/esbackup1"))
                         .add(new SnapshotRepository("daily_backups", "/mnt/esbackup2"))));
         TestHelpers.sleep(100);
-        final ElsaResponse<ConfirmationResponse> response = elsa.snapshotter.deleteRepository("daily_backups");
-        assertThat(response.get().hasSucceeded(), is(true));
+        final ConfirmationResponse response = elsa.snapshotter.deleteRepository("daily_backups");
+        assertThat(response.hasSucceeded(), is(true));
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test(expected = IllegalStateException.class) // todo change to ElsaException
     public void withSnapshotRepository_repositoryNotConfiguredExternally_throw() {
         new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)

@@ -22,6 +22,7 @@ import client.BulkProcessorCreator.BulkProcessorConfigurator;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import dao.ElsaDAO;
+import exceptions.ElsaException;
 import model.ElsaModel;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkProcessor;
@@ -118,7 +119,12 @@ public class ElsaClient {
                 config.createIndexesAndEnsureMappingConsistency,
                 this.registeredModels,
                 this.admin);
-        repositoryBucket.registerRepositories(this);
+        try {
+            repositoryBucket.registerRepositories(this); // todo propagate throw via method call
+        } catch (final ElsaException e) {
+            throw new IllegalStateException("Couldn't register repositories", e);
+        }
+
     }
 
 
@@ -127,7 +133,8 @@ public class ElsaClient {
     // ------------------------------------------------------------------------------------------ //
 
     public static class Config {
-        private Config() {}
+        private Config() {
+        }
 
         // MANDATORY SETTINGS
         private Map<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
@@ -156,7 +163,7 @@ public class ElsaClient {
             Objects.requireNonNull(modelClass, "Model class must not be NULL.");
             Objects.requireNonNull(daoClass, "DAO class must not be NULL.");
 
-            if(this.registeredModels == null) {
+            if (this.registeredModels == null) {
                 this.registeredModels = new HashMap<>();
             }
 
@@ -167,8 +174,10 @@ public class ElsaClient {
             return this;
         }
 
-        /** If the indices do not exist, then they will be created. If they exist, their mapping will be updated.
-         * If the new mapping is invalid, then this fail on startup. */
+        /**
+         * If the indices do not exist, then they will be created. If they exist, their mapping will be updated.
+         * If the new mapping is invalid, then this fail on startup.
+         */
         public Config createIndexesAndEnsureMappingConsistency(final boolean defaultIsTrue) {
             this.createIndexesAndEnsureMappingConsistency = defaultIsTrue;
             return this;

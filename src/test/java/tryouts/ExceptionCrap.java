@@ -56,13 +56,13 @@ public class ExceptionCrap {
         } catch (final ElsaException e) {
             switch (ElsaException.instanceOf(e)) {
                 case ELASTICSEARCH_EXCEPTION:
-                    System.out.println("ElasticsearchException: "+e.getRestStatus().getStatus() +", "+e.getMessage());
+                    System.out.println("ElasticsearchException: " + e.getHttpStatus() + ", " + e.getMessage());
                     break;
                 case IO_EXCEPTION:
-                    System.out.println("IOException: "+e.getRestStatus().getStatus() +", "+e.getMessage());
+                    System.out.println("IOException: " + e.getHttpStatus() + ", " + e.getMessage());
                     break;
                 default:
-                    System.out.println("UNKNOWN: "+e.getRestStatus().getStatus() +", "+e.getMessage());
+                    System.out.println("UNKNOWN: " + e.getHttpStatus() + ", " + e.getMessage());
             }
         }
 
@@ -99,7 +99,7 @@ public class ExceptionCrap {
     }
 
     private static ExcepEnum asEnum(final Exception e) {
-        if(e instanceof IllegalStateException) {
+        if (e instanceof IllegalStateException) {
             return ExcepEnum.ILLEGALSTATE;
         } else {
             return ExcepEnum.UNKNOWN;

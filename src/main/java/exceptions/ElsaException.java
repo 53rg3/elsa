@@ -1,37 +1,43 @@
 package exceptions;
 
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.rest.RestStatus;
+import responses.ExceptionResponse.Error;
+import statics.ElsaStatics;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
 
 public class ElsaException extends Exception {
 
-    private final RestStatus restStatus;
+    private final int httpStatus;
 
     public ElsaException(final ElasticsearchException e) {
         super(e);
-        this.restStatus = e.status();
+        this.httpStatus = e.status().getStatus();
     }
 
     public ElsaException(final IOException e) {
         super(e);
 
-        if(e.getMessage().contains("Connection refused")) {
-            this.restStatus = RestStatus.SERVICE_UNAVAILABLE;
+        final Matcher matcher = ElsaStatics.jsonExtractorPattern.matcher(e.getMessage());
+        if (matcher.find()) {
+            final JsonInExceptionAsPojo pojo = ElsaStatics.GSON.fromJson(matcher.group(0), JsonInExceptionAsPojo.class);
+            this.httpStatus = pojo.status;
+        } else if (e.getMessage().contains("Connection refused")) {
+            this.httpStatus = 503;
         } else {
-            this.restStatus = RestStatus.NOT_IMPLEMENTED;
+            this.httpStatus = 0; // DUMMY, meaning that this library didn't implement handling it
         }
     }
 
-    public RestStatus getRestStatus() {
-        return this.restStatus;
+    public int getHttpStatus() {
+        return this.httpStatus;
     }
 
     public static ElsaExceptionType instanceOf(final ElsaException e) {
-        if(e instanceof ElsaIOException) {
+        if (e instanceof ElsaIOException) {
             return ElsaExceptionType.IO_EXCEPTION;
-        } else if(e instanceof ElsaElasticsearchException) {
+        } else if (e instanceof ElsaElasticsearchException) {
             return ElsaExceptionType.ELASTICSEARCH_EXCEPTION;
         } else {
             return ElsaExceptionType.UNKNOWN_EXCEPTION;
@@ -42,5 +48,15 @@ public class ElsaException extends Exception {
         ELASTICSEARCH_EXCEPTION,
         IO_EXCEPTION,
         UNKNOWN_EXCEPTION
+    }
+
+    private static class JsonInExceptionAsPojo {
+        private final Integer status;
+        private final Error error;
+
+        public JsonInExceptionAsPojo(final Integer status, final Error error) {
+            this.status = status;
+            this.error = error;
+        }
     }
 }

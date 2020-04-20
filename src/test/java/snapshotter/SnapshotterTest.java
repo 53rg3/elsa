@@ -23,13 +23,13 @@ import dao.CrudDAO;
 import exceptions.ElsaException;
 import helpers.IndexName;
 import helpers.XJson;
-import org.apache.http.HttpHost;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import responses.ConfirmationResponse;
-import responses.ElsaResponse;
 import responses.RepositoryInfoResponse;
 import responses.SnapshotInfoResponse;
 
@@ -41,6 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SnapshotterTest {
 
     // ------------------------------------------------------------------------------------------ //
@@ -85,105 +86,114 @@ public class SnapshotterTest {
         deleteIndexResponse = elsa.admin.deleteIndex(restoredIndexName);
         assertThat(deleteIndexResponse.isAcknowledged(), is(true));
 
-        final ElsaResponse<ConfirmationResponse> deleteRepository = elsa.snapshotter.deleteRepository(repository3);
-        assertThat(deleteRepository.get().hasSucceeded(), is(true));
+        final ConfirmationResponse deleteRepository = elsa.snapshotter.deleteRepository(repository3);
+        assertThat(deleteRepository.hasSucceeded(), is(true));
     }
 
 
     @Test
     public void completeProcedure_pass() throws ElsaException {
 
+        // !!! IF THIS METHOD DOESN'T COMPLETE, THEN YOU PROBABLY WILL HAVE TO DELETE THE SNAPSHOTS MANUALLY SIMPLY USE:
+        // HTTP method DELETE on http://localhost:7777/_snapshot/repository1/snapshot1 and snapshot2
+
+
         // ------------------------------------------------------------------------------------------ //
         // CREATE REPOSITORIES
         // ------------------------------------------------------------------------------------------ //
         // repository1
-        ElsaResponse<ConfirmationResponse> createRepository = elsa.snapshotter.createRepository(
+        ConfirmationResponse createRepository = elsa.snapshotter.createRepository(
                 new CreateRepositoryRequest(c -> c
                         .repositoryName(repository1)
                         .pathToLocation(repositoryLocation_EXISTS)));
-        assertThat(createRepository.get().hasSucceeded(), is(true));
+        assertThat(createRepository.hasSucceeded(), is(true));
 
         // repository2
         createRepository = elsa.snapshotter.createRepository(
                 new CreateRepositoryRequest(c -> c
                         .repositoryName(repository2)
                         .pathToLocation(repositoryLocation_EXISTS)));
-        assertThat(createRepository.get().hasSucceeded(), is(true));
+        assertThat(createRepository.hasSucceeded(), is(true));
         TestHelpers.sleep(500);
 
         // non-existing repository
-        createRepository = elsa.snapshotter.createRepository(
-                new CreateRepositoryRequest(c -> c
-                        .repositoryName(repository2)
-                        .pathToLocation(repositoryLocation_DOES_NOT_EXIST)));
-        assertThat(createRepository.hasException(), is(true));
-        assertThat(createRepository.getExceptionResponse().getStatus(), is(500));
+        try {
+            elsa.snapshotter.createRepository(
+                    new CreateRepositoryRequest(c -> c
+                            .repositoryName(repository2)
+                            .pathToLocation(repositoryLocation_DOES_NOT_EXIST)));
+        } catch (final ElsaException e) {
+            assertThat(e.getHttpStatus(), is(500));
+        }
 
 
         // Get repository1
-        final ElsaResponse<RepositoryInfoResponse> getRepositoryByName = elsa.snapshotter.getRepositoryByName(repository1);
-        assertThat(getRepositoryByName.get().getName(), is(repository1));
-        assertThat(getRepositoryByName.get().getType(), is("fs"));
-        assertThat(getRepositoryByName.get().getSettings().getLocation(), is(repositoryLocation_EXISTS));
-        assertThat(getRepositoryByName.get().getSettings().getCompress(), is(true));
+        final RepositoryInfoResponse getRepositoryByName = elsa.snapshotter.getRepositoryByName(repository1);
+        assertThat(getRepositoryByName.getName(), is(repository1));
+        assertThat(getRepositoryByName.getType(), is("fs"));
+        assertThat(getRepositoryByName.getSettings().getLocation(), is(repositoryLocation_EXISTS));
+        assertThat(getRepositoryByName.getSettings().getCompress(), is(true));
 
         // Get all repositories
-        final ElsaResponse<List<RepositoryInfoResponse>> getRepositories = elsa.snapshotter.getRepositories();
-        assertThat(getRepositories.get().size(), is(3));
+        final List<RepositoryInfoResponse> getRepositories = elsa.snapshotter.getRepositories();
+        assertThat(getRepositories.size(), is(3));
 
 
         // ------------------------------------------------------------------------------------------ //
         // CREATE SNAPSHOTS
         // ------------------------------------------------------------------------------------------ //
         // snapshot1
-        ElsaResponse<ConfirmationResponse> createSnapshot = elsa.snapshotter.createSnapshot(
+        ConfirmationResponse createSnapshot = elsa.snapshotter.createSnapshot(
                 new CreateSnapshotRequest(c -> c
                         .indices(IndexName.of(FakerModel.class))
                         .repositoryName(repository1)
                         .snapshotName(snapshot1)
                         .partial(true)));
         TestHelpers.sleep(1000);
-        assertThat(createSnapshot.get().hasSucceeded(), is(true));
+        assertThat(createSnapshot.hasSucceeded(), is(true));
 
         // snapshot2
-        createSnapshot  = elsa.snapshotter.createSnapshot(
+        createSnapshot = elsa.snapshotter.createSnapshot(
                 new CreateSnapshotRequest(c -> c
                         .indices(IndexName.of(FakerModel.class))
                         .repositoryName(repository1)
                         .snapshotName(snapshot2)
                         .partial(true)));
-        assertThat(createSnapshot.get().hasSucceeded(), is(true));
+        assertThat(createSnapshot.hasSucceeded(), is(true));
 
         // snapshot in non-existing repository
-        createSnapshot  = elsa.snapshotter.createSnapshot(
-                new CreateSnapshotRequest(c -> c
-                        .indices(IndexName.of(FakerModel.class))
-                        .repositoryName(repository_DOES_NOT_EXIST)
-                        .snapshotName(snapshot2)
-                        .partial(true)));
-        assertThat(createSnapshot.hasException(), is(true));
-        assertThat(createSnapshot.getExceptionResponse().getStatus(), is(404));
+        try {
+            elsa.snapshotter.createSnapshot(
+                    new CreateSnapshotRequest(c -> c
+                            .indices(IndexName.of(FakerModel.class))
+                            .repositoryName(repository_DOES_NOT_EXIST)
+                            .snapshotName(snapshot2)
+                            .partial(true)));
+        } catch (final ElsaException e) {
+            assertThat(e.getHttpStatus(), is(404));
+        }
 
 
-        ElsaResponse<SnapshotInfoResponse> getSnapshotByName = elsa.snapshotter.getSnapshotByName(repository1, snapshot1);
-        assertThat(getSnapshotByName.get().getName(), is(snapshot1));
-        assertThat(getSnapshotByName.get().getEndTime(), notNullValue());
-        assertThat(getSnapshotByName.get().getShards().getFailed(), is(0));
-        assertThat(getSnapshotByName.get().getEndTimeInMillis(), notNullValue());
+        final SnapshotInfoResponse getSnapshotByName = elsa.snapshotter.getSnapshotByName(repository1, snapshot1);
+        assertThat(getSnapshotByName.getName(), is(snapshot1));
+        assertThat(getSnapshotByName.getEndTime(), notNullValue());
+        assertThat(getSnapshotByName.getShards().getFailed(), is(0));
+        assertThat(getSnapshotByName.getEndTimeInMillis(), notNullValue());
 
-        final ElsaResponse<List<SnapshotInfoResponse>> getSnapshots = elsa.snapshotter.getSnapshots(repository1);
-        assertThat(getSnapshots.get().size(), is(2));
+        final List<SnapshotInfoResponse> getSnapshots = elsa.snapshotter.getSnapshots(repository1);
+        assertThat(getSnapshots.size(), is(2));
 
-        getSnapshotByName = elsa.snapshotter.getSnapshotByName(repository1, snapshot1+"does_not_exist");
-        assertThat(getSnapshotByName.hasException(), is(true));
-        assertThat(getSnapshotByName.getExceptionResponse().getStatus(), is(404));
-
+        try {
+            elsa.snapshotter.getSnapshotByName(repository1, snapshot1 + "does_not_exist");
+        } catch (final ElsaException e) {
+            assertThat(e.getHttpStatus(), is(404));
+        }
 
         // ------------------------------------------------------------------------------------------ //
         // RESTORE
         // ------------------------------------------------------------------------------------------ //
         // Restore snapshot
-        final ElsaResponse<ConfirmationResponse> restoreSnapshot = elsa.snapshotter.restoreSnapshot(
+        final ConfirmationResponse restoreSnapshot = elsa.snapshotter.restoreSnapshot(
                 new RestoreSnapshotRequest(c -> c
                         .indices(FakerModel.getIndexName())
                         .repositoryName(repository1)
@@ -195,7 +205,7 @@ public class SnapshotterTest {
                         .includeGlobalState(false)
                         .renamePattern(FakerModel.getIndexName())
                         .renameReplacement(restoredIndexName)));
-        assertThat(restoreSnapshot.get().hasSucceeded(), is(true));
+        assertThat(restoreSnapshot.hasSucceeded(), is(true));
         TestHelpers.sleep(1000);
         assertTrue(elsa.admin.indexExists(restoredIndexName));
 
@@ -204,24 +214,31 @@ public class SnapshotterTest {
         // DELETE EVERYTHING
         // ------------------------------------------------------------------------------------------ //
         // Delete snapshots
-        ElsaResponse<ConfirmationResponse> deleteSnapshot = elsa.snapshotter.deleteSnapshot(repository1, snapshot1);
-        assertThat(deleteSnapshot.get().hasSucceeded(), is(true));
+        ConfirmationResponse deleteSnapshot = elsa.snapshotter.deleteSnapshot(repository1, snapshot1);
+        assertThat(deleteSnapshot.hasSucceeded(), is(true));
         deleteSnapshot = elsa.snapshotter.deleteSnapshot(repository1, snapshot2);
-        assertThat(deleteSnapshot.get().hasSucceeded(), is(true));
+        assertThat(deleteSnapshot.hasSucceeded(), is(true));
+
         // Non existing snapshot
-        deleteSnapshot = elsa.snapshotter.deleteSnapshot(repository1, snapshot2+"non_existing");
-        assertThat(deleteSnapshot.hasException(), is(true));
-        assertThat(deleteSnapshot.getExceptionResponse().getStatus(), is(404));
+        try {
+            elsa.snapshotter.deleteSnapshot(repository1, snapshot2 + "non_existing");
+        } catch (final ElsaException e) {
+            assertThat(e.getHttpStatus(), is(404));
+        }
+
 
         // Delete repositories
-        ElsaResponse<ConfirmationResponse> deleteRepository = elsa.snapshotter.deleteRepository(repository1);
-        assertThat(deleteRepository.get().hasSucceeded(), is(true));
+        ConfirmationResponse deleteRepository = elsa.snapshotter.deleteRepository(repository1);
+        assertThat(deleteRepository.hasSucceeded(), is(true));
         deleteRepository = elsa.snapshotter.deleteRepository(repository2);
-        assertThat(deleteRepository.get().hasSucceeded(), is(true));
+        assertThat(deleteRepository.hasSucceeded(), is(true));
+
         // Non-existing repository
-        deleteRepository = elsa.snapshotter.deleteRepository(repository2+"non_existing");
-        assertThat(deleteRepository.hasException(), is(true));
-        assertThat(deleteRepository.getExceptionResponse().getStatus(), is(404));
+        try {
+            elsa.snapshotter.deleteRepository(repository2 + "non_existing");
+        } catch (final ElsaException e) {
+            assertThat(e.getHttpStatus(), is(404));
+        }
 
     }
 
