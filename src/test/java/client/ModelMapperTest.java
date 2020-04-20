@@ -55,7 +55,7 @@ public class ModelMapperTest {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws ElsaException {
         elsa.admin.deleteIndex(DateModel.class);
     }
     

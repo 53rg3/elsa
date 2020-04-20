@@ -63,7 +63,7 @@ public class AsyncCrudDAOTest {
     }
 
     @AfterClass
-    public static void deleteIndex() {
+    public static void deleteIndex() throws ElsaException {
         elsa.admin.deleteIndex(newIndexName);
     }
 

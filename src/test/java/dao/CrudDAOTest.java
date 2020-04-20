@@ -69,7 +69,7 @@ public class CrudDAOTest {
     }
 
     @AfterClass
-    public static void deleteIndex() {
+    public static void deleteIndex() throws ElsaException {
         elsa.admin.deleteIndex(TestModel.class);
     }
 

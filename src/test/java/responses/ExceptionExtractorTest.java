@@ -21,7 +21,6 @@ import client.ElsaClient;
 import dao.CrudDAO;
 import exceptions.ElsaException;
 import org.apache.http.HttpHost;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.junit.Test;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
@@ -29,7 +28,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class ExceptionExtractorTest {
-
+    // todo delete class with ExceptionExtractor
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(FakerModel.class, CrudDAO.class)
@@ -50,11 +49,12 @@ public class ExceptionExtractorTest {
 
     @Test
     public void extract_notFoundException_pass() {
-        final ElsaResponse<AcknowledgedResponse> response = elsa.admin.deleteIndex("does_not_exist");
-
-        assertThat(response.isPresent(), is(false));
-        assertThat(response.hasException(), is(true));
-        assertThat(response.getExceptionResponse().getStatus(), is(404));
+        // todo no idea if that should throw or not
+        try {
+            elsa.admin.deleteIndex("does_not_exist");
+        } catch (final ElsaException e) {
+            assertThat(e.getRestStatus().getStatus(), is(404));
+        }
     }
 
     @Test
@@ -65,10 +65,11 @@ public class ExceptionExtractorTest {
                 .registerModel(FakerModel.class, CrudDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false));
 
-        final ElsaResponse<AcknowledgedResponse> response = elsa.admin.deleteIndex("cluster_is_offline");
-        assertThat(response.isPresent(), is(false));
-        assertThat(response.hasException(), is(true));
-        assertThat(response.getExceptionResponse().getStatus(), is(503));
+        try {
+            elsa.admin.deleteIndex("cluster_is_offline");
+        } catch (final ElsaException e) {
+            assertThat(e.getRestStatus().getStatus(), is(503)); // todo is code correct?
+        }
     }
 
 }

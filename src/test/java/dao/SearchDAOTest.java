@@ -68,7 +68,7 @@ public class SearchDAOTest {
     }
 
     @AfterClass
-    public static void teardown() {
+    public static void teardown() throws ElsaException {
         elsa.admin.deleteIndex(FakerModel.class);
     }
 

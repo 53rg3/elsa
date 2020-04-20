@@ -78,12 +78,12 @@ public class SnapshotterTest {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws ElsaException {
 //        // Delete indices
-        ElsaResponse<AcknowledgedResponse> deleteIndexResponse = elsa.admin.deleteIndex(FakerModel.getIndexName());
-        assertThat(deleteIndexResponse.get().isAcknowledged(), is(true));
+        AcknowledgedResponse deleteIndexResponse = elsa.admin.deleteIndex(FakerModel.getIndexName());
+        assertThat(deleteIndexResponse.isAcknowledged(), is(true));
         deleteIndexResponse = elsa.admin.deleteIndex(restoredIndexName);
-        assertThat(deleteIndexResponse.get().isAcknowledged(), is(true));
+        assertThat(deleteIndexResponse.isAcknowledged(), is(true));
 
         final ElsaResponse<ConfirmationResponse> deleteRepository = elsa.snapshotter.deleteRepository(repository3);
         assertThat(deleteRepository.get().hasSucceeded(), is(true));

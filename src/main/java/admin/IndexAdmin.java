@@ -132,23 +132,25 @@ public class IndexAdmin {
     }
 
 
-    public ElsaResponse<AcknowledgedResponse> deleteIndex(final String indexName, final RequestOptions options) {
+    public AcknowledgedResponse deleteIndex(final String indexName, final RequestOptions options) throws ElsaException {
         try {
-            return ElsaResponse.of(this.elsa.client.indices().delete(new DeleteIndexRequest(indexName), options));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.elsa.client.indices().delete(new DeleteIndexRequest(indexName), options);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public ElsaResponse<AcknowledgedResponse> deleteIndex(final String indexName) {
+    public AcknowledgedResponse deleteIndex(final String indexName) throws ElsaException {
         return this.deleteIndex(indexName, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<AcknowledgedResponse> deleteIndex(final Class<? extends ElsaModel> modelClass, final RequestOptions options) {
+    public AcknowledgedResponse deleteIndex(final Class<? extends ElsaModel> modelClass, final RequestOptions options) throws ElsaException {
         return this.deleteIndex(IndexName.of(modelClass), options);
     }
 
-    public ElsaResponse<AcknowledgedResponse> deleteIndex(final Class<? extends ElsaModel> modelClass) {
+    public AcknowledgedResponse deleteIndex(final Class<? extends ElsaModel> modelClass) throws ElsaException {
         return this.deleteIndex(IndexName.of(modelClass));
     }
 }

@@ -20,6 +20,7 @@ import assets.FakerModel;
 import assets.TestBulkResponseListener;
 import client.ElsaClient;
 import dao.CrudDAO;
+import exceptions.ElsaException;
 import org.elasticsearch.common.unit.TimeValue;
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public class BulkProcessorTest {
     private final CrudDAO<FakerModel> crudDAO = this.elsa.getDAO(FakerModel.class);
 
     @Test
-    public void bulkProcessor_10x66Requests_noErrorsCountsAreCorrect() {
+    public void bulkProcessor_10x66Requests_noErrorsCountsAreCorrect() throws ElsaException {
 
         for (int i = 0; i < this.bulkSize *10; i++) {
             this.elsa.bulkProcessor.add(this.crudDAO.buildIndexRequest(FakerModel.createModelWithRandomData()));
