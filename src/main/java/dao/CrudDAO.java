@@ -108,11 +108,11 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
      * This retrieves the document and maps it onto your model.
      * @return sub-type of ElsaModel or empty ElsaResponse
      */
-    public ElsaResponse<T> get(final String id) {
+    public T get(final String id) throws ElsaException {
         return this.get(id, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<T> get(final String id, final RequestOptions options) {
+    public T get(final String id, final RequestOptions options) throws ElsaException {
         try {
             final GetResponse response = this.getElsa().client.get(
                     new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id),
@@ -123,9 +123,11 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
                 model = this.getJsonMapper().fromJson(new String(response.getSourceAsBytes(), ElsaStatics.UTF_8)); // todo delete & replace
                 model.setId(response.getId());
             }
-            return ElsaResponse.ofNullable(model);
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return model; // todo throw or return null?
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 

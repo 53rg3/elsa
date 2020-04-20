@@ -25,7 +25,6 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import responses.ElsaResponse;
 import statics.ElsaStatics;
 
 import java.text.SimpleDateFormat;
@@ -68,8 +67,8 @@ public class ModelMapperTest {
 
         final IndexResponse response = dao.index(model);
         TestHelpers.sleep(100);
-        final ElsaResponse<DateModel> model2 = dao.get(response.getId());
+        final DateModel model2 = dao.get(response.getId());
 
-        assertThat(ElsaStatics.UTC_FORMAT.format(model2.get().getDate()), is(expected));
+        assertThat(ElsaStatics.UTC_FORMAT.format(model2.getDate()), is(expected));
     }
 }

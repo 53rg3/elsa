@@ -26,10 +26,10 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import responses.ElsaResponse;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class AsyncCrudDAOTest {
@@ -68,7 +68,7 @@ public class AsyncCrudDAOTest {
     }
 
     @Test
-    public void asyncChain_indexGetSearchUpdateDelete_pass() {
+    public void asyncChain_indexGetSearchUpdateDelete_pass() throws ElsaException {
 
         // Index
         crudDAO.indexAsync(model1, RequestOptions.DEFAULT, new AsyncIndexListener(this.indexCheck1, elsa));
@@ -96,16 +96,16 @@ public class AsyncCrudDAOTest {
         model1.setName("Jane");
         crudDAO.updateAsync(model1, RequestOptions.DEFAULT, new AsyncUpdateListener(this.updateCheck, elsa));
         this.sleep(100);
-        final ElsaResponse<FakerModelAsync> updatedResult = crudDAO.get("1");
+        final FakerModelAsync updatedResult = crudDAO.get("1");
         assertThat(this.updateCheck.wasSuccessful(), is(true));
-        assertThat(updatedResult.get().getName(), is("Jane"));
+        assertThat(updatedResult.getName(), is("Jane"));
 
         // Delete
-        crudDAO.deleteAsync(updatedResult.get(), RequestOptions.DEFAULT, new AsyncDeleteListener(this.deleteCheck, elsa));
+        crudDAO.deleteAsync(updatedResult, RequestOptions.DEFAULT, new AsyncDeleteListener(this.deleteCheck, elsa));
         this.sleep(100);
         assertThat(this.deleteCheck.wasSuccessful(), is(true));
-        final ElsaResponse<FakerModelAsync> deletedResult = crudDAO.get("1");
-        assertThat(deletedResult.isPresent(), is(false));
+        final FakerModelAsync deletedResult = crudDAO.get("1");
+        assertThat(deletedResult, nullValue());
     }
 
     private void sleep(final int ms) {

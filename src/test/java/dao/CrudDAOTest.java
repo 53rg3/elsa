@@ -105,16 +105,16 @@ public class CrudDAOTest {
         final IndexResponse indexResponse = this.testDAO.index(testModelWithoutId);
         assertThat(indexResponse.getResult().name(), is("CREATED"));
 
-        final ElsaResponse<TestModel> testModel = this.testDAO.get(indexResponse.getId());
-        assertThat(testModel.get().getTransientField(), nullValue());
+        final TestModel testModel = this.testDAO.get(indexResponse.getId());
+        assertThat(testModel.getTransientField(), nullValue());
     }
 
     @Test
     public void indexAndGet_customId_pass() throws ElsaException {
         assertThat(this.indexTestModelWithCustomId().getResult().name(), is("CREATED"));
 
-        final ElsaResponse<TestModel> newDoc = this.testDAO.get(id);
-        assertThat(newDoc.get().getId(), is(id));
+        final TestModel newDoc = this.testDAO.get(id);
+        assertThat(newDoc.getId(), is(id));
     }
 
     @Test
@@ -124,27 +124,27 @@ public class CrudDAOTest {
         final String id = response1.getId();
 
         // Assert that document was inserted
-        ElsaResponse<TestModel> model1 = this.testDAO.get(response1.getId());
+        TestModel model1 = this.testDAO.get(response1.getId());
         assertThat(model1, notNullValue());
 
         // Index the model again and assert that ID hasn't been indexed in _source field, i.e. search returns null
         // (Indexing with an existing ID overrides the document.)
-        this.testDAO.index(model1.get());
+        this.testDAO.index(model1);
         TestHelpers.sleep(500);
         final ElsaResponse<TestModel> model2 = this.testDAO.searchAndMapFirstHit(
                 new SearchRequest()
-                        .indices(model1.get().getIndexConfig().getIndexName())
+                        .indices(model1.getIndexConfig().getIndexName())
                         .source(searchSource()
                                 .query(matchQuery("id", id))));
         assertThat(model2.isPresent(), is(false));
 
         // Update the model and assert that ID hasn't been indexed in _source field, i.e. search returns null
         model1 = this.testDAO.get(response1.getId());
-        this.testDAO.update(model1.get());
+        this.testDAO.update(model1);
         TestHelpers.sleep(500);
         final ElsaResponse<TestModel> model3 = this.testDAO.searchAndMapFirstHit(
                 new SearchRequest()
-                        .indices(model1.get().getIndexConfig().getIndexName())
+                        .indices(model1.getIndexConfig().getIndexName())
                         .source(searchSource()
                                 .query(matchQuery("id", id))));
         assertThat(model3.isPresent(), is(false));
@@ -165,18 +165,17 @@ public class CrudDAOTest {
     }
 
     @Test
-    public void get_nonExistingDocument_nullResult() {
-        final ElsaResponse<TestModel> newDoc = this.testDAO.get("nonExistingId");
-        assertThat(newDoc.hasResult(), is(false));
-        assertThat(newDoc.isPresent(), is(false));
+    public void get_nonExistingDocument_nullResult() throws ElsaException {
+        final TestModel newDoc = this.testDAO.get("nonExistingId");
+        assertThat(newDoc, nullValue()); // todo maybe should throw instead of NULL?!
     }
 
     @Test
     public void delete_newDocument_pass() throws ElsaException {
         assertThat(this.indexTestModelWithCustomId().getResult().name(), is("CREATED"));
-        final ElsaResponse<TestModel> newDoc = this.testDAO.get(id);
+        final TestModel newDoc = this.testDAO.get(id);
         assertThat(newDoc, notNullValue());
-        assertThat(newDoc.get().getId(), is(id));
+        assertThat(newDoc.getId(), is(id));
 
         final ElsaResponse<DeleteResponse> deleteResponse = this.testDAO.delete(testModelWithId);
         assertThat(deleteResponse.get().getResult().name(), is("DELETED"));
@@ -186,15 +185,15 @@ public class CrudDAOTest {
     public void update_singleValueInDoc_pass() throws ElsaException {
         this.indexTestModelWithCustomId();
 
-        ElsaResponse<TestModel> newDoc = this.testDAO.get(id);
+        TestModel newDoc = this.testDAO.get(id);
         assertThat(newDoc, notNullValue());
 
-        newDoc.get().setStringField("updatedValue");
-        final ElsaResponse<UpdateResponse> updateResponse = this.testDAO.update(newDoc.get());
+        newDoc.setStringField("updatedValue");
+        final ElsaResponse<UpdateResponse> updateResponse = this.testDAO.update(newDoc);
         assertThat(updateResponse.get().getResult().name(), is("UPDATED"));
 
         newDoc = this.testDAO.get(id);
-        assertThat(newDoc.get().getStringField(), is("updatedValue"));
+        assertThat(newDoc.getStringField(), is("updatedValue"));
     }
 
     @Test
@@ -206,8 +205,8 @@ public class CrudDAOTest {
         testModel.setStringField("partial update");
 
         this.testDAO.update(testModel);
-        final ElsaResponse<TestModel> testModel1 = this.testDAO.get(id);
-        assertThat(testModel1.get().getStringField(), is("partial update"));
+        final TestModel testModel1 = this.testDAO.get(id);
+        assertThat(testModel1.getStringField(), is("partial update"));
     }
 
     @Test
