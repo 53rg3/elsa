@@ -36,7 +36,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import responses.ElsaResponse;
 import statics.ElsaStatics;
 
 import java.io.IOException;
@@ -199,16 +198,18 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     // ------------------------------------------------------------------------------------------ //
 
     /** Updating a non-existing documents causes an exception. */
-    public ElsaResponse<UpdateResponse> update(final T model) {
+    public UpdateResponse update(final T model) throws ElsaException {
         return this.update(model, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<UpdateResponse> update(final T model, final RequestOptions requestOptions) {
+    public UpdateResponse update(final T model, final RequestOptions requestOptions) throws ElsaException {
         final UpdateRequest request = this.buildUpdateRequest(model);
         try {
-            return ElsaResponse.of(this.getElsa().client.update(request, requestOptions));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.getElsa().client.update(request, requestOptions);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 

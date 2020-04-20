@@ -189,8 +189,8 @@ public class CrudDAOTest {
         assertThat(newDoc, notNullValue());
 
         newDoc.setStringField("updatedValue");
-        final ElsaResponse<UpdateResponse> updateResponse = this.testDAO.update(newDoc);
-        assertThat(updateResponse.get().getResult().name(), is("UPDATED"));
+        final UpdateResponse updateResponse = this.testDAO.update(newDoc);
+        assertThat(updateResponse.getResult().name(), is("UPDATED"));
 
         newDoc = this.testDAO.get(id);
         assertThat(newDoc.getStringField(), is("updatedValue"));
