@@ -65,7 +65,7 @@ public class SampleTransientEntity {
 		}
 
 		public void setSomeField(NestedEntity someField) {
-			this.someField = someField;
+			NestedEntity.someField = someField;
 		}
 
 		public Boolean getSomething() {

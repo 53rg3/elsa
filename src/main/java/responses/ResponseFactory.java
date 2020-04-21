@@ -21,11 +21,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import helpers.ResponseParser;
 import org.elasticsearch.client.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import statics.ElsaStatics;
+import statics.Messages.ExceptionMsg;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import static helpers.KeysToValuesConverter.convertObjectOfObjects;
@@ -34,37 +37,53 @@ import static helpers.XJsonType.mapStringObjectType;
 import static statics.ElsaStatics.GSON;
 
 public class ResponseFactory {
-    private ResponseFactory() {}
+    private ResponseFactory() {
+    }
 
-    private static final Type repositoryInfoResponseType = new TypeToken<List<RepositoryInfoResponse>>(){}.getType();
-    private static final Type snapshotInfoResponseType = new TypeToken<List<SnapshotInfoResponse>>(){}.getType();
+    private static final Type repositoryInfoResponseType = new TypeToken<List<RepositoryInfoResponse>>() {
+    }.getType();
+    private static final Type snapshotInfoResponseType = new TypeToken<List<SnapshotInfoResponse>>() {
+    }.getType();
+    private static final Logger logger = LoggerFactory.getLogger(ResponseFactory.class);
 
     public static ReindexResponse createReindexResponse(final Response response) {
-        return ElsaStatics.GSON.fromJson(ResponseParser.convertToReader(response), ReindexResponse.class);
+        try (final InputStreamReader reader = ResponseParser.convertToReader(response)) {
+            return ElsaStatics.GSON.fromJson(reader, ReindexResponse.class);
+        } catch (final IOException e) {
+            logger.error(ExceptionMsg.FAILED_TO_GET_INPUTSTREAMREADER_FROM_RESPONSE, e);
+            throw new IllegalStateException(ExceptionMsg.FAILED_TO_GET_INPUTSTREAMREADER_FROM_RESPONSE, e);
+        }
     }
 
     public static ConfirmationResponse createConfirmationResponse(final Response response) {
-        return ElsaStatics.GSON.fromJson(ResponseParser.convertToReader(response), ConfirmationResponse.class);
+        try (final InputStreamReader reader = ResponseParser.convertToReader(response)) {
+            return ElsaStatics.GSON.fromJson(reader, ConfirmationResponse.class);
+        } catch (final IOException e) {
+            logger.error(ExceptionMsg.FAILED_TO_GET_INPUTSTREAMREADER_FROM_RESPONSE, e);
+            throw new IllegalStateException(ExceptionMsg.FAILED_TO_GET_INPUTSTREAMREADER_FROM_RESPONSE, e);
+        }
     }
 
     public static List<SnapshotInfoResponse> createSnapshotInfoListResponse(final Response response) {
-        try {
-            JsonElement jsonElement = ElsaStatics.GSON.fromJson(ResponseParser.convertToReader(response), JsonObject.class)
+        try (final InputStreamReader reader = ResponseParser.convertToReader(response)) {
+            final JsonElement jsonElement = ElsaStatics.GSON.fromJson(reader, JsonObject.class)
                     .getAsJsonArray("snapshots");
             return ElsaStatics.GSON.fromJson(jsonElement, snapshotInfoResponseType);
-        } catch(Exception e) {
-            throw new IllegalStateException("Couldn't extract snapshot from JSON. That's a bug.");
+        } catch (final IOException e) {
+            logger.error(ExceptionMsg.COULD_NOT_EXTRACT_SNAPSHOT_FROM_JSON, e);
+            throw new IllegalStateException(ExceptionMsg.COULD_NOT_EXTRACT_SNAPSHOT_FROM_JSON, e);
         }
     }
 
     public static SnapshotInfoResponse createSnapshotInfoResponse(final Response response) {
-        try {
-            JsonElement jsonElement = ElsaStatics.GSON.fromJson(ResponseParser.convertToReader(response), JsonObject.class)
+        try (final InputStreamReader reader = ResponseParser.convertToReader(response)) {
+            final JsonElement jsonElement = ElsaStatics.GSON.fromJson(reader, JsonObject.class)
                     .getAsJsonArray("snapshots")
                     .get(0);
             return ElsaStatics.GSON.fromJson(jsonElement, SnapshotInfoResponse.class);
-        } catch(Exception e) {
-            throw new IllegalStateException("Couldn't extract snapshot from JSON. That's a bug.");
+        } catch (final IOException e) {
+            logger.error(ExceptionMsg.COULD_NOT_EXTRACT_SNAPSHOT_FROM_JSON, e);
+            throw new IllegalStateException(ExceptionMsg.COULD_NOT_EXTRACT_SNAPSHOT_FROM_JSON, e);
         }
     }
 
@@ -78,7 +97,6 @@ public class ResponseFactory {
         final String json = ResponseParser.convertToString(response);
         final String convertedJson = convertObjectOfObjects(GSON.fromJson(json, mapStringObjectType), "name");
         return GSON.fromJson(convertedJson, repositoryInfoResponseType);
-
     }
 
 }

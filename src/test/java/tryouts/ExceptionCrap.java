@@ -95,7 +95,7 @@ public class ExceptionCrap {
 
     enum ExcepEnum {
         ILLEGALSTATE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static ExcepEnum asEnum(final Exception e) {

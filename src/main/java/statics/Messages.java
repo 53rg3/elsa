@@ -29,6 +29,8 @@ public class Messages {
         public static final String CLASS_INSTANTIATION_FAILED = "Couldn't create instance from class.";
         public static final String XCONTENTBUILDER_FAILED_TO_CREATE_JSON = "Couldn't create JSON from XContentBuilder.";
         public static final String FAILED_TO_GET_INPUTSTREAM_FROM_RESPONSE = "Failed to get InputStream from Response.";
+        public static final String FAILED_TO_GET_INPUTSTREAMREADER_FROM_RESPONSE = "Failed create InputStreamReader from Response.";
+        public static final String COULD_NOT_EXTRACT_SNAPSHOT_FROM_JSON = "Couldn't extract snapshot from JSON.";
         public static final String KEY_ALREADY_EXISTS_CAUSED_BY = "Key already exists, caused by: ";
     }
 

@@ -29,23 +29,25 @@ public class ResponseParser {
 
     private static final Logger logger = LoggerFactory.getLogger(ResponseParser.class);
 
-    /** The return can be passed to GSON's fromJson */
+    /**
+     * The return can be passed to GSON's fromJson
+     */
     public static InputStreamReader convertToReader(final Response response) {
         try {
             return new InputStreamReader(response.getEntity().getContent());
         } catch (final IOException e) {
             logger.error(ExceptionMsg.FAILED_TO_GET_INPUTSTREAM_FROM_RESPONSE, e);
+            throw new IllegalStateException(ExceptionMsg.FAILED_TO_GET_INPUTSTREAM_FROM_RESPONSE, e);
         }
-        throw new IllegalStateException(ExceptionMsg.FAILED_TO_GET_INPUTSTREAM_FROM_RESPONSE);
     }
 
     public static String convertToString(final Response response) {
-        try {
-            return CharStreams.toString(convertToReader(response));
-        } catch (IOException e) {
+        try (final InputStreamReader reader = convertToReader(response)) {
+            return CharStreams.toString(reader);
+        } catch (final IOException e) {
             logger.error(ExceptionMsg.FAILED_TO_GET_INPUTSTREAM_FROM_RESPONSE, e);
+            throw new IllegalStateException(ExceptionMsg.FAILED_TO_GET_INPUTSTREAM_FROM_RESPONSE, e);
         }
-        throw new IllegalStateException(ExceptionMsg.FAILED_TO_GET_INPUTSTREAM_FROM_RESPONSE);
     }
 
 }
