@@ -24,7 +24,6 @@ import client.ElsaClient;
 import exceptions.ElsaException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import responses.ConfirmationResponse;
@@ -94,12 +93,12 @@ public class IndexAdminTest {
     }
 
     @Test
-    @Ignore("fix after ElsaResponse for deleteIndex")
     public void deleteIndexViaClass_indexDoesNotExist_throw() {
-        // todo fix test
-//        final ExceptionHandlerWithExtractor handler = new ExceptionHandlerWithExtractor();
-//        this.elsa.admin.deleteIndex(TestModel.class, handler);
-//        assertTrue(handler.getException() instanceof ElasticsearchStatusException);
+        try {
+            this.elsa.admin.deleteIndex(TestModel.class);
+        } catch (final ElsaException e) {
+            assertThat(e.getHttpStatus(), is(404));
+        }
     }
 
     @Test
@@ -112,13 +111,13 @@ public class IndexAdminTest {
     }
 
     @Test
-    @Ignore("fix after ElsaResponse for deleteIndex")
     public void deleteIndexViaString_indexDoesNotExist_throw() {
-        // todo fix test
-//        final ExceptionHandlerWithExtractor handler = new ExceptionHandlerWithExtractor();
-//        final TestModel testModel = new TestModel();
-//        this.elsa.admin.deleteIndex(testModel.getIndexConfig().getIndexName(), handler);
-//        assertTrue(handler.getException() instanceof ElasticsearchStatusException);
+        try {
+            final TestModel testModel = new TestModel();
+            this.elsa.admin.deleteIndex(testModel.getIndexConfig().getIndexName());
+        } catch (final ElsaException e) {
+            assertThat(e.getHttpStatus(), is(404));
+        }
     }
 
     @Test
