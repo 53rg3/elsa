@@ -27,6 +27,7 @@ import model.ElsaModel;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkProcessor.Listener;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import reindexer.Reindexer;
 import scroller.Scroller;
@@ -65,6 +66,7 @@ public class ElsaClient {
         static Config loadDefaults() {
             final Config config = new Config();
             config.bulkResponseListener = new DefaultBulkResponseListener();
+            config.requestOptionsForBulkProcessor = RequestOptions.DEFAULT;
             config.createIndexesAndEnsureMappingConsistency = true;
             config.modelMapper = new ModelMapper();
             return config;
@@ -109,6 +111,7 @@ public class ElsaClient {
         this.bulkProcessor = BulkProcessorCreator.createBulkProcessor(
                 this.client,
                 config.bulkResponseListener,
+                config.requestOptionsForBulkProcessor,
                 config.bulkProcessorConfigurator);
         this.scroller = new Scroller(this);
         this.reindexer = new Reindexer(this);
@@ -148,6 +151,7 @@ public class ElsaClient {
         // OPTIONAL SETTINGS
         private RestClientConfig restClientConfig;
         private Listener bulkResponseListener;
+        private RequestOptions requestOptionsForBulkProcessor;
         private boolean createIndexesAndEnsureMappingConsistency;
         private BulkProcessorConfigurator bulkProcessorConfigurator;
         private RepositoryBucket.Config repositoryBucketConfig;
@@ -198,8 +202,10 @@ public class ElsaClient {
          * <a href="https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html">here</a>
          * for more info.
          */ // todo why return value never used?
-        public Config setBulkResponseListener(final Listener defaultIsDefaultBulkResponseListener) {
+        public Config setBulkResponseListener(final Listener defaultIsDefaultBulkResponseListener,
+                                              final RequestOptions defaultIsRequestOptionsDefault) {
             this.bulkResponseListener = defaultIsDefaultBulkResponseListener;
+            this.requestOptionsForBulkProcessor = defaultIsRequestOptionsDefault;
             return this;
         }
 
@@ -225,7 +231,9 @@ public class ElsaClient {
 
     }
 
-    /** Type is set in this.createDaoMap() */
+    /**
+     * Type is set in this.createDaoMap()
+     */
     @SuppressWarnings("unchecked")
     public <T extends ElsaDAO> T getDAO(final Class<? extends ElsaModel> modelClass) {
         return Objects.requireNonNull((T) this.daoMap.get(modelClass), "Requested DAO for model class does not exist. " +

@@ -25,9 +25,11 @@ public class BulkProcessorCreator {
 
     protected static BulkProcessor createBulkProcessor(final RestHighLevelClient client,
                                                        final Listener bulkResponseListener,
+                                                       final RequestOptions requestOptions,
                                                        final BulkProcessorConfigurator bulkProcessorConfigurator) {
 
-        final BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(client::bulkAsync, bulkResponseListener);
+        final BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(
+                (request, bulkActionListener) -> client.bulkAsync(request, requestOptions, bulkActionListener), bulkResponseListener);
         if (bulkProcessorConfigurator != null) {
             return bulkProcessorConfigurator.configure(bulkProcessorBuilder).build();
         }
