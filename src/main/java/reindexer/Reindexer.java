@@ -18,17 +18,21 @@ package reindexer;
 
 import client.ElsaClient;
 import endpoints.Endpoint;
+import exceptions.ElsaElasticsearchException;
 import exceptions.ElsaException;
+import exceptions.ElsaIOException;
 import helpers.RequestBody;
 import model.ElsaModel;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import reindexer.ReindexOptions.ReindexMode;
-import responses.ElsaResponse;
 import responses.ReindexResponse;
 import responses.ResponseFactory;
 import statics.Method;
 import statics.UrlParams;
+
+import java.io.IOException;
 
 public class Reindexer {
 
@@ -38,9 +42,9 @@ public class Reindexer {
         this.elsa = elsa;
     }
 
-    public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings,
-                                                 final ReindexMode reindexMode,
-                                                 final RequestOptions options) throws ElsaException {
+    public ReindexResponse execute(final ReindexSettings reindexSettings,
+                                   final ReindexMode reindexMode,
+                                   final RequestOptions options) throws ElsaException {
 
         switch (reindexMode) {
             case CREATE_NEW_INDEX_FROM_MODEL_IN_DESTINATION:
@@ -63,14 +67,16 @@ public class Reindexer {
                     Endpoint.REINDEX,
                     UrlParams.NONE,
                     RequestBody.asJson(reindexSettings.getXContentBuilder()));
-            return ElsaResponse.of(ResponseFactory.createReindexResponse(response));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e); // TODO throw ElsaException
+            return ResponseFactory.createReindexResponse(response);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public ElsaResponse<ReindexResponse> execute(final ReindexSettings reindexSettings,
-                                                 final ReindexMode reindexMode) throws ElsaException {
+    public ReindexResponse execute(final ReindexSettings reindexSettings,
+                                   final ReindexMode reindexMode) throws ElsaException {
         return this.execute(reindexSettings, reindexMode, RequestOptions.DEFAULT);
     }
 

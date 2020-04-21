@@ -49,7 +49,8 @@ public class Scroller {
 
     public ElsaResponse<SearchResponse> getNext(final ScrollManager scrollManager, final SearchResponse lastSearchResponse, final RequestOptions options) {
         try {
-            scrollManager.updateScrollId(lastSearchResponse); // todo use .scroll(req, options)
+            scrollManager.updateScrollId(lastSearchResponse);
+            // todo use .scroll(req, options)
             return ElsaResponse.of(this.elsa.client.searchScroll(new SearchScrollRequest(scrollManager.getScrollId()).scroll(scrollManager.getScroll()), options));
         } catch (final Exception e) {
             return ElsaResponse.of(e);
