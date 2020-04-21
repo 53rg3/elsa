@@ -115,11 +115,11 @@ public class ElsaClient {
         this.snapshotter = new Snapshotter(this, repositoryBucket);
 
         // METHODS
-        IndexCreator.createIndicesOrEnsureMappingConsistency(
-                config.createIndexesAndEnsureMappingConsistency,
-                this.registeredModels,
-                this.admin);
         try {
+            IndexCreator.createIndicesOrEnsureMappingConsistency(
+                    config.createIndexesAndEnsureMappingConsistency,
+                    this.registeredModels,
+                    this.admin);
             repositoryBucket.registerRepositories(this); // todo propagate throw via method call
         } catch (final ElsaException e) {
             throw new IllegalStateException("Couldn't register repositories", e);

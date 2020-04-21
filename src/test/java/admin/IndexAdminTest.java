@@ -28,9 +28,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import responses.ConfirmationResponse;
-import responses.ElsaResponse;
-
-import java.io.IOException;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.CoreMatchers.is;
@@ -58,8 +55,8 @@ public class IndexAdminTest {
     @Test
     public void updateMapping_validMappingWithNestedObject_pass() throws ElsaException {
         this.elsa.admin.createIndex(TestModel.class);
-        final ElsaResponse<ConfirmationResponse> response = this.elsa.admin.updateMapping(TestModelWithAddedMappings.class);
-        assertThat(response.get().hasSucceeded(), is(true));
+        final ConfirmationResponse response = this.elsa.admin.updateMapping(TestModelWithAddedMappings.class);
+        assertThat(response.hasSucceeded(), is(true));
 
         this.elsa.admin.deleteIndex(TestModel.class);
         assertThat(this.elsa.admin.indexExists(TestModel.class), is(false));
@@ -68,9 +65,12 @@ public class IndexAdminTest {
     @Test
     public void updateMapping_tryingToOverrideExistingMapping_throw() throws ElsaException {
         this.elsa.admin.createIndex(TestModel.class);
-        final ElsaResponse<ConfirmationResponse> response = this.elsa.admin.updateMapping(TestModelWithInvalidlyModifiedMappings.class);
-        assertThat(response.hasException(), is(true));
-        assertThat(response.getExceptionResponse().getStatus(), is(400));
+
+        try {
+            this.elsa.admin.updateMapping(TestModelWithInvalidlyModifiedMappings.class);
+        } catch (final ElsaException e) {
+            assertThat(e.getHttpStatus(), is(400));
+        }
 
         this.elsa.admin.deleteIndex(TestModel.class);
         assertThat(this.elsa.admin.indexExists(TestModel.class), is(false));

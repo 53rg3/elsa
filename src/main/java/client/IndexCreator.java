@@ -25,11 +25,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class IndexCreator {
-    private IndexCreator() {}
+    private IndexCreator() {
+    }
 
     protected static void createIndicesOrEnsureMappingConsistency(final boolean shouldProceed,
                                                                   final Map<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels,
-                                                                  final IndexAdmin indexAdmin) {
+                                                                  final IndexAdmin indexAdmin) throws ElsaException {
         if (!shouldProceed) {
             return;
         }
@@ -41,23 +42,10 @@ public class IndexCreator {
                 throw new IllegalArgumentException("Registering interface ElsaModel.class as model is not allowed. Create a model which implements it.");
             }
 
-            final boolean doesIndexExist;
-            try {
-                doesIndexExist = indexAdmin.indexExists(modelClass);
-            } catch (final ElsaException e) {
-                throw new IllegalStateException("Couldn't check if index exists", e);
-            }
-
-            if (!doesIndexExist) {
-                try {
-                    indexAdmin.createIndex(modelClass);
-                } catch (final ElsaException e) {
-                    throw new IllegalStateException("Index creation failed", e);
-                }
+            if (!indexAdmin.indexExists(modelClass)) {
+                indexAdmin.createIndex(modelClass);
             } else {
-                if (!indexAdmin.updateMapping(modelClass).isPresent()) {
-                    throw new IllegalStateException("Index mappings update failed. Check logs for details.");
-                }
+                indexAdmin.updateMapping(modelClass);
             }
         }
     }

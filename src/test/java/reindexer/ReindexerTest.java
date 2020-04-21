@@ -28,7 +28,6 @@ import org.junit.*;
 import org.junit.runners.MethodSorters;
 import reindexer.ReindexOptions.ReindexMode;
 import reindexer.ReindexSettings.ReindexSettingsBuilder;
-import responses.ElsaResponse;
 import responses.ReindexResponse;
 
 import java.util.List;
@@ -51,7 +50,7 @@ public class ReindexerTest {
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
     private static final FakerModel fakerModel = new FakerModel();
     private static final String oldIndex = fakerModel.getIndexConfig().getIndexName();
-    private static final String oldIndexCorrectMapping = oldIndex+"_correct_mapping";
+    private static final String oldIndexCorrectMapping = oldIndex + "_correct_mapping";
     private static final int totalDocuments = 100;
     private static final String newIndex = "bulk_testing_create_new_index";
 

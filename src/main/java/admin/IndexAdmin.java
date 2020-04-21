@@ -87,7 +87,8 @@ public class IndexAdmin {
     // UPDATE MAPPING
     // ------------------------------------------------------------------------------------------ //
 
-    public ElsaResponse<ConfirmationResponse> updateMapping(final Class<? extends ElsaModel> modelClass, final RequestOptions options) {
+    public ConfirmationResponse updateMapping(final Class<? extends ElsaModel> modelClass,
+                                              final RequestOptions options) throws ElsaException {
         try {
             final String indexName = IndexName.of(modelClass);
             final XContentBuilder xContentBuilder = MappingBuilder.buildMapping(modelClass, "_doc", "", "");
@@ -96,13 +97,15 @@ public class IndexAdmin {
                     Endpoint.INDEX_MAPPING.update(indexName),
                     UrlParams.NONE,
                     RequestBody.asJson(xContentBuilder));
-            return ElsaResponse.of(ResponseFactory.createConfirmationResponse(response));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return ResponseFactory.createConfirmationResponse(response);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public ElsaResponse<ConfirmationResponse> updateMapping(final Class<? extends ElsaModel> modelClass) {
+    public ConfirmationResponse updateMapping(final Class<? extends ElsaModel> modelClass) throws ElsaException {
         return this.updateMapping(modelClass, RequestOptions.DEFAULT);
     }
 
