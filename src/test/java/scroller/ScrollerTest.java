@@ -28,7 +28,6 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import responses.ElsaResponse;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -68,7 +67,7 @@ public class ScrollerTest {
     }
 
     @Test
-    public void scroller_idsAreRetrievedInExpectedOrderFrom0To99_pass() {
+    public void scroller_idsAreRetrievedInExpectedOrderFrom0To99_pass() throws ElsaException {
         final SearchRequest request = new SearchRequest()
                 .indices(FakerModel.getIndexName())
                 .source(SearchSourceBuilder.searchSource()
@@ -76,16 +75,14 @@ public class ScrollerTest {
                         .size(1));
 
         final ScrollManager scrollManager = new ScrollManager(TimeValue.timeValueMinutes(1L));
-        ElsaResponse<SearchResponse> searchResponse = elsa.scroller.initialize(scrollManager, request);
+        SearchResponse searchResponse = elsa.scroller.initialize(scrollManager, request);
         final AtomicInteger expectedId = new AtomicInteger(0);
-        if(!searchResponse.isPresent()) {
-            throw new IllegalArgumentException("Search response is not present.");
-        }
-        while (elsa.scroller.hasHits(searchResponse.get())) {
-            dao.getSearchResponseMapper().mapHitsToStream(searchResponse.get())
+
+        while (elsa.scroller.hasHits(searchResponse)) {
+            dao.getSearchResponseMapper().mapHitsToStream(searchResponse)
                     .forEach(model -> assertThat(Integer.valueOf(model.getId()), is(expectedId.getAndIncrement())));
 
-            searchResponse = elsa.scroller.getNext(scrollManager, searchResponse.get());
+            searchResponse = elsa.scroller.getNext(scrollManager, searchResponse);
         }
         elsa.scroller.clearScroll(scrollManager);
     }

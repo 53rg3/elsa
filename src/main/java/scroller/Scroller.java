@@ -17,9 +17,14 @@
 package scroller;
 
 import client.ElsaClient;
+import exceptions.ElsaElasticsearchException;
+import exceptions.ElsaException;
+import exceptions.ElsaIOException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
-import responses.ElsaResponse;
+
+import java.io.IOException;
 
 public class Scroller {
 
@@ -29,17 +34,21 @@ public class Scroller {
         this.elsa = elsa;
     }
 
-    public ElsaResponse<SearchResponse> initialize(final SearchRequest searchRequest, final ScrollManager scrollManager, final RequestOptions options) {
+    public SearchResponse initialize(final SearchRequest searchRequest, final ScrollManager scrollManager,
+                                     final RequestOptions options) throws ElsaException {
         try {
             final SearchResponse searchResponse = this.elsa.client.search(searchRequest.scroll(scrollManager.getScroll()), options);
             scrollManager.updateScrollId(searchResponse);
-            return ElsaResponse.of(searchResponse);
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return searchResponse;
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public ElsaResponse<SearchResponse> initialize(final ScrollManager scrollManager, final SearchRequest searchRequest) {
+    public SearchResponse initialize(final ScrollManager scrollManager,
+                                     final SearchRequest searchRequest) throws ElsaException {
         return this.initialize(searchRequest, scrollManager, RequestOptions.DEFAULT);
     }
 
@@ -47,31 +56,38 @@ public class Scroller {
         return searchResponse.getHits().getHits() != null && searchResponse.getHits().getHits().length > 0;
     }
 
-    public ElsaResponse<SearchResponse> getNext(final ScrollManager scrollManager, final SearchResponse lastSearchResponse, final RequestOptions options) {
+    public SearchResponse getNext(final ScrollManager scrollManager, final SearchResponse lastSearchResponse,
+                                  final RequestOptions options) throws ElsaException {
         try {
             scrollManager.updateScrollId(lastSearchResponse);
             // todo use .scroll(req, options)
-            return ElsaResponse.of(this.elsa.client.searchScroll(new SearchScrollRequest(scrollManager.getScrollId()).scroll(scrollManager.getScroll()), options));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.elsa.client.searchScroll(new SearchScrollRequest(scrollManager.getScrollId()).scroll(scrollManager.getScroll()), options);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public ElsaResponse<SearchResponse> getNext(final ScrollManager scrollManager, final SearchResponse lastSearchResponse) {
+    public SearchResponse getNext(final ScrollManager scrollManager,
+                                  final SearchResponse lastSearchResponse) throws ElsaException {
         return this.getNext(scrollManager, lastSearchResponse, RequestOptions.DEFAULT);
     }
 
-    public ElsaResponse<ClearScrollResponse> clearScroll(final ScrollManager scrollManager, final RequestOptions options) {
+    public ClearScrollResponse clearScroll(final ScrollManager scrollManager,
+                                           final RequestOptions options) throws ElsaException {
         try {
             final ClearScrollRequest clearScrollRequest = new ClearScrollRequest();
             clearScrollRequest.addScrollId(scrollManager.getScrollId());
-            return ElsaResponse.of(this.elsa.client.clearScroll(clearScrollRequest, options));
-        } catch (final Exception e) {
-            return ElsaResponse.of(e);
+            return this.elsa.client.clearScroll(clearScrollRequest, options);
+        } catch (final IOException e) {
+            throw new ElsaIOException(e);
+        } catch (final ElasticsearchException e) {
+            throw new ElsaElasticsearchException(e);
         }
     }
 
-    public ElsaResponse<ClearScrollResponse> clearScroll(final ScrollManager scrollManager) {
+    public ClearScrollResponse clearScroll(final ScrollManager scrollManager) throws ElsaException {
         return this.clearScroll(scrollManager, RequestOptions.DEFAULT);
     }
 
