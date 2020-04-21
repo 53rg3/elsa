@@ -22,9 +22,13 @@ import assets.TestHelpers;
 import client.ElsaClient;
 import dao.CrudDAO;
 import exceptions.ElsaException;
+import exceptions.ElsaIOException;
 import helpers.XJson;
 import org.elasticsearch.action.search.SearchRequest;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import reindexer.ReindexOptions.ReindexMode;
 import reindexer.ReindexSettings.ReindexSettingsBuilder;
@@ -35,7 +39,6 @@ import java.util.List;
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.search.builder.SearchSourceBuilder.searchSource;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -108,7 +111,6 @@ public class ReindexerTest {
     }
 
     @Test
-    @Ignore("fix after this.elsa.admin.updateMapping doesn't use ElsaResponse. Exception is hidden and not propagated till here.")
     public void a2_create_modeAbortIfMappingIncorrect_responseHasException() throws ElsaException {
         fakerModel.getIndexConfig().setIndexName(oldIndexCorrectMapping);
         elsa.admin.createIndex(FakerModel.class);
@@ -119,8 +121,13 @@ public class ReindexerTest {
                 .configureDestination(c -> c
                         .intoIndex(FakerModelInvalidMapping.class))
                 .build();
-        final ReindexResponse response = elsa.reindexer.execute(reindexSettings, ReindexMode.ABORT_IF_MAPPING_INCORRECT);
-        assertThat(response.getFailures().size(), not(0));
+        try {
+            elsa.reindexer.execute(reindexSettings, ReindexMode.ABORT_IF_MAPPING_INCORRECT);
+        } catch (final ElsaException e) {
+            assertTrue(e instanceof ElsaIOException);
+            assertThat(e.getHttpStatus(), is(400));
+        }
+
         fakerModel.getIndexConfig().setIndexName(oldIndex);
         elsa.admin.deleteIndex(oldIndexCorrectMapping);
     }

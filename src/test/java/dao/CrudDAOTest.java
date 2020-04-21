@@ -20,6 +20,7 @@ import assets.TestDAO;
 import assets.TestHelpers;
 import assets.TestModel;
 import client.ElsaClient;
+import exceptions.ElsaElasticsearchException;
 import exceptions.ElsaException;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -36,6 +37,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.search.builder.SearchSourceBuilder.searchSource;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class CrudDAOTest {
@@ -55,7 +57,7 @@ public class CrudDAOTest {
 
     @BeforeClass
     public static void createIndex() throws ElsaException {
-        if(elsa.admin.indexExists(TestModel.class)) {
+        if (elsa.admin.indexExists(TestModel.class)) {
             elsa.admin.deleteIndex(TestModel.class);
         }
         elsa.admin.createIndex(TestModel.class);
@@ -209,13 +211,16 @@ public class CrudDAOTest {
     }
 
     @Test
-    @Ignore("rewrite test with new exception management -> ID does not exist exception")
-    public void update_nonExistingDocument_throw() {
-//        final ExceptionHandlerWithExtractor handler = new ExceptionHandlerWithExtractor();
-//        this.testDAO.update(testModelWithId, handler);
-//        ElsaResponse<TestModel> model = this.testDAO.get(id);
-//        assertThat(model.isPresent(), is(false));
-//        assertTrue(handler.getException() instanceof ElasticsearchStatusException);
+    public void update_nonExistingDocument_throw() throws ElsaException {
+        try {
+            this.testDAO.update(testModelWithId);
+        } catch (final ElsaException e) {
+            assertTrue(e instanceof ElsaElasticsearchException);
+            assertThat(e.getHttpStatus(), is(404));
+        }
+
+        final TestModel model = this.testDAO.get(id);
+        assertThat(model, nullValue());
     }
 
 }

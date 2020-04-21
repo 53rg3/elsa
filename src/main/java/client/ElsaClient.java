@@ -120,6 +120,11 @@ public class ElsaClient {
                     config.createIndexesAndEnsureMappingConsistency,
                     this.registeredModels,
                     this.admin);
+        } catch (final ElsaException e) {
+            throw new IllegalStateException("Couldn't create indices or update mapping.", e);
+        }
+
+        try {
             repositoryBucket.registerRepositories(this); // todo propagate throw via method call
         } catch (final ElsaException e) {
             throw new IllegalStateException("Couldn't register repositories", e);
@@ -192,7 +197,7 @@ public class ElsaClient {
          * This will add a custom listener to the BulkProcessor, see
          * <a href="https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html">here</a>
          * for more info.
-         */
+         */ // todo why return value never used?
         public Config setBulkResponseListener(final Listener defaultIsDefaultBulkResponseListener) {
             this.bulkResponseListener = defaultIsDefaultBulkResponseListener;
             return this;

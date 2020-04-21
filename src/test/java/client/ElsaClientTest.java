@@ -25,7 +25,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.RestClient.FailureListener;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -34,11 +33,10 @@ import responses.ConfirmationResponse;
 import snapshotter.SnapshotRepository;
 import statics.Headers;
 
-import java.util.NoSuchElementException;
-
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertTrue;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ElsaClientTest {
@@ -94,16 +92,21 @@ public class ElsaClientTest {
         assertThat(elsa.admin.indexExists(TestModel.class), is(false));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void builder_ensureIndexMappingConsistencyWithInValidUpdate_throw() throws ElsaException {
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, TestDAO.class));
         assertThat(elsa.admin.indexExists(TestModel.class), is(true));
 
-        new ElsaClient(c -> c
-                .setClusterNodes(TEST_CLUSTER_HOSTS)
-                .registerModel(TestModelWithInvalidlyModifiedMappings.class, TestDAO.class));
+        try {
+            new ElsaClient(c -> c
+                    .setClusterNodes(TEST_CLUSTER_HOSTS)
+                    .registerModel(TestModelWithInvalidlyModifiedMappings.class, TestDAO.class));
+        } catch (final Exception e) {
+            assertTrue(e instanceof IllegalStateException);
+            assertThat(e.getMessage(), is("Couldn't create indices or update mapping."));
+        }
 
         elsa.admin.deleteIndex(TestModel.class);
         assertThat(elsa.admin.indexExists(TestModel.class), is(false));
@@ -136,17 +139,31 @@ public class ElsaClientTest {
                 .createIndexesAndEnsureMappingConsistency(false));
     }
 
-    // todo delete. replace with test that test correct behavior when cluster is offline
     @Test(timeout = 1000)
-    @Ignore("In ElsaClientTest: We need to mock ping()")
-    public void waitTillClusterIsOnline_clusterIsOnline_pass() {
-//        final ElsaClient elsa = new ElsaClient.Builder(httpHosts)
-//                .stifleThreadUntilClusterIsOnline(true)
-//                .registerModel(TestModel.class, TestDAO.class)
-//                .createIndexesAndEnsureMappingConsistency(false)
-//                .build();
-//        // Dirty, but if it ever reaches this, then the cluster is online
-//        assertThat(elsa, is(notNullValue()));
+    public void createIndexesAndMapping_butClusterIsOffline_fail() {
+        final HttpHost[] DOES_NOT_EXIST = {new HttpHost("127.0.0.1", 8888, "http")};
+
+        try {
+            new ElsaClient(c -> c
+                    .setClusterNodes(DOES_NOT_EXIST)
+                    .registerModel(TestModel.class, TestDAO.class)
+                    .createIndexesAndEnsureMappingConsistency(true));
+        } catch (final Exception e) {
+            assertTrue(e instanceof IllegalStateException);
+            assertThat(e.getMessage(), is("Couldn't create indices or update mapping."));
+        }
+    }
+
+    /**
+     * If we don't use createIndexesAndEnsureMappingConsistency then it doesn't matter if cluster is offline
+     */
+    @Test(timeout = 1000)
+    public void do_not_createIndexesAndMapping_butClusterIsOffline_pass() {
+        final HttpHost[] DOES_NOT_EXIST = {new HttpHost("127.0.0.1", 8888, "http")};
+        new ElsaClient(c -> c
+                .setClusterNodes(DOES_NOT_EXIST)
+                .registerModel(TestModel.class, TestDAO.class)
+                .createIndexesAndEnsureMappingConsistency(false));
     }
 
     @Test(expected = NullPointerException.class)
@@ -202,6 +219,6 @@ public class ElsaClientTest {
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerModel(TestModel.class, ElsaDAO.class)
                 .createIndexesAndEnsureMappingConsistency(false));
-        final CrudDAO<TestModel> dao = elsa.getDAO(TestModel.class);
+        final CrudDAO<TestModel> dao = elsa.getDAO(TestModel.class); // DON'T DELETE THE VARIABLE DECLARATION
     }
 }
