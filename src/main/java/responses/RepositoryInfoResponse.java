@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
-public class RepositoryInfoResponse implements JsonConvertable {
+public class RepositoryInfoResponse implements JsonConvertible {
 
     @Override
     public boolean validate() {

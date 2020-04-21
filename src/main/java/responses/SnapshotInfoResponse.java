@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class SnapshotInfoResponse implements JsonConvertable {
+public class SnapshotInfoResponse implements JsonConvertible {
     private SnapshotInfoResponse() {}
 
     @Override

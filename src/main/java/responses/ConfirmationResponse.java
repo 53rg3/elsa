@@ -16,11 +16,7 @@
 
 package responses;
 
-import helpers.ResponseParser;
-import org.elasticsearch.client.Response;
-import statics.ElsaStatics;
-
-public class ConfirmationResponse implements JsonConvertable {
+public class ConfirmationResponse implements JsonConvertible {
 
     private Boolean acknowledged;
     private Boolean accepted;

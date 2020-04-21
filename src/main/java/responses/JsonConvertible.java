@@ -16,7 +16,7 @@
 
 package responses;
 
-public interface JsonConvertable {
+public interface JsonConvertible {
 
     boolean validate();
 

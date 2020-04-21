@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.Objects;
 
-public class ReindexResponse implements JsonConvertable {
+public class ReindexResponse implements JsonConvertible {
 
     @Override
     public boolean validate() {
