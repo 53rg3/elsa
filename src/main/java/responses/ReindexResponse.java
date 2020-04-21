@@ -26,20 +26,20 @@ public class ReindexResponse implements JsonConvertible {
 
     @Override
     public boolean validate() {
-        Objects.requireNonNull(took, "'took' must not be NULL.");
-        Objects.requireNonNull(timedOut, "'timedOut' must not be NULL.");
-        Objects.requireNonNull(total, "'total' must not be NULL.");
-        Objects.requireNonNull(updated, "'updated' must not be NULL.");
-        Objects.requireNonNull(created, "'created' must not be NULL.");
-        Objects.requireNonNull(deleted, "'deleted' must not be NULL.");
-        Objects.requireNonNull(batches, "'batches' must not be NULL.");
-        Objects.requireNonNull(versionConflicts, "'versionConflicts' must not be NULL.");
-        Objects.requireNonNull(noops, "'noops' must not be NULL.");
-        Objects.requireNonNull(retries, "'retries' must not be NULL.");
-        Objects.requireNonNull(throttledMillis, "'throttledMillis' must not be NULL.");
-        Objects.requireNonNull(requestsPerSecond, "'requestsPerSecond' must not be NULL.");
-        Objects.requireNonNull(throttledUntilMillis, "'throttledUntilMillis' must not be NULL.");
-        Objects.requireNonNull(failures, "'failures' must not be NULL.");
+        Objects.requireNonNull(this.took, "'took' must not be NULL.");
+        Objects.requireNonNull(this.timedOut, "'timedOut' must not be NULL.");
+        Objects.requireNonNull(this.total, "'total' must not be NULL.");
+        Objects.requireNonNull(this.updated, "'updated' must not be NULL.");
+        Objects.requireNonNull(this.created, "'created' must not be NULL.");
+        Objects.requireNonNull(this.deleted, "'deleted' must not be NULL.");
+        Objects.requireNonNull(this.batches, "'batches' must not be NULL.");
+        Objects.requireNonNull(this.versionConflicts, "'versionConflicts' must not be NULL.");
+        Objects.requireNonNull(this.noops, "'noops' must not be NULL.");
+        Objects.requireNonNull(this.retries, "'retries' must not be NULL.");
+        Objects.requireNonNull(this.throttledMillis, "'throttledMillis' must not be NULL.");
+        Objects.requireNonNull(this.requestsPerSecond, "'requestsPerSecond' must not be NULL.");
+        Objects.requireNonNull(this.throttledUntilMillis, "'throttledUntilMillis' must not be NULL.");
+        Objects.requireNonNull(this.failures, "'failures' must not be NULL.");
         return true;
     }
 
@@ -100,8 +100,7 @@ public class ReindexResponse implements JsonConvertible {
     private List<Object> failures;
 
 
-
-    public class Retries {
+    public static class Retries {
 
         @SerializedName("bulk")
         @Expose
@@ -112,67 +111,67 @@ public class ReindexResponse implements JsonConvertible {
         private Integer search;
 
         public Integer getBulk() {
-            return bulk;
+            return this.bulk;
         }
 
         public Integer getSearch() {
-            return search;
+            return this.search;
         }
     }
 
     public Integer getTook() {
-        return took;
+        return this.took;
     }
 
     public Boolean getTimedOut() {
-        return timedOut;
+        return this.timedOut;
     }
 
     public Integer getTotal() {
-        return total;
+        return this.total;
     }
 
     public Integer getUpdated() {
-        return updated;
+        return this.updated;
     }
 
     public Integer getCreated() {
-        return created;
+        return this.created;
     }
 
     public Integer getDeleted() {
-        return deleted;
+        return this.deleted;
     }
 
     public Integer getBatches() {
-        return batches;
+        return this.batches;
     }
 
     public Integer getVersionConflicts() {
-        return versionConflicts;
+        return this.versionConflicts;
     }
 
     public Integer getNoops() {
-        return noops;
+        return this.noops;
     }
 
     public Retries getRetries() {
-        return retries;
+        return this.retries;
     }
 
     public Integer getThrottledMillis() {
-        return throttledMillis;
+        return this.throttledMillis;
     }
 
     public Double getRequestsPerSecond() {
-        return requestsPerSecond;
+        return this.requestsPerSecond;
     }
 
     public Integer getThrottledUntilMillis() {
-        return throttledUntilMillis;
+        return this.throttledUntilMillis;
     }
 
     public List<Object> getFailures() {
-        return failures;
+        return this.failures;
     }
 }

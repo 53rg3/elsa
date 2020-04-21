@@ -32,87 +32,88 @@ public class CreateRepositoryRequest {
     // ------------------------------------------------------------------------------------------ //
     // CONFIGURATOR
     // ------------------------------------------------------------------------------------------ //
-    
+
     @FunctionalInterface
     public interface Config {
-    
+
         static Builder createBuilderWithDefaults() {
             return new Builder()
                     .type("fs")
                     .compress(true);
         }
-    
+
         void applyCustomConfig(Builder builder);
-    
-        default void validate(Builder builder) {
+
+        default void validate(final Builder builder) {
             Objects.requireNonNull(builder.location, "pathToLocation must not be NULL");
             Objects.requireNonNull(builder.repositoryName, "repository must not be NULL");
         }
-    
-        static Builder createBuilder(Config config) {
-            Builder builder = createBuilderWithDefaults();
+
+        static Builder createBuilder(final Config config) {
+            final Builder builder = createBuilderWithDefaults();
             config.applyCustomConfig(builder);
             config.validate(builder);
             return builder;
         }
     }
-    
-    
+
+
     // ------------------------------------------------------------------------------------------ //
     // BUILD
     // ------------------------------------------------------------------------------------------ //
-    
-    public CreateRepositoryRequest(Config config) {
-        Builder builder = Config.createBuilder(config);
+
+    public CreateRepositoryRequest(final Config config) {
+        final Builder builder = Config.createBuilder(config);
         this.repositoryName = builder.repositoryName;
         this.type = builder.type;
         this.settings = new Settings(builder.location, builder.compress);
     }
-    
-    
+
+
     // ------------------------------------------------------------------------------------------ //
     // BUILDER
     // ------------------------------------------------------------------------------------------ //
-    
+
     public static class Builder {
-        private Builder() {}
+        private Builder() {
+        }
 
         private String repositoryName;
         private String type;
         private Boolean compress;
         private String location;
 
-        public Builder repositoryName(String mandatorySetting) {
+        public Builder repositoryName(final String mandatorySetting) {
             this.repositoryName = mandatorySetting;
             return this;
         }
-    
-        public Builder type(String defaultIsFS) {
+
+        public Builder type(final String defaultIsFS) {
             this.type = defaultIsFS;
             return this;
         }
 
-        public Builder compress(Boolean defaultIsTrue) {
+        public Builder compress(final Boolean defaultIsTrue) {
             this.compress = defaultIsTrue;
             return this;
         }
 
-        public Builder pathToLocation(String mandatorySetting) {
+        public Builder pathToLocation(final String mandatorySetting) {
             this.location = mandatorySetting;
             return this;
         }
-    
+
     }
 
     // ------------------------------------------------------------------------------------------ //
     // INNER CLASSES
     // ------------------------------------------------------------------------------------------ //
 
-    private class Settings {
+    private static class Settings {
         private final Boolean compress;
         private final String location;
 
-        public Settings(String location, Boolean compress) {
+        public Settings(final String location, final Boolean compress) {
             this.compress = compress;
             this.location = location;
         }
@@ -124,6 +125,6 @@ public class CreateRepositoryRequest {
     // ------------------------------------------------------------------------------------------ //
 
     public String getRepositoryName() {
-        return repositoryName;
+        return this.repositoryName;
     }
 }

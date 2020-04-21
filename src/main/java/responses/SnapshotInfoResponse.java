@@ -24,24 +24,25 @@ import java.util.List;
 import java.util.Objects;
 
 public class SnapshotInfoResponse implements JsonConvertible {
-    private SnapshotInfoResponse() {}
+    private SnapshotInfoResponse() {
+    }
 
     @Override
     public boolean validate() {
-        Objects.requireNonNull(name, "'name' must not be NULL.");
-        Objects.requireNonNull(uuid, "'uuid' must not be NULL.");
-        Objects.requireNonNull(versionId, "'versionId' must not be NULL.");
-        Objects.requireNonNull(version, "'version' must not be NULL.");
-        Objects.requireNonNull(indices, "'indices' must not be NULL.");
-        Objects.requireNonNull(includeGlobalState, "'includeGlobalState' must not be NULL.");
-        Objects.requireNonNull(state, "'state' must not be NULL.");
-        Objects.requireNonNull(startTime, "'startTime' must not be NULL.");
-        Objects.requireNonNull(startTimeInMillis, "'startTimeInMillis' must not be NULL.");
-        Objects.requireNonNull(endTime, "'endTime' must not be NULL.");
-        Objects.requireNonNull(endTimeInMillis, "'endTimeInMillis' must not be NULL.");
-        Objects.requireNonNull(durationInMillis, "'durationInMillis' must not be NULL.");
-        Objects.requireNonNull(failures, "'failures' must not be NULL.");
-        Objects.requireNonNull(shards, "'shards' must not be NULL.");
+        Objects.requireNonNull(this.name, "'name' must not be NULL.");
+        Objects.requireNonNull(this.uuid, "'uuid' must not be NULL.");
+        Objects.requireNonNull(this.versionId, "'versionId' must not be NULL.");
+        Objects.requireNonNull(this.version, "'version' must not be NULL.");
+        Objects.requireNonNull(this.indices, "'indices' must not be NULL.");
+        Objects.requireNonNull(this.includeGlobalState, "'includeGlobalState' must not be NULL.");
+        Objects.requireNonNull(this.state, "'state' must not be NULL.");
+        Objects.requireNonNull(this.startTime, "'startTime' must not be NULL.");
+        Objects.requireNonNull(this.startTimeInMillis, "'startTimeInMillis' must not be NULL.");
+        Objects.requireNonNull(this.endTime, "'endTime' must not be NULL.");
+        Objects.requireNonNull(this.endTimeInMillis, "'endTimeInMillis' must not be NULL.");
+        Objects.requireNonNull(this.durationInMillis, "'durationInMillis' must not be NULL.");
+        Objects.requireNonNull(this.failures, "'failures' must not be NULL.");
+        Objects.requireNonNull(this.shards, "'shards' must not be NULL.");
 
         return true;
     }
@@ -103,7 +104,7 @@ public class SnapshotInfoResponse implements JsonConvertible {
     @Expose
     private Shards shards;
 
-    public class Shards {
+    public static class Shards {
 
         @SerializedName("total")
         @Expose
@@ -118,71 +119,71 @@ public class SnapshotInfoResponse implements JsonConvertible {
         private Integer successful;
 
         public Integer getTotal() {
-            return total;
+            return this.total;
         }
 
         public Integer getFailed() {
-            return failed;
+            return this.failed;
         }
 
         public Integer getSuccessful() {
-            return successful;
+            return this.successful;
         }
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getUuid() {
-        return uuid;
+        return this.uuid;
     }
 
     public Long getVersionId() {
-        return versionId;
+        return this.versionId;
     }
 
     public String getVersion() {
-        return version;
+        return this.version;
     }
 
     public List<String> getIndices() {
-        return indices;
+        return this.indices;
     }
 
     public boolean getIncludeGlobalState() {
-        return includeGlobalState;
+        return this.includeGlobalState;
     }
 
     public String getState() {
-        return state;
+        return this.state;
     }
 
     public Long getStartTimeInMillis() {
-        return startTimeInMillis;
+        return this.startTimeInMillis;
     }
 
     public Long getEndTimeInMillis() {
-        return endTimeInMillis;
+        return this.endTimeInMillis;
     }
 
     public Long getDurationInMillis() {
-        return durationInMillis;
+        return this.durationInMillis;
     }
 
     public Date getStartTime() {
-        return startTime;
+        return this.startTime;
     }
 
     public Date getEndTime() {
-        return endTime;
+        return this.endTime;
     }
 
     public List<String> getFailures() {
-        return failures;
+        return this.failures;
     }
 
     public Shards getShards() {
-        return shards;
+        return this.shards;
     }
 }

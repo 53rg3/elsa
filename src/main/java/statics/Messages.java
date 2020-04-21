@@ -17,13 +17,15 @@
 package statics;
 
 public class Messages {
-    private Messages() {}
+    private Messages() {
+    }
 
     // ------------------------------------------------------------------------------------------ //
     // EXCEPTIONS
     // ------------------------------------------------------------------------------------------ //
-    public class ExceptionMsg {
-        private ExceptionMsg(){}
+    public static class ExceptionMsg {
+        private ExceptionMsg() {
+        }
 
         public static final String REQUEST_FAILED = "Couldn't perform Elasticsearch request.";
         public static final String CLASS_INSTANTIATION_FAILED = "Couldn't create instance from class.";

@@ -25,9 +25,9 @@ public class RepositoryInfoResponse implements JsonConvertible {
 
     @Override
     public boolean validate() {
-        Objects.requireNonNull(name, "'name' must not be NULL.");
-        Objects.requireNonNull(type, "'type' must not be NULL.");
-        Objects.requireNonNull(settings, "'settings' must not be NULL.");
+        Objects.requireNonNull(this.name, "'name' must not be NULL.");
+        Objects.requireNonNull(this.type, "'type' must not be NULL.");
+        Objects.requireNonNull(this.settings, "'settings' must not be NULL.");
         return true;
     }
 
@@ -43,7 +43,7 @@ public class RepositoryInfoResponse implements JsonConvertible {
     @Expose
     private Settings settings;
 
-    public class Settings {
+    public static class Settings {
 
         @SerializedName("compress")
         @Expose
@@ -54,23 +54,23 @@ public class RepositoryInfoResponse implements JsonConvertible {
         private String location;
 
         public boolean getCompress() {
-            return compress;
+            return this.compress;
         }
 
         public String getLocation() {
-            return location;
+            return this.location;
         }
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public Settings getSettings() {
-        return settings;
+        return this.settings;
     }
 }
