@@ -1,7 +1,6 @@
 package exceptions;
 
 import org.elasticsearch.ElasticsearchException;
-import responses.ExceptionResponse.Error;
 import statics.ElsaStatics;
 
 import java.io.IOException;

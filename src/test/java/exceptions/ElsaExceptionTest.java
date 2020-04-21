@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package responses;
+package exceptions;
 
 import assets.FakerModel;
 import client.ElsaClient;
 import dao.CrudDAO;
-import exceptions.ElsaException;
 import org.apache.http.HttpHost;
 import org.junit.Test;
 
@@ -27,15 +26,18 @@ import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class ExceptionExtractorTest {
-    // todo delete class with ExceptionExtractor
+/**
+ * This was once ExceptionExtractorTest, but the tests are still ok and don't take much time.
+ */
+public class ElsaExceptionTest {
+
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerModel(FakerModel.class, CrudDAO.class)
             .createIndexesAndEnsureMappingConsistency(false));
 
     @Test
-    public void extract_badRequestException_pass() throws ElsaException{
+    public void extract_badRequestException_pass() throws ElsaException {
         elsa.admin.createIndex(FakerModel.class);
 
         try {
@@ -49,7 +51,6 @@ public class ExceptionExtractorTest {
 
     @Test
     public void extract_notFoundException_pass() {
-        // todo no idea if that should throw or not
         try {
             elsa.admin.deleteIndex("does_not_exist");
         } catch (final ElsaException e) {
@@ -68,7 +69,7 @@ public class ExceptionExtractorTest {
         try {
             elsa.admin.deleteIndex("cluster_is_offline");
         } catch (final ElsaException e) {
-            assertThat(e.getHttpStatus(), is(503)); // todo is code correct?
+            assertThat(e.getHttpStatus(), is(503));
         }
     }
 

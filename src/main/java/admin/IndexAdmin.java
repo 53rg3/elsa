@@ -35,7 +35,6 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import responses.ConfirmationResponse;
-import responses.ElsaResponse;
 import responses.ResponseFactory;
 import statics.ElsaStatics;
 import statics.Method;
