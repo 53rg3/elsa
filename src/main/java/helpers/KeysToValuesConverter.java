@@ -24,7 +24,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class KeysToValuesConverter {
-    private KeysToValuesConverter() {}
+    private KeysToValuesConverter() {
+    }
 
     /**
      * Converts keys to values for objects like the following. Nested objects are not converted.
@@ -73,7 +74,7 @@ public class KeysToValuesConverter {
     public static String convertArrayOfObjects(final Map<String, Object>[] outerList, final String fieldNameForKey) {
         final List<Map<String, Object>> list = new ArrayList<>();
         Stream.of(outerList).forEach(innerMap ->
-            reassembleJsonObject(innerMap, list, fieldNameForKey));
+                reassembleJsonObject(innerMap, list, fieldNameForKey));
         return ElsaStatics.GSON.toJson(list);
     }
 
@@ -104,6 +105,7 @@ public class KeysToValuesConverter {
         return ElsaStatics.GSON.toJson(list);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> void reassembleJsonObject(final Map<String, Object> map, final List<T> list, final String fieldNameForKey) {
         map.forEach((key, value) -> {
             final XJson xJson = new XJson();

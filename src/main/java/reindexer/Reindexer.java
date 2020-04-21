@@ -24,13 +24,13 @@ import exceptions.ElsaIOException;
 import helpers.RequestBody;
 import model.ElsaModel;
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import reindexer.ReindexOptions.ReindexMode;
 import responses.ReindexResponse;
 import responses.ResponseFactory;
 import statics.Method;
-import statics.UrlParams;
 
 import java.io.IOException;
 
@@ -62,11 +62,11 @@ public class Reindexer {
         }
 
         try {
-            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo Request
-                    Method.POST,
-                    Endpoint.REINDEX,
-                    UrlParams.NONE,
-                    RequestBody.asJson(reindexSettings.getXContentBuilder()));
+            final Request request = new Request(Method.POST, Endpoint.REINDEX);
+            request.setOptions(options);
+            request.setEntity(RequestBody.asJson(reindexSettings.getXContentBuilder()));
+
+            final Response response = this.elsa.client.getLowLevelClient().performRequest(request);
             return ResponseFactory.createReindexResponse(response);
         } catch (final IOException e) {
             throw new ElsaIOException(e);

@@ -30,6 +30,7 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.settings.Settings;
@@ -38,7 +39,6 @@ import responses.ConfirmationResponse;
 import responses.ResponseFactory;
 import statics.ElsaStatics;
 import statics.Method;
-import statics.UrlParams;
 
 import java.io.IOException;
 
@@ -91,11 +91,12 @@ public class IndexAdmin {
         try {
             final String indexName = IndexName.of(modelClass);
             final XContentBuilder xContentBuilder = MappingBuilder.buildMapping(modelClass, "_doc", "", "");
-            final Response response = this.elsa.client.getLowLevelClient().performRequest( // todo new Request
-                    Method.PUT,
-                    Endpoint.INDEX_MAPPING.update(indexName),
-                    UrlParams.NONE,
-                    RequestBody.asJson(xContentBuilder));
+
+            final Request request = new Request(Method.PUT, Endpoint.INDEX_MAPPING.update(indexName));
+            request.setEntity(RequestBody.asJson(xContentBuilder));
+            request.setOptions(options);
+            final Response response = this.elsa.client.getLowLevelClient().performRequest(request);
+
             return ResponseFactory.createConfirmationResponse(response);
         } catch (final IOException e) {
             throw new ElsaIOException(e);
@@ -110,9 +111,11 @@ public class IndexAdmin {
 
 
     public boolean indexExists(final String indexName, final RequestOptions options) throws ElsaException {
-        final Response response;
         try {
-            response = this.elsa.client.getLowLevelClient().performRequest("HEAD", indexName); // todo as Request
+            final Request request = new Request(Method.HEAD, indexName);
+            request.setOptions(options);
+
+            final Response response = this.elsa.client.getLowLevelClient().performRequest(request);
             return response.getStatusLine().getStatusCode() == 200;
         } catch (final IOException e) {
             throw new ElsaIOException(e);

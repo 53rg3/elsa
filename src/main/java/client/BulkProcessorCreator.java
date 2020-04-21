@@ -18,6 +18,7 @@ package client;
 
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkProcessor.Listener;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
 public class BulkProcessorCreator {

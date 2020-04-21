@@ -60,8 +60,7 @@ public class Scroller {
                                   final RequestOptions options) throws ElsaException {
         try {
             scrollManager.updateScrollId(lastSearchResponse);
-            // todo use .scroll(req, options)
-            return this.elsa.client.searchScroll(new SearchScrollRequest(scrollManager.getScrollId()).scroll(scrollManager.getScroll()), options);
+            return this.elsa.client.scroll(new SearchScrollRequest(scrollManager.getScrollId()).scroll(scrollManager.getScroll()), options);
         } catch (final IOException e) {
             throw new ElsaIOException(e);
         } catch (final ElasticsearchException e) {
