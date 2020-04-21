@@ -194,7 +194,7 @@ public class ElsaClientTest {
         assertThat(response.hasSucceeded(), is(true));
     }
 
-    @Test(expected = IllegalStateException.class) // todo change to ElsaException
+    @Test(expected = IllegalStateException.class) // throws RuntimeException because program should break, if client misconfigured
     public void withSnapshotRepository_repositoryNotConfiguredExternally_throw() {
         new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)

@@ -62,9 +62,10 @@ public class SnapshotterTest {
     // ------------------------------------------------------------------------------------------ //
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(FakerModel.class, CrudDAO.class)
             .registerSnapshotRepositories(d -> d
-                    .add(new SnapshotRepository(repository3, repositoryLocation_EXISTS))));
+                    .add(new SnapshotRepository(repository3, repositoryLocation_EXISTS)))
+            .registerModel(FakerModel.class, CrudDAO.class)
+    );
     private static final CrudDAO<FakerModel> crudDAO = elsa.getDAO(FakerModel.class);
 
 

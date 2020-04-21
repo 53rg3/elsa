@@ -94,7 +94,6 @@ public class ElsaClient {
 
     public ElsaClient(final Configurator configurator) {
 
-
         // FIELDS
         final Config config = Configurator.create(configurator);
         this.client = RestClientConfig.create(config.httpHosts, config.restClientConfig);
@@ -128,7 +127,7 @@ public class ElsaClient {
         }
 
         try {
-            repositoryBucket.registerRepositories(this); // todo propagate throw via method call
+            repositoryBucket.registerRepositories(this);
         } catch (final ElsaException e) {
             throw new IllegalStateException("Couldn't register repositories", e);
         }
@@ -201,7 +200,7 @@ public class ElsaClient {
          * This will add a custom listener to the BulkProcessor, see
          * <a href="https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-docs-bulk-processor.html">here</a>
          * for more info.
-         */ // todo why return value never used?
+         */ // Warning is IntelliJ bug. Return value is used, but since it's last position in the builder it's somehow not registered?
         public Config setBulkResponseListener(final Listener defaultIsDefaultBulkResponseListener,
                                               final RequestOptions defaultIsRequestOptionsDefault) {
             this.bulkResponseListener = defaultIsDefaultBulkResponseListener;
@@ -223,7 +222,7 @@ public class ElsaClient {
          * This will try to register the repositories for snapshots on start-up, so you can be sure to have
          * set up the `path.repo` variable in the config file elasticsearch.yml properly, before doing any operations.
          * The repositories will be registered with the default config (compress=true, type=fs).
-         */ // todo why return value never used?
+         */
         public Config registerSnapshotRepositories(final RepositoryBucket.Config configurator) {
             this.repositoryBucketConfig = configurator;
             return this;

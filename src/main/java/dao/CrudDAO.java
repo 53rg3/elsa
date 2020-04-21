@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import statics.ElsaStatics;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
@@ -105,12 +106,16 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
 
     /**
      * This retrieves the document and maps it onto your model.
-     * @return sub-type of ElsaModel or empty ElsaResponse
+     *
+     * @return mapped object or NULL if ID not found
      */
     public T get(final String id) throws ElsaException {
         return this.get(id, RequestOptions.DEFAULT);
     }
 
+    /**
+     * @return mapped object or NULL if ID not found
+     */
     public T get(final String id, final RequestOptions options) throws ElsaException {
         try {
             final GetResponse response = this.getElsa().client.get(
@@ -119,10 +124,10 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
             );
             T model = null;
             if (response.isExists()) {
-                model = this.getJsonMapper().fromJson(new String(response.getSourceAsBytes(), ElsaStatics.UTF_8)); // todo delete & replace
+                model = this.getJsonMapper().fromJson(new String(response.getSourceAsBytes(), StandardCharsets.UTF_8));
                 model.setId(response.getId());
             }
-            return model; // todo throw or return null?
+            return model;
         } catch (final IOException e) {
             throw new ElsaIOException(e);
         } catch (final ElasticsearchException e) {
@@ -133,7 +138,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     /**
      * This return the native GetResponse result of the GetRequest, which has additional fields and methods.
      * Object mapping must be done manually.
-     * */
+     */
     public GetResponse getRawResponse(final String id) throws ElsaException {
         return this.getRawResponse(id, RequestOptions.DEFAULT);
     }
@@ -149,7 +154,9 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
         }
     }
 
-    /** This retrieves the document asynchronously. GetResponse will be send to the Listener and needs to be mapped there. */
+    /**
+     * This retrieves the document asynchronously. GetResponse will be send to the Listener and needs to be mapped there.
+     */
     public void getAsync(final String id, final RequestOptions options, final ActionListener<GetResponse> listener) {
         this.getElsa().client.getAsync(
                 new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id),
@@ -179,11 +186,16 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     }
 
 
-    /** This deletes the document asynchronously. DeleteResponse will be send to the Listener. */
+    /**
+     * This deletes the document asynchronously. DeleteResponse will be send to the Listener.
+     */
     public void deleteAsync(final T model, final RequestOptions requestOptions, final ActionListener<DeleteResponse> listener) {
         this.getElsa().client.deleteAsync(this.buildDeleteRequest(model), requestOptions, listener);
     }
-    /** This deletes the document asynchronously. DeleteResponse will be send to the Listener. Uses RequestOptions.DEFAULT */
+
+    /**
+     * This deletes the document asynchronously. DeleteResponse will be send to the Listener. Uses RequestOptions.DEFAULT
+     */
     public void deleteAsync(final T model, final ActionListener<DeleteResponse> listener) {
         this.deleteAsync(model, RequestOptions.DEFAULT, listener);
     }
@@ -197,7 +209,9 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     // UPDATE
     // ------------------------------------------------------------------------------------------ //
 
-    /** Updating a non-existing documents causes an exception. */
+    /**
+     * Updating a non-existing documents causes an exception.
+     */
     public UpdateResponse update(final T model) throws ElsaException {
         return this.update(model, RequestOptions.DEFAULT);
     }

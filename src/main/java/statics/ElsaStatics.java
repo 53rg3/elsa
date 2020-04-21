@@ -19,7 +19,6 @@ package statics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jsonmapper.GsonUTCDateAdapter;
-import org.apache.http.Header;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,7 +31,8 @@ import java.util.regex.Pattern;
  * Constants for ElsaStatics
  */
 public class ElsaStatics {
-    private ElsaStatics(){}
+    private ElsaStatics() {
+    }
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -43,10 +43,13 @@ public class ElsaStatics {
             .registerTypeAdapter(Date.class, new GsonUTCDateAdapter())
             .create();
 
-    /** Used to get JSON from exception messages.*/
+    /**
+     * Used to get JSON from exception messages.
+     */
     public static final Pattern jsonExtractorPattern = Pattern.compile("\\{.*}");
 
     public static final DateFormat UTC_FORMAT;
+
     static {
         UTC_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.UK);
         UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -56,16 +59,12 @@ public class ElsaStatics {
     // ------------------------------------------------------------------------------------------ //
     // MISC
     // ------------------------------------------------------------------------------------------ //
-    /** Temporary official recommendation for ES 6.x till 7.0,
-     * see https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html */
+    /**
+     * Temporary official recommendation for ES 6.x till 7.0,
+     * see https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
+     */
     public static final String DUMMY_TYPE = "_doc";
 
     public static final String DEFAULT_ID_FIELD_NAME = "id";
-
-    public static final String UTF_8 = "UTF-8";
-
-
-
-
 
 }

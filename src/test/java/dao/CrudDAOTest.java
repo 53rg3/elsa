@@ -168,7 +168,7 @@ public class CrudDAOTest {
     @Test
     public void get_nonExistingDocument_nullResult() throws ElsaException {
         final TestModel newDoc = this.testDAO.get("nonExistingId");
-        assertThat(newDoc, nullValue()); // todo maybe should throw instead of NULL?!
+        assertThat(newDoc, nullValue());
     }
 
     @Test
