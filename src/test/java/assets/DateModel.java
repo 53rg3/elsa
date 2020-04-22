@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class DateModel implements ElsaModel {
 
-    private static IndexConfig indexConfig = new IndexConfig(c->c
+    public static IndexConfig indexConfig = new IndexConfig(c->c
             .indexName("elsa_gson_test")
             .shards(1)
             .replicas(0)

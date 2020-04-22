@@ -28,7 +28,7 @@ public class InvalidModelIdAccessorsWrong implements ElsaModel {
 
     // MODEL WITHOUT INSTANTIATED IndexConfig
 
-    private static final IndexConfig indexData = null;
+    public static final IndexConfig indexConfig = null;
 
     @Id
     private String id;
@@ -57,7 +57,7 @@ public class InvalidModelIdAccessorsWrong implements ElsaModel {
 
     @Override
     public IndexConfig getIndexConfig() {
-        return indexData;
+        return indexConfig;
     }
 
     @Override

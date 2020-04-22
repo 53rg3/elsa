@@ -21,6 +21,7 @@ import bulkprocessor.DefaultBulkResponseListener;
 import client.BulkProcessorCreator.BulkProcessorConfigurator;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import dao.DaoConfig;
 import dao.ElsaDAO;
 import exceptions.ElsaException;
 import model.ElsaModel;
@@ -52,7 +53,6 @@ public class ElsaClient {
     public final Snapshotter snapshotter;
     public final Gson gson;
 
-    private final ImmutableMap<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
     private final ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> daoMap;
 
 
@@ -73,8 +73,9 @@ public class ElsaClient {
         }
 
         default void validate(final Config config) {
-            Objects.requireNonNull(config.httpHosts, "HttpHost must not be null.");
-            Objects.requireNonNull(config.registeredModels, "At least one model must be registered.");
+            if (config.httpHosts == null || config.httpHosts.length == 0) {
+                throw new IllegalArgumentException("httpHosts must not be null or empty");
+            }
         }
 
         static Config create(final Configurator configurator) {
@@ -98,10 +99,9 @@ public class ElsaClient {
         final Config config = Configurator.create(configurator);
         this.client = RestClientConfig.create(config.httpHosts, config.restClientConfig);
         this.gson = config.modelMapper.getGsonBuilder().create();
-        this.registeredModels = ImmutableMap.copyOf(config.registeredModels);
         this.daoMap = new DaoMapCreator(c -> c
                 .elsa(this)
-                .registeredModels(this.registeredModels))
+                .registeredModels(config.registeredModels.values()))
                 .create();
         final RepositoryBucket repositoryBucket = new RepositoryBucket(config.repositoryBucketConfig);
 
@@ -120,7 +120,7 @@ public class ElsaClient {
         try {
             IndexCreator.createIndicesOrEnsureMappingConsistency(
                     config.createIndexesAndEnsureMappingConsistency,
-                    this.registeredModels,
+                    config.registeredModels.values(),
                     this.admin);
         } catch (final ElsaException e) {
             throw new IllegalStateException("Couldn't create indices or update mapping.", e);
@@ -144,7 +144,7 @@ public class ElsaClient {
         }
 
         // MANDATORY SETTINGS
-        private Map<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels;
+        private final Map<Class<? extends ElsaModel>, DaoConfig> registeredModels = new HashMap<>();
         private HttpHost[] httpHosts;
 
         // OPTIONAL SETTINGS
@@ -167,17 +167,13 @@ public class ElsaClient {
             return this;
         }
 
-        public Config registerModel(final Class<? extends ElsaModel> modelClass, final Class<? extends ElsaDAO> daoClass) {
-            Objects.requireNonNull(modelClass, "Model class must not be NULL.");
-            Objects.requireNonNull(daoClass, "DAO class must not be NULL.");
+        public Config registerDAO(final DaoConfig daoConfig) {
+            Objects.requireNonNull(daoConfig.getModelClass(), "Model class must not be NULL.");
+            Objects.requireNonNull(daoConfig.getDaoClass(), "DAO class must not be NULL.");
 
-            if (this.registeredModels == null) {
-                this.registeredModels = new HashMap<>();
-            }
-
-            if (this.registeredModels.putIfAbsent(modelClass, daoClass) != null) {
-                throw new IllegalStateException("Model already registered in ElsaClient.Builder: " + modelClass + "\n" +
-                        "Make a copy of the model class if you want separate DAOs for whatever reason.");
+            if (this.registeredModels.putIfAbsent(daoConfig.getModelClass(), daoConfig) != null) {
+                throw new IllegalStateException("Model already registered in ElsaClient.Builder: " + daoConfig.getModelClass() + "\n" +
+                        "Make a copy (or simply extend) of the model class if you want separate DAOs for whatever reason.");
             }
             return this;
         }

@@ -27,8 +27,8 @@ public interface RestClientConfig {
     void configure(RestClientBuilder builder);
 
     static RestHighLevelClient create(final HttpHost[] httpHosts, final RestClientConfig config) {
-        RestClientBuilder builder = RestClient.builder(httpHosts);
-        if(config != null) {
+        final RestClientBuilder builder = RestClient.builder(httpHosts);
+        if (config != null) {
             config.configure(builder);
         }
         return new RestHighLevelClient(builder);

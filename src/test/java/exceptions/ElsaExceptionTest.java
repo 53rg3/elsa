@@ -19,6 +19,7 @@ package exceptions;
 import assets.FakerModel;
 import client.ElsaClient;
 import dao.CrudDAO;
+import dao.DaoConfig;
 import org.apache.http.HttpHost;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class ElsaExceptionTest {
 
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(FakerModel.class, CrudDAO.class)
+            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
 
     @Test
@@ -63,7 +64,7 @@ public class ElsaExceptionTest {
         final HttpHost[] httpHosts = {new HttpHost("localhost", 1111, "http")};
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(httpHosts)
-                .registerModel(FakerModel.class, CrudDAO.class)
+                .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
                 .createIndexesAndEnsureMappingConsistency(false));
 
         try {

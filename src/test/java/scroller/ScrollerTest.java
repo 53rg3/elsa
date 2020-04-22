@@ -19,6 +19,7 @@ package scroller;
 import assets.FakerModel;
 import client.ElsaClient;
 import dao.CrudDAO;
+import dao.DaoConfig;
 import exceptions.ElsaException;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -39,7 +40,7 @@ public class ScrollerTest {
 
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(FakerModel.class, CrudDAO.class)
+            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
 

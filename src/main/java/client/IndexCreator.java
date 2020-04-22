@@ -17,26 +17,25 @@
 package client;
 
 import admin.IndexAdmin;
-import dao.ElsaDAO;
+import dao.DaoConfig;
 import exceptions.ElsaException;
 import model.ElsaModel;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collection;
 
 public class IndexCreator {
     private IndexCreator() {
     }
 
     protected static void createIndicesOrEnsureMappingConsistency(final boolean shouldProceed,
-                                                                  final Map<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> registeredModels,
+                                                                  final Collection<DaoConfig> daoConfigs,
                                                                   final IndexAdmin indexAdmin) throws ElsaException {
         if (!shouldProceed) {
             return;
         }
 
-        for (final Entry<Class<? extends ElsaModel>, Class<? extends ElsaDAO>> entry : registeredModels.entrySet()) {
-            final Class<? extends ElsaModel> modelClass = entry.getKey();
+        for (final DaoConfig daoConfig : daoConfigs) {
+            final Class<? extends ElsaModel> modelClass = daoConfig.getModelClass();
 
             if (modelClass.equals(ElsaModel.class)) {
                 throw new IllegalArgumentException("Registering interface ElsaModel.class as model is not allowed. Create a model which implements it.");

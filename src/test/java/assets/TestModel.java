@@ -27,7 +27,7 @@ import java.util.List;
 
 public class TestModel implements ElsaModel {
 
-    private static IndexConfig indexData = new IndexConfig(c->c
+    public static IndexConfig indexConfig = new IndexConfig(c->c
             .indexName("elsa_test_index")
             .shards(1)
             .replicas(0)
@@ -61,7 +61,7 @@ public class TestModel implements ElsaModel {
 
     @Override
     public IndexConfig getIndexConfig() {
-        return indexData;
+        return indexConfig;
     }
 
     @Override

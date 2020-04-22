@@ -48,7 +48,7 @@ public class CrudDAOTest {
 
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(TestModel.class, TestDAO.class)
+            .registerDAO(new DaoConfig(TestModel.class, TestDAO.class, TestModel.indexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
     private final TestDAO testDAO = elsa.getDAO(TestModel.class);
     private static final TestModel testModelWithoutId = new TestModel();

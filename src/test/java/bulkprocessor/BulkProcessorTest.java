@@ -20,6 +20,7 @@ import assets.FakerModel;
 import assets.TestBulkResponseListener;
 import client.ElsaClient;
 import dao.CrudDAO;
+import dao.DaoConfig;
 import exceptions.ElsaException;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.unit.TimeValue;
@@ -38,7 +39,7 @@ public class BulkProcessorTest {
     private final AtomicInteger totalResponses = new AtomicInteger();
     private final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(FakerModel.class, CrudDAO.class)
+            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
             .configureBulkProcessor(config -> config
                     .setBulkActions(66)
                     .setFlushInterval(TimeValue.timeValueSeconds(10)))

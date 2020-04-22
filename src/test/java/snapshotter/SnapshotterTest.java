@@ -20,6 +20,7 @@ import assets.FakerModel;
 import assets.TestHelpers;
 import client.ElsaClient;
 import dao.CrudDAO;
+import dao.DaoConfig;
 import exceptions.ElsaException;
 import helpers.IndexName;
 import helpers.XJson;
@@ -64,7 +65,7 @@ public class SnapshotterTest {
             .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerSnapshotRepositories(d -> d
                     .add(new SnapshotRepository(repository3, repositoryLocation_EXISTS)))
-            .registerModel(FakerModel.class, CrudDAO.class)
+            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
     );
     private static final CrudDAO<FakerModel> crudDAO = elsa.getDAO(FakerModel.class);
 

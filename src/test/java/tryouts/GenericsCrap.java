@@ -1,17 +1,12 @@
 package tryouts;
 
 import assets.FakerModel;
-import assets.TestDAO;
 import assets.TestModel;
 import client.ElsaClient;
 import dao.CrudDAO;
-import dao.ElsaDAO;
+import dao.DaoConfig;
 import dao.SearchDAO;
-import model.ElsaModel;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 
@@ -19,8 +14,8 @@ public class GenericsCrap {
     // todo delete class
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(TestModel.class, SearchDAO.class)
-            .registerModel(FakerModel.class, CrudDAO.class)
+            .registerDAO(new DaoConfig(TestModel.class, SearchDAO.class, FakerModel.indexConfig))
+            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
 
     @Test

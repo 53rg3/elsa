@@ -21,6 +21,7 @@ import assets.TestModel;
 import assets.TestModelWithAddedMappings;
 import assets.TestModelWithInvalidlyModifiedMappings;
 import client.ElsaClient;
+import dao.DaoConfig;
 import exceptions.ElsaException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.junit.FixMethodOrder;
@@ -37,7 +38,7 @@ public class IndexAdminTest {
 
     private final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(TestModel.class, TestDAO.class)
+            .registerDAO(new DaoConfig(TestModel.class, TestDAO.class, TestModel.indexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
 
     @Test

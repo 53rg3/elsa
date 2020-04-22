@@ -43,7 +43,7 @@ public class SearchDAOTest {
 
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(FakerModel.class, CrudDAO.class)
+            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
 

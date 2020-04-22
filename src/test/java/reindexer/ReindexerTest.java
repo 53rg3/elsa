@@ -21,6 +21,7 @@ import assets.FakerModelInvalidMapping;
 import assets.TestHelpers;
 import client.ElsaClient;
 import dao.CrudDAO;
+import dao.DaoConfig;
 import exceptions.ElsaException;
 import exceptions.ElsaIOException;
 import helpers.XJson;
@@ -48,7 +49,7 @@ public class ReindexerTest {
 
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerModel(FakerModel.class, CrudDAO.class)
+            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
     );
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
     private static final FakerModel fakerModel = new FakerModel();
