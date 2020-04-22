@@ -213,6 +213,7 @@ public class ElsaClientTest {
         elsa.getDAO(FakerModel.class);
     }
 
+    // todo add tests 1. class type not compatible, 2. params must not be null
     @Test(expected = ClassCastException.class)
     public void getDao_daoTypeIsNotCompatible_throw() {
         final ElsaClient elsa = new ElsaClient(c -> c

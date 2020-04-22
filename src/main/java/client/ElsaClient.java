@@ -232,7 +232,7 @@ public class ElsaClient {
 
     /**
      * Type is set in this.createDaoMap()
-     */
+     */ // todo how to check
     @SuppressWarnings("unchecked")
     public <T extends ElsaDAO> T getDAO(final Class<? extends ElsaModel> modelClass) {
         return Objects.requireNonNull((T) this.daoMap.get(modelClass), "Requested DAO for model class does not exist. " +
