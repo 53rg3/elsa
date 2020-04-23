@@ -225,12 +225,21 @@ public class ElsaClient {
     }
 
     /**
-     * Type is set in this.createDaoMap()
-     */ // todo how to check, see generics crap AND test
+     * Convenience method for DAOs registered via ElsaClient instantiation. You can also use ElsaClient.createDAO()
+     * if you need different IndexConfigs for working on multiple indices with the same model.
+     */ // todo how to check, see GenericsCrap AND test
     @SuppressWarnings("unchecked")
     public <T extends ElsaDAO> T getDAO(final Class<? extends ElsaModel> modelClass) {
         return Objects.requireNonNull((T) this.daoMap.get(modelClass), "Requested DAO for model class does not exist. " +
                 "Make sure the following model was registered in the ElsaClient instantiation: " + modelClass);
+    }
+
+    /**
+     * Use this method if you want to work with multiple indices which use the same model. Otherwise register DAOs
+     * via the ElsaClient instantiation and use ElsaClient.getDAO(ElsaModel).
+     */
+    public <T extends ElsaDAO> T createDAO(final DaoConfig daoConfig) {
+        return this.daoCreator.createDAO(daoConfig);
     }
 
 }
