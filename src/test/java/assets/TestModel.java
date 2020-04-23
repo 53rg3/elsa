@@ -31,7 +31,6 @@ public class TestModel implements ElsaModel {
             .indexName("elsa_test_index")
             .shards(1)
             .replicas(0)
-            .allowDynamicIndexNaming(true)
             .refreshInterval(TimeValue.timeValueSeconds(1)));
 
     @Id

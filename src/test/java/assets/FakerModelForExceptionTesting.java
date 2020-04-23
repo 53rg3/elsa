@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+// todo why not used? Delete?
 public class FakerModelForExceptionTesting implements ElsaModel {
 
     private static final Faker faker = new Faker();
@@ -36,7 +37,6 @@ public class FakerModelForExceptionTesting implements ElsaModel {
             .indexName("exception_handler_test")
             .shards(1)
             .replicas(0)
-            .allowDynamicIndexNaming(true)
             .refreshInterval(TimeValue.timeValueSeconds(1)));
 
     @Id

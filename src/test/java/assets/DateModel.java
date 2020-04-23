@@ -35,7 +35,6 @@ public class DateModel implements ElsaModel {
             .indexName("elsa_gson_test")
             .shards(1)
             .replicas(0)
-            .allowDynamicIndexNaming(true)
             .refreshInterval(TimeValue.timeValueSeconds(1)));
 
     @Id

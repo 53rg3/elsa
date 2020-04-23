@@ -28,8 +28,7 @@ public class IndexConfig {
     public interface Configurator {
 
         default Config loadDefaults() {
-            return new Config()
-                    .allowDynamicIndexNaming(false);
+            return new Config();
         }
 
         default void validate(final Config config) {
@@ -56,7 +55,6 @@ public class IndexConfig {
     private String indexName;
     private final Integer shards;
     private final Integer replicas;
-    private final boolean allowDynamicIndexNaming;
     private final TimeValue refreshInterval;
 
 
@@ -69,7 +67,6 @@ public class IndexConfig {
         this.indexName = config.indexName;
         this.shards = config.shards;
         this.replicas = config.replicas;
-        this.allowDynamicIndexNaming = config.allowDynamicIndexNaming;
         this.refreshInterval = config.refreshInterval;
     }
 
@@ -79,12 +76,12 @@ public class IndexConfig {
     // ------------------------------------------------------------------------------------------ //
 
     public static class Config {
-        private Config() {}
+        private Config() {
+        }
 
         private String indexName;
         private Integer shards;
         private Integer replicas;
-        private boolean allowDynamicIndexNaming = false;
         private TimeValue refreshInterval = TimeValue.timeValueSeconds(1);
 
         public Config indexName(final String mandatorySetting) {
@@ -99,11 +96,6 @@ public class IndexConfig {
 
         public Config replicas(final Integer mandatorySetting) {
             this.replicas = mandatorySetting;
-            return this;
-        }
-
-        public Config allowDynamicIndexNaming(final boolean defaultIsFalse) {
-            this.allowDynamicIndexNaming = defaultIsFalse;
             return this;
         }
 
@@ -133,34 +125,23 @@ public class IndexConfig {
     }
 
     public synchronized String getIndexName() {
-        return indexName;
+        return this.indexName;
     }
 
-    public synchronized void setIndexName(final String indexName) {
-        if (this.allowDynamicIndexNaming) {
-            this.indexName = indexName;
-        } else {
-            throw new IllegalStateException("" +
-                    "One of your registered models doesn't explicitly allow to set the indexName dynamically. " +
-                    "This is disallowed by default. " +
-                    "Check the IndexConfig implementations of the registered models. ");
-        }
+    public synchronized void setIndexName(final String indexName) { // todo delete. Use separate DAOs. Or maybe keep?
+        this.indexName = indexName;
     }
 
     public int getShards() {
-        return shards;
+        return this.shards;
     }
 
     public int getReplicas() {
-        return replicas;
+        return this.replicas;
     }
 
     public TimeValue getRefreshInterval() {
-        return refreshInterval;
-    }
-
-    public boolean isDynamicIndexNamingAllowed() {
-        return allowDynamicIndexNaming;
+        return this.refreshInterval;
     }
 
 }

@@ -36,7 +36,6 @@ public class FakerModel implements ElsaModel {
             .indexName("elsa_bulk_test")
             .shards(1)
             .replicas(0)
-            .allowDynamicIndexNaming(true)
             .refreshInterval(TimeValue.timeValueSeconds(1)));
 
     @Id
