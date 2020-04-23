@@ -32,85 +32,33 @@ import java.util.Objects;
 /**
  * Creates a map to retrieve DAO classes for registered models.
  */
-public class DaoMapCreator {
+class DaoCreator {
 
-    private static final Logger logger = LoggerFactory.getLogger(DaoMapCreator.class);
+    private static final Logger logger = LoggerFactory.getLogger(DaoCreator.class);
 
     // ------------------------------------------------------------------------------------------ //
     //  FIELDS
     // ------------------------------------------------------------------------------------------ //
 
     private final ElsaClient elsa;
-    private final Collection<DaoConfig> daoConfigs;
-
-    // ------------------------------------------------------------------------------------------ //
-    // CONFIGURATOR
-    // ------------------------------------------------------------------------------------------ //
-
-    @FunctionalInterface
-    protected interface Config {
-
-        static Builder createBuilderWithDefaults() {
-            return new Builder();
-        }
-
-        void applyCustomConfig(Builder builder);
-
-        default void validate(final Builder builder) {
-            Objects.requireNonNull(builder.elsa, "ElsaClient must not be NULL.");
-            Objects.requireNonNull(builder.registeredModels, "RegisteredModels must not be NULL.");
-        }
-
-        static Builder createBuilder(final Config config) {
-            final Builder builder = createBuilderWithDefaults();
-            config.applyCustomConfig(builder);
-            config.validate(builder);
-            return builder;
-        }
-    }
 
 
     // ------------------------------------------------------------------------------------------ //
     // BUILD
     // ------------------------------------------------------------------------------------------ //
 
-    DaoMapCreator(final Config config) {
-        final Builder builder = Config.createBuilder(config);
-        this.elsa = builder.elsa;
-        this.daoConfigs = builder.registeredModels;
-    }
-
-
-    // ------------------------------------------------------------------------------------------ //
-    // BUILDER
-    // ------------------------------------------------------------------------------------------ //
-
-    public static class Builder {
-        private Builder() {
-        }
-
-        private ElsaClient elsa;
-        private Collection<DaoConfig> registeredModels;
-
-        public Builder elsa(final ElsaClient mandatorySetting) {
-            this.elsa = mandatorySetting;
-            return this;
-        }
-
-        public Builder registeredModels(final Collection<DaoConfig> mandatorySetting) {
-            this.registeredModels = mandatorySetting;
-            return this;
-        }
-
+    DaoCreator(final ElsaClient elsaClient) {
+        Objects.requireNonNull(elsaClient, "ElsaClient must not be NULL.");
+        this.elsa = elsaClient;
     }
 
     // ------------------------------------------------------------------------------------------ //
     // METHODS
     // ------------------------------------------------------------------------------------------ //
 
-    public ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> create() {
+    ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> createDaoMap(final Collection<DaoConfig> registeredDaos) {
         final Map<Class<? extends ElsaModel>, ElsaDAO> map = new HashMap<>();
-        for (final DaoConfig daoConfig : this.daoConfigs) {
+        for (final DaoConfig daoConfig : registeredDaos) {
 
             final Class<? extends ElsaModel> modelClass = daoConfig.getModelClass();
             final Class<? extends ElsaDAO> daoClass = daoConfig.getDaoClass();

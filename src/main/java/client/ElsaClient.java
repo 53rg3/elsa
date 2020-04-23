@@ -52,6 +52,7 @@ public class ElsaClient {
     public final Reindexer reindexer;
     public final Snapshotter snapshotter;
     public final Gson gson;
+    private final DaoCreator daoCreator;
     private final ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> daoMap;
 
 
@@ -98,10 +99,8 @@ public class ElsaClient {
         final Config config = Configurator.create(configurator);
         this.client = RestClientConfig.create(config.httpHosts, config.restClientConfig);
         this.gson = config.modelMapper.getGsonBuilder().create();
-        this.daoMap = new DaoMapCreator(c -> c
-                .elsa(this)
-                .registeredModels(config.daoConfigMap.values()))
-                .create();
+        this.daoCreator = new DaoCreator(this);
+        this.daoMap = this.daoCreator.createDaoMap(config.daoConfigMap.values());
         final RepositoryBucket repositoryBucket = new RepositoryBucket(config.repositoryBucketConfig);
 
         // COMPONENTS
