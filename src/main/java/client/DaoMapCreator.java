@@ -115,11 +115,11 @@ public class DaoMapCreator {
             final Class<? extends ElsaModel> modelClass = daoConfig.getModelClass();
             final Class<? extends ElsaDAO> daoClass = daoConfig.getDaoClass();
 
-            this.ensureElsaIndexDataInModelIsNotNull(modelClass);
+            this.ensureElsaIndexDataInModelIsNotNull(modelClass); // todo delete
             this.ensureGetIdAndSetIdInModelWorkProperly(modelClass);
 
             try {
-                map.put(modelClass, daoClass.getConstructor(Class.class, ElsaClient.class).newInstance(modelClass, this.elsa));
+                map.put(modelClass, daoClass.getConstructor(DaoConfig.class, ElsaClient.class).newInstance(daoConfig, this.elsa));
             } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 logger.error("Can't instantiate DAOMap for ElsaClient. Problem with " + modelClass + " or " + daoClass, e);
                 throw new IllegalStateException("Can't instantiate DAOMap for ElsaClient. Problem with " + modelClass + " or " + daoClass, e);

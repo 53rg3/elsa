@@ -21,7 +21,6 @@ import exceptions.ElsaElasticsearchException;
 import exceptions.ElsaException;
 import exceptions.ElsaIOException;
 import model.ElsaModel;
-import model.IndexConfig;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -34,8 +33,6 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import statics.ElsaStatics;
 
 import java.io.IOException;
@@ -44,13 +41,8 @@ import java.util.Objects;
 
 public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
 
-    private final IndexConfig indexConfig;
-
-    private static final Logger logger = LoggerFactory.getLogger(CrudDAO.class);
-
-    public CrudDAO(final Class<T> model, final ElsaClient elsa) {
-        super(model, elsa);
-        this.indexConfig = this.setIndexConfig(model);
+    public CrudDAO(final DaoConfig daoConfig, final ElsaClient elsa) {
+        super(daoConfig, elsa);
     }
 
 
@@ -91,10 +83,10 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
 
     public IndexRequest buildIndexRequest(final T model) {
         if (model.getId() == null) {
-            return new IndexRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE)
+            return new IndexRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE)
                     .source(this.getJsonMapper().toJson(model), XContentType.JSON);
         } else {
-            return new IndexRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()))
+            return new IndexRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()))
                     .source(this.getJsonMapper().toJson(model), XContentType.JSON);
         }
     }
@@ -119,7 +111,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     public T get(final String id, final RequestOptions options) throws ElsaException {
         try {
             final GetResponse response = this.getElsa().client.get(
-                    new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id),
+                    new GetRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, id),
                     options
             );
             T model = null;
@@ -144,7 +136,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     }
 
     public GetResponse getRawResponse(final String id, final RequestOptions options) throws ElsaException {
-        final GetRequest request = new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id);
+        final GetRequest request = new GetRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, id);
         try {
             return this.getElsa().client.get(request, options);
         } catch (final IOException e) {
@@ -159,7 +151,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
      */
     public void getAsync(final String id, final RequestOptions options, final ActionListener<GetResponse> listener) {
         this.getElsa().client.getAsync(
-                new GetRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, id),
+                new GetRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, id),
                 options,
                 listener
         );
@@ -185,7 +177,6 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
         }
     }
 
-
     /**
      * This deletes the document asynchronously. DeleteResponse will be send to the Listener.
      */
@@ -201,7 +192,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     }
 
     public DeleteRequest buildDeleteRequest(final T model) {
-        return new DeleteRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()));
+        return new DeleteRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()));
     }
 
 
@@ -232,7 +223,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     }
 
     public UpdateRequest buildUpdateRequest(final T model) {
-        return new UpdateRequest(this.indexConfig.getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()))
+        return new UpdateRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()))
                 .doc(this.getJsonMapper().toJson(model), XContentType.JSON);
     }
 
@@ -240,15 +231,6 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     // ------------------------------------------------------------------------------------------ //
     // PRIVATE METHODS
     // ------------------------------------------------------------------------------------------ //
-
-    private IndexConfig setIndexConfig(final Class<? extends ElsaModel> model) {
-        try {
-            return model.newInstance().getIndexConfig();
-        } catch (final InstantiationException | IllegalAccessException e) {
-            logger.error("", e);
-        }
-        throw new IllegalStateException("Can't build object for model: " + model.getName());
-    }
 
     private String getIdOrThrow(final String id) {
         if (id == null) {

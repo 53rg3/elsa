@@ -21,6 +21,7 @@ import dao.CrudDAO;
 import dao.DaoConfig;
 import dao.ElsaDAO;
 import exceptions.ElsaException;
+import model.IndexConfig;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
@@ -124,19 +125,28 @@ public class ElsaClientTest {
                 .createIndexesAndEnsureMappingConsistency(false));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void builder_elsaIndexDataIsNullInModel_throw() {
-        new ElsaClient(c -> c
-                .setClusterNodes(TEST_CLUSTER_HOSTS)
-                .registerDAO(new DaoConfig(InvalidModelIndexDataIsNull.class, ElsaDAO.class, InvalidModelIndexDataIsNull.indexConfig))
-                .createIndexesAndEnsureMappingConsistency(false));
+        try {
+            new ElsaClient(c -> c
+                    .setClusterNodes(TEST_CLUSTER_HOSTS)
+                    .registerDAO(new DaoConfig(InvalidModelIndexDataIsNull.class, ElsaDAO.class, InvalidModelIndexDataIsNull.indexConfig))
+                    .createIndexesAndEnsureMappingConsistency(false));
+        } catch (final Exception e) {
+            assertTrue(e instanceof NullPointerException);
+            assertThat(e.getMessage(), is("indexConfig must not be null"));
+        }
     }
 
     @Test(expected = IllegalStateException.class)
     public void builder_modelHasInvalidIdGetterOrSetter_throw() {
+        final IndexConfig indexConfig = new IndexConfig(c -> c
+                .indexName("some_index")
+                .shards(1)
+                .replicas(0));
         new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
-                .registerDAO(new DaoConfig(InvalidModelIdAccessorsWrong.class, TestDAO.class, InvalidModelIdAccessorsWrong.indexConfig))
+                .registerDAO(new DaoConfig(InvalidModelIdAccessorsWrong.class, TestDAO.class, indexConfig))
                 .createIndexesAndEnsureMappingConsistency(false));
     }
 

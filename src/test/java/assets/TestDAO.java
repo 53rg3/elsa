@@ -18,11 +18,12 @@ package assets;
 
 import client.ElsaClient;
 import dao.CrudDAO;
+import dao.DaoConfig;
 
 public class TestDAO extends CrudDAO<TestModel> {
 
-    public TestDAO(final Class<TestModel> model, final ElsaClient elsa) {
-        super(model, elsa);
+    public TestDAO(final DaoConfig daoConfig, final ElsaClient elsa) {
+        super(daoConfig, elsa);
     }
 
 }

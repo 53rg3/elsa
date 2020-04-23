@@ -3,6 +3,8 @@ package dao;
 import model.ElsaModel;
 import model.IndexConfig;
 
+import java.util.Objects;
+
 public class DaoConfig {
 
     private final Class<? extends ElsaModel> modelClass;
@@ -12,6 +14,9 @@ public class DaoConfig {
     public DaoConfig(final Class<? extends ElsaModel> modelClass,
                      final Class<? extends ElsaDAO> daoClass,
                      final IndexConfig indexConfig) {
+        Objects.requireNonNull(modelClass, "modelClass must not be null");
+        Objects.requireNonNull(daoClass, "daoClass must not be null");
+        Objects.requireNonNull(indexConfig, "indexConfig must not be null");
         this.modelClass = modelClass;
         this.daoClass = daoClass;
         this.indexConfig = indexConfig;

@@ -33,8 +33,8 @@ import java.util.stream.Stream;
 
 public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
 
-    public SearchDAO(final Class<T> model, final ElsaClient elsa) {
-        super(model, elsa);
+    public SearchDAO(final DaoConfig daoConfig, final ElsaClient elsa) {
+        super(daoConfig, elsa);
     }
 
     public SearchResponse search(final SearchRequest searchRequest, final RequestOptions options) throws ElsaException {
@@ -76,6 +76,7 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
      * Makes a search and returns the hits of the response mapped to your model inclusive the _id field.<br>
      * If you need the meta data of the SearchResponse, then use the regular search method and parse the hits manually
      * with the SearchResponseMapper in this DAO.
+     *
      * @return Empty list if no results found
      */
     public List<T> searchAndMapToList(final SearchRequest searchRequest, final RequestOptions options) throws ElsaException {
@@ -91,6 +92,7 @@ public class SearchDAO<T extends ElsaModel> extends ElsaDAO<T> {
      * Makes a search and returns the hits of the response mapped to your model inclusive the _id field as a stream.<br>
      * If you need the meta data of the SearchResponse, then use the regular search method and parse the hits manually
      * with the SearchResponseMapper in this DAO.
+     *
      * @return Empty list if no results found
      */
     public Stream<T> searchAndMapToStream(final SearchRequest searchRequest, final RequestOptions options) throws ElsaException {

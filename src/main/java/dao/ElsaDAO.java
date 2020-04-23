@@ -20,18 +20,28 @@ import client.ElsaClient;
 import jsonmapper.GsonAdapter;
 import jsonmapper.JsonMapper;
 import model.ElsaModel;
+import model.IndexConfig;
+
+import java.util.Objects;
 
 public class ElsaDAO<T extends ElsaModel> {
 
+    private final Class<T> modelClass;
+    private final IndexConfig indexConfig;
     private final ElsaClient elsa;
     private final JsonMapper<T> jsonMapper;
-    private final Class<T> model;
     private final SearchResponseMapper<T> searchResponseMapper;
 
-    public ElsaDAO(final Class<T> model, final ElsaClient elsa) {
+    @SuppressWarnings("unchecked") // todo is casting legit or must this be done differently?
+    public ElsaDAO(final DaoConfig daoConfig, final ElsaClient elsa) {
+        Objects.requireNonNull(daoConfig, "daoConfig must not be null");
+        Objects.requireNonNull(elsa, "elsa must not be null");
+
+        this.modelClass = (Class<T>) daoConfig.getModelClass();
+        this.indexConfig = daoConfig.getIndexConfig();
         this.elsa = elsa;
-        this.model = model;
-        this.jsonMapper = new GsonAdapter<T>(model, elsa.gson);
+
+        this.jsonMapper = new GsonAdapter<>(this.modelClass, elsa.gson);
         this.searchResponseMapper = new SearchResponseMapper<>(this);
     }
 
@@ -44,10 +54,14 @@ public class ElsaDAO<T extends ElsaModel> {
     }
 
     public Class<T> getModelClass() {
-        return this.model;
+        return this.modelClass;
     }
 
     public SearchResponseMapper<T> getSearchResponseMapper() {
         return this.searchResponseMapper;
+    }
+
+    public IndexConfig getIndexConfig() {
+        return this.indexConfig;
     }
 }
