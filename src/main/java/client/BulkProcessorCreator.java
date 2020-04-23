@@ -22,7 +22,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
 public class BulkProcessorCreator {
-
+    // todo public and put into ElsaClient
     protected static BulkProcessor createBulkProcessor(final RestHighLevelClient client,
                                                        final Listener bulkResponseListener,
                                                        final RequestOptions requestOptions,

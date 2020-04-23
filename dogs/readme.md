@@ -3,10 +3,20 @@
 # Ruminations for 0.2
 
 - No pseudo-Optionals
+
   - They're fake and gay. Throw a shit load of exceptions.
+
 - Don't we have some exception mapping? Was that useful? Why not pass it as it is and let user decide what to do.
 
 
+
+## ElsaClient, DAOs and the BulkProcessor
+
+- The Elasticsearch client manages thread pools which automatically are configured depending on the underlying machine. You should therefore only use one per application. One client is connected to only one cluster. If you want to work on multiple clusters you need multiple clients. In that case you probably will have to [configure the thread pools manually](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-threadpool.html), if performance is a concern. A work-around would be to open and close clients when switching clusters.
+- When initializing the `ElsaClient` you can register DAOs, which can then be retrieved via `ElsaClient.getDao(Model.class)`. If you want to work on multiple indices you can also use `ElsaClient.createDAO(DaoConfig)`. The indices must be in the same cluster.
+- You don't need to create multiple `Bulkprocessor` instances. Just use the one which `ElsaClient` creates on initialization and throw your raw requests from the DAOs in there and let it do it's magic. You can work on multiple indices at once. If you, for whatever reason, want more BulkProcessors, then it's no problem, because they will use the same thread pool.
+
+ 
 
 ## Exception handling
 
