@@ -41,7 +41,7 @@ public class DaoMapCreator {
     // ------------------------------------------------------------------------------------------ //
 
     private final ElsaClient elsa;
-    private final Collection<DaoConfig> registeredModels;
+    private final Collection<DaoConfig> daoConfigs;
 
     // ------------------------------------------------------------------------------------------ //
     // CONFIGURATOR
@@ -77,7 +77,7 @@ public class DaoMapCreator {
     DaoMapCreator(final Config config) {
         final Builder builder = Config.createBuilder(config);
         this.elsa = builder.elsa;
-        this.registeredModels = builder.registeredModels;
+        this.daoConfigs = builder.registeredModels;
     }
 
 
@@ -110,7 +110,7 @@ public class DaoMapCreator {
 
     public ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> create() {
         final Map<Class<? extends ElsaModel>, ElsaDAO> map = new HashMap<>();
-        for (final DaoConfig daoConfig : this.registeredModels) {
+        for (final DaoConfig daoConfig : this.daoConfigs) {
 
             final Class<? extends ElsaModel> modelClass = daoConfig.getModelClass();
             final Class<? extends ElsaDAO> daoClass = daoConfig.getDaoClass();
@@ -122,6 +122,7 @@ public class DaoMapCreator {
                 map.put(modelClass, daoClass.getConstructor(Class.class, ElsaClient.class).newInstance(modelClass, this.elsa));
             } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 logger.error("Can't instantiate DAOMap for ElsaClient. Problem with " + modelClass + " or " + daoClass, e);
+                throw new IllegalStateException("Can't instantiate DAOMap for ElsaClient. Problem with " + modelClass + " or " + daoClass, e);
             }
         }
         return ImmutableMap.copyOf(map);

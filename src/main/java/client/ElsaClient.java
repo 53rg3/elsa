@@ -52,7 +52,6 @@ public class ElsaClient {
     public final Reindexer reindexer;
     public final Snapshotter snapshotter;
     public final Gson gson;
-
     private final ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> daoMap;
 
 
@@ -101,7 +100,7 @@ public class ElsaClient {
         this.gson = config.modelMapper.getGsonBuilder().create();
         this.daoMap = new DaoMapCreator(c -> c
                 .elsa(this)
-                .registeredModels(config.registeredModels.values()))
+                .registeredModels(config.daoConfigMap.values()))
                 .create();
         final RepositoryBucket repositoryBucket = new RepositoryBucket(config.repositoryBucketConfig);
 
@@ -120,7 +119,7 @@ public class ElsaClient {
         try {
             IndexCreator.createIndicesOrEnsureMappingConsistency(
                     config.createIndexesAndEnsureMappingConsistency,
-                    config.registeredModels.values(),
+                    config.daoConfigMap.values(),
                     this.admin);
         } catch (final ElsaException e) {
             throw new IllegalStateException("Couldn't create indices or update mapping.", e);
@@ -144,7 +143,7 @@ public class ElsaClient {
         }
 
         // MANDATORY SETTINGS
-        private final Map<Class<? extends ElsaModel>, DaoConfig> registeredModels = new HashMap<>();
+        private final Map<Class<? extends ElsaModel>, DaoConfig> daoConfigMap = new HashMap<>();
         private HttpHost[] httpHosts;
 
         // OPTIONAL SETTINGS
@@ -171,7 +170,7 @@ public class ElsaClient {
             Objects.requireNonNull(daoConfig.getModelClass(), "Model class must not be NULL.");
             Objects.requireNonNull(daoConfig.getDaoClass(), "DAO class must not be NULL.");
 
-            if (this.registeredModels.putIfAbsent(daoConfig.getModelClass(), daoConfig) != null) {
+            if (this.daoConfigMap.putIfAbsent(daoConfig.getModelClass(), daoConfig) != null) {
                 throw new IllegalStateException("Model already registered in ElsaClient.Builder: " + daoConfig.getModelClass() + "\n" +
                         "Make a copy (or simply extend) of the model class if you want separate DAOs for whatever reason.");
             }
@@ -228,7 +227,7 @@ public class ElsaClient {
 
     /**
      * Type is set in this.createDaoMap()
-     */ // todo how to check
+     */ // todo how to check, see generics crap AND test
     @SuppressWarnings("unchecked")
     public <T extends ElsaDAO> T getDAO(final Class<? extends ElsaModel> modelClass) {
         return Objects.requireNonNull((T) this.daoMap.get(modelClass), "Requested DAO for model class does not exist. " +

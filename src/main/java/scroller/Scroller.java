@@ -34,7 +34,8 @@ public class Scroller {
         this.elsa = elsa;
     }
 
-    public SearchResponse initialize(final SearchRequest searchRequest, final ScrollManager scrollManager,
+    public SearchResponse initialize(final SearchRequest searchRequest,
+                                     final ScrollManager scrollManager,
                                      final RequestOptions options) throws ElsaException {
         try {
             final SearchResponse searchResponse = this.elsa.client.search(searchRequest.scroll(scrollManager.getScroll()), options);
@@ -56,7 +57,8 @@ public class Scroller {
         return searchResponse.getHits().getHits() != null && searchResponse.getHits().getHits().length > 0;
     }
 
-    public SearchResponse getNext(final ScrollManager scrollManager, final SearchResponse lastSearchResponse,
+    public SearchResponse getNext(final ScrollManager scrollManager,
+                                  final SearchResponse lastSearchResponse,
                                   final RequestOptions options) throws ElsaException {
         try {
             scrollManager.updateScrollId(lastSearchResponse);
