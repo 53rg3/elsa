@@ -50,7 +50,7 @@ public class ReindexerTest {
 
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
+            .registerDAO(new DaoConfig(CrudDAO.class, FakerModel.indexConfig))
     );
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
     private static final FakerModel fakerModel = new FakerModel();

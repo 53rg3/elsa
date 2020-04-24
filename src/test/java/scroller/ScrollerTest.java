@@ -40,7 +40,7 @@ public class ScrollerTest {
 
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
+            .registerDAO(new DaoConfig(CrudDAO.class, FakerModel.indexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
 

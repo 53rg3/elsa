@@ -65,7 +65,7 @@ public class SnapshotterTest {
             .setClusterNodes(TEST_CLUSTER_HOSTS)
             .registerSnapshotRepositories(d -> d
                     .add(new SnapshotRepository(repository3, repositoryLocation_EXISTS)))
-            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
+            .registerDAO(new DaoConfig(CrudDAO.class, FakerModel.indexConfig))
     );
     private static final CrudDAO<FakerModel> crudDAO = elsa.getDAO(FakerModel.class);
 

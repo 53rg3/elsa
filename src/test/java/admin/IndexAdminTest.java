@@ -39,7 +39,7 @@ public class IndexAdminTest {
 
     private final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(TestModel.class, TestDAO.class, TestModel.indexConfig))
+            .registerDAO(new DaoConfig(TestDAO.class, TestModel.indexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
 
     @Test

@@ -48,7 +48,7 @@ public class AsyncCrudDAOTest {
             .refreshInterval(TimeValue.timeValueMillis(10)));
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(FakerModelAsync.class, CrudDAO.class, newIndexConfig))
+            .registerDAO(new DaoConfig(CrudDAO.class, newIndexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
     private static final CrudDAO<FakerModelAsync> crudDAO = elsa.getDAO(FakerModelAsync.class);
 

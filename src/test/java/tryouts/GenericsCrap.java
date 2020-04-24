@@ -17,11 +17,11 @@ import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 
 public class GenericsCrap {
     // todo delete class
-    private static final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(TestModel.class, SearchDAO.class, FakerModel.indexConfig))
-            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
-            .createIndexesAndEnsureMappingConsistency(false));
+//    private static final ElsaClient elsa = new ElsaClient(c -> c
+//            .setClusterNodes(TEST_CLUSTER_HOSTS)
+//            .registerDAO(new DaoConfig(SearchDAO.class, FakerModel.indexConfig))
+//            .registerDAO(new DaoConfig(CrudDAO.class, FakerModel.indexConfig))
+//            .createIndexesAndEnsureMappingConsistency(false));
     Map<Class<? extends ElsaModel>, ElsaDAO> daoMap = new HashMap<>();
 
     @Test

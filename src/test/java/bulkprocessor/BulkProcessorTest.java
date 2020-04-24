@@ -39,7 +39,7 @@ public class BulkProcessorTest {
     private final AtomicInteger totalResponses = new AtomicInteger();
     private final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(FakerModel.class, CrudDAO.class, FakerModel.indexConfig))
+            .registerDAO(new DaoConfig(CrudDAO.class, FakerModel.indexConfig))
             .configureBulkProcessor(config -> config
                     .setBulkActions(66)
                     .setFlushInterval(TimeValue.timeValueSeconds(10)))

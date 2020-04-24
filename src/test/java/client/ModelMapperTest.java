@@ -41,7 +41,7 @@ public class ModelMapperTest {
 
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(DateModel.class, CrudDAO.class, DateModel.indexConfig))
+            .registerDAO(new DaoConfig(CrudDAO.class, DateModel.indexConfig))
             .configureGson(d -> d
                     .registerTypeAdapter(Date.class, new DummyGsonUTCDateAdapter("yyyy", Locale.UK, "UTC")))
             .createIndexesAndEnsureMappingConsistency(false)

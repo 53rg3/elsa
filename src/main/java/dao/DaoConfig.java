@@ -11,13 +11,11 @@ public class DaoConfig {
     private final Class<? extends ElsaDAO> daoClass;
     private final IndexConfig indexConfig;
 
-    public DaoConfig(final Class<? extends ElsaModel> modelClass,
-                     final Class<? extends ElsaDAO> daoClass,
+    public DaoConfig(final Class<? extends ElsaDAO> daoClass,
                      final IndexConfig indexConfig) {
-        Objects.requireNonNull(modelClass, "modelClass must not be null");
         Objects.requireNonNull(daoClass, "daoClass must not be null");
         Objects.requireNonNull(indexConfig, "indexConfig must not be null");
-        this.modelClass = modelClass;
+        this.modelClass = indexConfig.getMappingClass();
         this.daoClass = daoClass;
         this.indexConfig = indexConfig;
     }
