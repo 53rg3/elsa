@@ -23,6 +23,7 @@ import assets.TestModelWithInvalidlyModifiedMappings;
 import client.ElsaClient;
 import dao.DaoConfig;
 import exceptions.ElsaException;
+import model.IndexConfig;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class IndexAdminTest {
 
     @Test
     public void createIndex_indexDoesNotExist_pass() throws ElsaException {
-        final CreateIndexResponse response = this.elsa.admin.createIndex(TestModel.class);
+        final CreateIndexResponse response = this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
         assertThat(response.isAcknowledged(), is(true));
         assertThat(response.isShardsAcknowledged(), is(true));
         assertThat(this.elsa.admin.indexExists(TestModel.class), is(true));
@@ -54,7 +55,7 @@ public class IndexAdminTest {
 
     @Test
     public void updateMapping_validMappingWithNestedObject_pass() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class);
+        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
         final ConfirmationResponse response = this.elsa.admin.updateMapping(TestModelWithAddedMappings.class);
         assertThat(response.hasSucceeded(), is(true));
 
@@ -64,7 +65,7 @@ public class IndexAdminTest {
 
     @Test
     public void updateMapping_tryingToOverrideExistingMapping_throw() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class);
+        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
 
         try {
             this.elsa.admin.updateMapping(TestModelWithInvalidlyModifiedMappings.class);
@@ -78,7 +79,7 @@ public class IndexAdminTest {
 
     @Test
     public void indexExists_createCheckDeleteCheck_pass() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class);
+        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
         assertThat(this.elsa.admin.indexExists(TestModel.class), is(true));
 
         this.elsa.admin.deleteIndex(TestModel.class);
@@ -87,7 +88,7 @@ public class IndexAdminTest {
 
     @Test
     public void deleteIndexViaClass_indexNewlyCreated_pass() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class);
+        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
 
         this.elsa.admin.deleteIndex(TestModel.class);
         assertThat(this.elsa.admin.indexExists(TestModel.class), is(false));
@@ -105,7 +106,7 @@ public class IndexAdminTest {
     @Test
     public void deleteIndexViaString_indexNewlyCreated_pass() throws ElsaException {
         final TestModel testModel = new TestModel();
-        this.elsa.admin.createIndex(TestModel.class);
+        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
 
         this.elsa.admin.deleteIndex(testModel.getIndexConfig().getIndexName());
         assertThat(this.elsa.admin.indexExists(TestModel.class), is(false));
@@ -123,33 +124,40 @@ public class IndexAdminTest {
 
     @Test
     public void createIndex_withDynamicNaming_pass() throws ElsaException {
-        final TestModel testModel1 = new TestModel();
-        final TestModel testModel2 = new TestModel();
-        assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
+        String elsa_test_index = "elsa_test_index";
+        String new_name = "new_name";
+        IndexConfig elsaTestIndexConfig = new IndexConfig(c -> c
+                .indexName(elsa_test_index)
+                .mappingClass(TestModel.class)
+                .shards(1)
+                .replicas(0));
+        IndexConfig newNameConfig = new IndexConfig(c -> c
+                .indexName(new_name)
+                .mappingClass(TestModel.class)
+                .shards(1)
+                .replicas(0));
+        assertThat(elsaTestIndexConfig.getIndexName(), is(elsa_test_index));
 
-        this.elsa.admin.createIndex(TestModel.class);
-        assertThat(this.elsa.admin.indexExists("elsa_test_index"), is(true));
+        this.elsa.admin.createIndex(TestModel.class, elsaTestIndexConfig);
+        assertThat(this.elsa.admin.indexExists(elsa_test_index), is(true));
 
-        testModel2.getIndexConfig().setIndexName("new_name");
-        this.elsa.admin.createIndex(TestModel.class);
-        assertThat(this.elsa.admin.indexExists("new_name"), is(true));
-        assertThat(testModel1.getIndexConfig().getIndexName(), is("new_name"));
+        this.elsa.admin.createIndex(TestModel.class, newNameConfig);
+        assertThat(this.elsa.admin.indexExists(new_name), is(true));
 
-        testModel2.getIndexConfig().setIndexName("elsa_test_index");
-        this.elsa.admin.deleteIndex("elsa_test_index");
-        this.elsa.admin.deleteIndex("new_name");
+        this.elsa.admin.deleteIndex(elsa_test_index);
+        this.elsa.admin.deleteIndex(new_name);
     }
 
-    @Test
-    public void changeIndexName_appliesToInstancesOfModel_pass() {
-        final TestModel testModel1 = new TestModel();
-        final TestModel testModel2 = new TestModel();
-        assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
-
-        testModel2.getIndexConfig().setIndexName("new_name");
-        assertThat(testModel1.getIndexConfig().getIndexName(), is("new_name"));
-
-        testModel2.getIndexConfig().setIndexName("elsa_test_index");
-        assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
-    }
+//    @Test todo delete
+//    public void changeIndexName_appliesToInstancesOfModel_pass() {
+//        final TestModel testModel1 = new TestModel();
+//        final TestModel testModel2 = new TestModel();
+//        assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
+//
+//        testModel2.getIndexConfig().setIndexName("new_name");
+//        assertThat(testModel1.getIndexConfig().getIndexName(), is("new_name"));
+//
+//        testModel2.getIndexConfig().setIndexName("elsa_test_index");
+//        assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
+//    }
 }

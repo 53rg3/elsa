@@ -16,8 +16,8 @@
 
 package assets;
 
-import model.IndexConfig;
 import model.ElsaModel;
+import model.IndexConfig;
 import org.elasticsearch.common.unit.TimeValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -27,8 +27,9 @@ import java.util.List;
 
 public class TestModel implements ElsaModel {
 
-    public static IndexConfig indexConfig = new IndexConfig(c->c
+    public static IndexConfig indexConfig = new IndexConfig(c -> c
             .indexName("elsa_test_index")
+            .mappingClass(TestModel.class)
             .shards(1)
             .replicas(0)
             .refreshInterval(TimeValue.timeValueSeconds(1)));
@@ -50,11 +51,11 @@ public class TestModel implements ElsaModel {
     @Override
     public String toString() {
         return "TestModel{" +
-                "id='" + id + '\'' +
-                ", stringField='" + stringField + '\'' +
-                ", integerField=" + integerField +
-                ", arrayField=" + arrayField +
-                ", transientField='" + transientField + '\'' +
+                "id='" + this.id + '\'' +
+                ", stringField='" + this.stringField + '\'' +
+                ", integerField=" + this.integerField +
+                ", arrayField=" + this.arrayField +
+                ", transientField='" + this.transientField + '\'' +
                 '}';
     }
 
@@ -69,39 +70,39 @@ public class TestModel implements ElsaModel {
     }
 
     @Override
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
     public String getStringField() {
-        return stringField;
+        return this.stringField;
     }
 
-    public void setStringField(String stringField) {
+    public void setStringField(final String stringField) {
         this.stringField = stringField;
     }
 
     public int getIntegerField() {
-        return integerField;
+        return this.integerField;
     }
 
-    public void setIntegerField(int integerField) {
+    public void setIntegerField(final int integerField) {
         this.integerField = integerField;
     }
 
     public List<String> getArrayField() {
-        return arrayField;
+        return this.arrayField;
     }
 
-    public void setArrayField(List<String> arrayField) {
+    public void setArrayField(final List<String> arrayField) {
         this.arrayField = arrayField;
     }
 
     public String getTransientField() {
-        return transientField;
+        return this.transientField;
     }
 
-    public void setTransientField(String transientField) {
+    public void setTransientField(final String transientField) {
         this.transientField = transientField;
     }
 }

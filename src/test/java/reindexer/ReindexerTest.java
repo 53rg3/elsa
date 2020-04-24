@@ -25,6 +25,7 @@ import dao.DaoConfig;
 import exceptions.ElsaException;
 import exceptions.ElsaIOException;
 import helpers.XJson;
+import model.IndexConfig;
 import org.elasticsearch.action.search.SearchRequest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -57,6 +58,16 @@ public class ReindexerTest {
     private static final String oldIndexCorrectMapping = oldIndex + "_correct_mapping";
     private static final int totalDocuments = 100;
     private static final String newIndex = "bulk_testing_create_new_index";
+    private static final IndexConfig newIndexConfig = new IndexConfig(c -> c
+            .indexName(newIndex)
+            .mappingClass(FakerModel.class)
+            .shards(1)
+            .replicas(0));
+    private static final IndexConfig oldIndexCorrectMappingConfig = new IndexConfig(c -> c
+            .indexName(oldIndexCorrectMapping)
+            .mappingClass(FakerModel.class)
+            .shards(1)
+            .replicas(0));
 
     @BeforeClass
     public static void setup() {
@@ -76,11 +87,10 @@ public class ReindexerTest {
 
     @Test
     public void a1_create_modeCreateNewIndex_pass() throws ElsaException {
-        fakerModel.getIndexConfig().setIndexName(newIndex);
 
         final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
                 .configureSource(c -> c
-                        .fromIndex(oldIndex)
+                        .fromIndex(FakerModel.indexConfig)
                         .selectFields("name", "age")
                         .whereClause(boolQuery()
                                 .should(matchQuery("name", "ms"))
@@ -88,7 +98,7 @@ public class ReindexerTest {
                         .sortBy(new XJson()
                                 .field("age", "asc")))
                 .configureDestination(c -> c
-                        .intoIndex(FakerModel.class))
+                        .intoIndex(newIndexConfig))
                 .build();
         final ReindexResponse response = elsa.reindexer.execute(reindexSettings, ReindexMode.CREATE_NEW_INDEX_FROM_MODEL_IN_DESTINATION);
         assertThat(response.getFailures().size(), is(0));
@@ -96,31 +106,31 @@ public class ReindexerTest {
 
 
         final List<FakerModel> list = dao.searchAndMapToList(new SearchRequest()
-                .indices(FakerModel.getIndexName())
+                .indices(newIndexConfig.getIndexName())
                 .source(searchSource()
                         .query(matchAllQuery())));
 
         int minAge = 0;
         for (final FakerModel fakerModel : list) {
-            assertTrue(fakerModel.getAge() >= minAge);
-            assertTrue(fakerModel.getName().contains("Ms") || fakerModel.getName().contains("Mr"));
+            assertThat("Expected age to be >= " + minAge + ", but was " + fakerModel.getAge(),
+                    fakerModel.getAge() >= minAge, is(true));
+            assertThat("Expected name to contain 'Ms' or 'Mr', but got: " + fakerModel.getName(),
+                    fakerModel.getName().contains("Ms") || fakerModel.getName().contains("Mr"), is(true));
             minAge = fakerModel.getAge();
         }
 
         elsa.admin.deleteIndex(newIndex);
-        fakerModel.getIndexConfig().setIndexName(oldIndex);
     }
 
     @Test
     public void a2_create_modeAbortIfMappingIncorrect_responseHasException() throws ElsaException {
-        fakerModel.getIndexConfig().setIndexName(oldIndexCorrectMapping);
-        elsa.admin.createIndex(FakerModel.class);
+        elsa.admin.createIndex(FakerModel.class, oldIndexCorrectMappingConfig);
 
         final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
                 .configureSource(c -> c
-                        .fromIndex(FakerModel.class))
+                        .fromIndex(oldIndexCorrectMappingConfig))
                 .configureDestination(c -> c
-                        .intoIndex(FakerModelInvalidMapping.class))
+                        .intoIndex(FakerModelInvalidMapping.indexConfig))
                 .build();
         try {
             elsa.reindexer.execute(reindexSettings, ReindexMode.ABORT_IF_MAPPING_INCORRECT);
@@ -129,7 +139,6 @@ public class ReindexerTest {
             assertThat(e.getHttpStatus(), is(400));
         }
 
-        fakerModel.getIndexConfig().setIndexName(oldIndex);
         elsa.admin.deleteIndex(oldIndexCorrectMapping);
     }
 

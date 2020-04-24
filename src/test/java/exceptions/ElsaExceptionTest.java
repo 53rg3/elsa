@@ -39,10 +39,10 @@ public class ElsaExceptionTest {
 
     @Test
     public void extract_badRequestException_pass() throws ElsaException {
-        elsa.admin.createIndex(FakerModel.class);
+        elsa.admin.createIndex(FakerModel.class, FakerModel.indexConfig);
 
         try {
-            elsa.admin.createIndex(FakerModel.class);
+            elsa.admin.createIndex(FakerModel.class, FakerModel.indexConfig);
         } catch (final ElsaException e) {
             assertThat(e.getHttpStatus(), is(400));
         }

@@ -32,8 +32,9 @@ public class FakerModelInvalidMapping implements ElsaModel {
 
     private static final Faker faker = new Faker();
 
-    private static IndexConfig indexConfig = new IndexConfig(c->c
+    public static IndexConfig indexConfig = new IndexConfig(c->c
             .indexName("elsa_bulk_test")
+            .mappingClass(FakerModelInvalidMapping.class)
             .shards(1)
             .replicas(0)
             .refreshInterval(TimeValue.timeValueSeconds(1)));

@@ -18,6 +18,8 @@ package model;
 
 import org.elasticsearch.common.unit.TimeValue;
 
+import java.util.Objects;
+
 public class IndexConfig {
 
     // ------------------------------------------------------------------------------------------ //
@@ -35,6 +37,7 @@ public class IndexConfig {
             evaluateIndexName(config.indexName);
             evaluateShards(config.shards);
             evaluateReplicas(config.replicas);
+            Objects.requireNonNull(config.mappingClass, "mappingClass must not be NULL");
         }
 
         default Config applyCustomConfig(final Configurator configurator) {
@@ -52,10 +55,11 @@ public class IndexConfig {
     //  FIELDS
     // ------------------------------------------------------------------------------------------ //
 
-    private String indexName;
+    private final String indexName;
     private final Integer shards;
     private final Integer replicas;
     private final TimeValue refreshInterval;
+    private final Class<? extends ElsaModel> mappingClass;
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -68,6 +72,7 @@ public class IndexConfig {
         this.shards = config.shards;
         this.replicas = config.replicas;
         this.refreshInterval = config.refreshInterval;
+        this.mappingClass = config.mappingClass;
     }
 
 
@@ -83,9 +88,15 @@ public class IndexConfig {
         private Integer shards;
         private Integer replicas;
         private TimeValue refreshInterval = TimeValue.timeValueSeconds(1);
+        private Class<? extends ElsaModel> mappingClass;
 
         public Config indexName(final String mandatorySetting) {
             this.indexName = mandatorySetting;
+            return this;
+        }
+
+        public Config mappingClass(final Class<? extends ElsaModel> mandatorySetting) {
+            this.mappingClass = mandatorySetting;
             return this;
         }
 
@@ -128,10 +139,6 @@ public class IndexConfig {
         return this.indexName;
     }
 
-    public synchronized void setIndexName(final String indexName) { // todo delete. Use separate DAOs. Or maybe keep?
-        this.indexName = indexName;
-    }
-
     public int getShards() {
         return this.shards;
     }
@@ -144,4 +151,7 @@ public class IndexConfig {
         return this.refreshInterval;
     }
 
+    public Class<? extends ElsaModel> getMappingClass() {
+        return this.mappingClass;
+    }
 }

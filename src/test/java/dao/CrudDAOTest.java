@@ -60,7 +60,7 @@ public class CrudDAOTest {
         if (elsa.admin.indexExists(TestModel.class)) {
             elsa.admin.deleteIndex(TestModel.class);
         }
-        elsa.admin.createIndex(TestModel.class);
+        elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
         testModelWithoutId.setStringField("modelWithoutId");
         testModelWithoutId.setArrayField(Arrays.asList("qwer", "asdf", "yxcv"));
         testModelWithoutId.setIntegerField(1234);

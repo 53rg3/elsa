@@ -19,13 +19,18 @@ package dao;
 import assets.*;
 import client.ElsaClient;
 import exceptions.ElsaException;
+import model.IndexConfig;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,9 +39,16 @@ import static org.junit.Assert.assertThat;
 
 public class AsyncCrudDAOTest {
 
+    private final static String newIndexName = "async_test";
+    private static final IndexConfig newIndexConfig = new IndexConfig(c -> c
+            .indexName(newIndexName)
+            .mappingClass(FakerModelAsync.class)
+            .shards(1)
+            .replicas(0)
+            .refreshInterval(TimeValue.timeValueMillis(10)));
     private static final ElsaClient elsa = new ElsaClient(c -> c
             .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(FakerModelAsync.class, CrudDAO.class, FakerModelAsync.indexConfig))
+            .registerDAO(new DaoConfig(FakerModelAsync.class, CrudDAO.class, newIndexConfig))
             .createIndexesAndEnsureMappingConsistency(false));
     private static final CrudDAO<FakerModelAsync> crudDAO = elsa.getDAO(FakerModelAsync.class);
 
@@ -48,12 +60,11 @@ public class AsyncCrudDAOTest {
     private final Check updateCheck = new Check();
     private final Check deleteCheck = new Check();
     private final Check searchCheck = new Check();
-    private final static String newIndexName = "async_test";
 
     @BeforeClass
     public static void createIndex() throws ElsaException {
-        model1.getIndexConfig().setIndexName(newIndexName);
-        elsa.admin.createIndex(FakerModelAsync.class);
+
+        elsa.admin.createIndex(FakerModelAsync.class, newIndexConfig);
 
         model1.setId("1");
         model1.setName("Carl Smith");
@@ -68,11 +79,12 @@ public class AsyncCrudDAOTest {
     }
 
     @Test
-    public void asyncChain_indexGetSearchUpdateDelete_pass() throws ElsaException {
+    public void asyncChain_indexGetSearchUpdateDelete_pass() throws ElsaException, IOException {
 
         // Index
         crudDAO.indexAsync(model1, RequestOptions.DEFAULT, new AsyncIndexListener(this.indexCheck1, elsa));
         crudDAO.indexAsync(model2, RequestOptions.DEFAULT, new AsyncIndexListener(this.indexCheck2, elsa));
+        elsa.client.indices().flush(new FlushRequest(newIndexConfig.getIndexName()).force(true), RequestOptions.DEFAULT);
         this.sleep(100);
         assertThat(this.indexCheck1.wasSuccessful(), is(true));
         assertThat(this.indexCheck2.wasSuccessful(), is(true));
@@ -84,10 +96,10 @@ public class AsyncCrudDAOTest {
 
         // Search
         final SearchRequest searchRequest = new SearchRequest()
-                .indices(model1.getIndexConfig().getIndexName())
+                .indices(newIndexConfig.getIndexName())
                 .source(SearchSourceBuilder.searchSource()
                         .query(QueryBuilders.matchAllQuery()));
-        this.sleep(1000); // Needs time to make indexation...
+        this.sleep(100); // Needs time to make indexation...
         crudDAO.searchAsync(searchRequest, RequestOptions.DEFAULT, new AsyncSearchListener(this.searchCheck, elsa));
         this.sleep(100);
         assertThat(this.searchCheck.wasSuccessful(), is(true));

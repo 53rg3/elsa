@@ -16,11 +16,9 @@
 
 package reindexer;
 
-import assets.FakerModel;
 import assets.TestModel;
-import helpers.IndexName;
 import helpers.XJson;
-import model.ElsaModel;
+import model.IndexConfig;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -31,14 +29,18 @@ import reindexer.ReindexOptions.ScriptingLanguage;
 import reindexer.ReindexOptions.VersionType;
 import reindexer.ReindexSettings.ReindexSettingsBuilder;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 public class ReindexSettingsTest {
 
-
-    private final Class<? extends ElsaModel> fromIndexClass = FakerModel.class;
-    private final Class<? extends ElsaModel> intoIndexClass = TestModel.class;
+    private final IndexConfig fromIndexConfig = new IndexConfig(c -> c
+            .indexName("twitter")
+            .mappingClass(TestModel.class)
+            .shards(1)
+            .replicas(0));
+    private final IndexConfig intoIndexConfig = new IndexConfig(c -> c
+            .indexName("new_twitter")
+            .mappingClass(TestModel.class)
+            .shards(1)
+            .replicas(0));
 
     @Test
     public void build_full_pass() throws Exception {
@@ -49,7 +51,7 @@ public class ReindexSettingsTest {
                 .conflicts(Conflicts.PROCEED)
                 .totalSize(1000)
                 .configureSource(c -> c
-                        .fromIndex("twitter")
+                        .fromIndex(this.fromIndexConfig)
                         .selectFields("user", "email")
                         .whereClause(QueryBuilders.termQuery("name", "kimchy"))
                         .remoteHost(r -> r
@@ -64,7 +66,7 @@ public class ReindexSettingsTest {
                                 .field("date", "desc")
                                 .field("name", "asc")))
                 .configureDestination(c -> c
-                        .intoIndex("new_twitter")
+                        .intoIndex(this.intoIndexConfig)
                         .versionType(VersionType.EXTERNAL))
                 .configureScript(c -> c
                         .language(ScriptingLanguage.PAINLESS)
@@ -75,44 +77,44 @@ public class ReindexSettingsTest {
 
     }
 
-    @Test
-    public void build_withClassesAsArguments_pass() throws Exception {
+//    @Test todo delete we use IndexConfig now
+//    public void build_withClassesAsArguments_pass() throws Exception {
+//
+//        final String expected = "{\"source\":{\"index\":\"" + IndexName.of(this.fromIndexClass) + "\"},\"dest\":{\"index\":\"" + IndexName.of(this.intoIndexClass) + "\"}}";
+//
+//        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
+//                .configureSource(c -> c
+//                        .fromIndex(this.fromIndexClass))
+//                .configureDestination(c -> c
+//                        .intoIndex(this.intoIndexClass))
+//                .build();
+//
+//        final String result = Strings.toString(reindexSettings.getXContentBuilder());
+//
+//        assertThat(result, is(expected));
+//
+//    }
 
-        final String expected = "{\"source\":{\"index\":\""+ IndexName.of(this.fromIndexClass) +"\"},\"dest\":{\"index\":\""+ IndexName.of(this.intoIndexClass) +"\"}}";
+//    @Test(expected = IllegalArgumentException.class) todo delete we use IndexConfig now
+//    public void build_sourceIndexWithClassAndString_throw() {
+//        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
+//                .configureSource(c -> c
+//                        .fromIndex(this.fromIndexClass)
+//                        .fromIndex("asdf"))
+//                .configureDestination(c -> c
+//                        .intoIndex(this.intoIndexClass))
+//                .build();
+//    }
 
-        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
-                .configureSource(c -> c
-                        .fromIndex(this.fromIndexClass))
-                .configureDestination(c -> c
-                        .intoIndex(this.intoIndexClass))
-                .build();
-
-        final String result = Strings.toString(reindexSettings.getXContentBuilder());
-
-        assertThat(result, is(expected));
-
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void build_sourceIndexWithClassAndString_throw() {
-        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
-                .configureSource(c -> c
-                        .fromIndex(this.fromIndexClass)
-                        .fromIndex("asdf"))
-                .configureDestination(c -> c
-                        .intoIndex(this.intoIndexClass))
-                .build();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void build_destinationIndexWithClassAndString_throw() {
-        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
-                .configureSource(c -> c
-                        .fromIndex(this.fromIndexClass))
-                .configureDestination(c -> c
-                        .intoIndex(this.intoIndexClass)
-                        .intoIndex("asdf"))
-                .build();
-    }
+//    @Test(expected = IllegalArgumentException.class) todo delete we use IndexConfig now
+//    public void build_destinationIndexWithClassAndString_throw() {
+//        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
+//                .configureSource(c -> c
+//                        .fromIndex(this.fromIndexClass))
+//                .configureDestination(c -> c
+//                        .intoIndex(this.intoIndexClass)
+//                        .intoIndex("asdf"))
+//                .build();
+//    }
 
 }

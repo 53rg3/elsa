@@ -34,6 +34,7 @@ public class FakerModelAsync implements ElsaModel {
 
     public static IndexConfig indexConfig = new IndexConfig(c->c
             .indexName("elsa_bulk_test")
+            .mappingClass(FakerModelAsync.class)
             .shards(1)
             .replicas(0)
             .refreshInterval(TimeValue.timeValueSeconds(1)));

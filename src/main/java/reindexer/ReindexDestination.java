@@ -16,11 +16,11 @@
 
 package reindexer;
 
-import helpers.IndexName;
-import helpers.ModelClass;
 import helpers.XJson;
-import model.ElsaModel;
+import model.IndexConfig;
 import reindexer.ReindexOptions.VersionType;
+
+import java.util.Objects;
 
 public class ReindexDestination {
 
@@ -28,27 +28,28 @@ public class ReindexDestination {
     //  FIELDS
     // ------------------------------------------------------------------------------------------ //
 
-    private final Class<? extends ElsaModel> modelClass;
+    private final IndexConfig indexConfig;
     private final XJson xJson;
-    
-    
+
+
     // ------------------------------------------------------------------------------------------ //
     // CONFIGURATOR
     // ------------------------------------------------------------------------------------------ //
-    
+
     @FunctionalInterface
     public interface Configurator {
 
         default Config loadDefaults() {
             return new Config();
         }
-    
-        default void validate(Config builder) {
+
+        default void validate(final Config builder) {
             builder.xJson.throwIfFieldNotExists("index", "Field 'index' in Destination must not be NULL.");
+            Objects.requireNonNull(builder.indexConfig, "'indexConfig' must not be NULL.");
         }
 
-        default ReindexDestination applyCustomConfig(Configurator configurator) {
-            Config config = configurator.loadDefaults();
+        default ReindexDestination applyCustomConfig(final Configurator configurator) {
+            final Config config = configurator.loadDefaults();
             configurator.configure(config);
             configurator.validate(config);
             return config.build();
@@ -57,45 +58,43 @@ public class ReindexDestination {
         void configure(Config builder);
 
     }
-    
-    
+
+
     // ------------------------------------------------------------------------------------------ //
     // BUILD
     // ------------------------------------------------------------------------------------------ //
-    
-    private ReindexDestination(Config config) {
-        this.modelClass = config.modelClass;
+
+    private ReindexDestination(final Config config) {
+        this.indexConfig = config.indexConfig;
         this.xJson = config.xJson;
     }
-    
-    
+
+
     // ------------------------------------------------------------------------------------------ //
     // BUILDER
     // ------------------------------------------------------------------------------------------ //
-    
+
     public static class Config {
-        private XJson xJson = new XJson();
-        private Class<? extends ElsaModel> modelClass;
+        private final XJson xJson = new XJson();
+        private IndexConfig indexConfig;
 
-        /** (Mandatory) Name of the target index which shall be filled */
-        public Config intoIndex(String mandatoryField) {
-            this.xJson.field("index", mandatoryField);
+        /**
+         * (Mandatory) Name of the target index which shall be filled
+         */
+        public Config intoIndex(final IndexConfig indexConfig) {
+            this.xJson.field("index", indexConfig.getIndexName());
+            this.indexConfig = indexConfig;
             return this;
         }
 
-        /** (Mandatory) Name of the target index which shall be filled */
-        public Config intoIndex(final Class<? extends ElsaModel> modelClass) {
-            xJson.field("index", IndexName.of(modelClass));
-            this.modelClass = modelClass;
-            return this;
-        }
-
-        /** (Optional) How to handle different document versions. Default is 'internal'. */
-        public Config versionType(VersionType optionalSetting) {
+        /**
+         * (Optional) How to handle different document versions. Default is 'internal'.
+         */
+        public Config versionType(final VersionType optionalSetting) {
             this.xJson.field("version_type", optionalSetting.toString());
             return this;
         }
-    
+
         public ReindexDestination build() {
             return new ReindexDestination(this);
         }
@@ -106,8 +105,8 @@ public class ReindexDestination {
     // ------------------------------------------------------------------------------------------ //
 
 
-    public Class<? extends ElsaModel> getModelClass() {
-        return this.modelClass;
+    public IndexConfig getIndexConfig() {
+        return this.indexConfig;
     }
 
     public XJson getXJson() {

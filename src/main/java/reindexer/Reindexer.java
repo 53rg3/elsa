@@ -23,6 +23,7 @@ import exceptions.ElsaException;
 import exceptions.ElsaIOException;
 import helpers.RequestBody;
 import model.ElsaModel;
+import model.IndexConfig;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
@@ -45,15 +46,15 @@ public class Reindexer {
     public ReindexResponse execute(final ReindexSettings reindexSettings,
                                    final ReindexMode reindexMode,
                                    final RequestOptions options) throws ElsaException {
-
+        final IndexConfig destinationIndexConfig = reindexSettings.getDestinationIndexConfig();
         switch (reindexMode) {
             case CREATE_NEW_INDEX_FROM_MODEL_IN_DESTINATION:
-                this.ensureDestinationModelClassExists(reindexSettings.getModelClass());
-                this.elsa.admin.createIndex(reindexSettings.getModelClass(), options);
+                this.ensureDestinationModelClassExists(destinationIndexConfig.getMappingClass());
+                this.elsa.admin.createIndex(destinationIndexConfig.getMappingClass(), destinationIndexConfig, options);
                 break;
             case ABORT_IF_MAPPING_INCORRECT:
-                this.ensureDestinationModelClassExists(reindexSettings.getModelClass());
-                this.elsa.admin.updateMapping(reindexSettings.getModelClass());
+                this.ensureDestinationModelClassExists(destinationIndexConfig.getMappingClass());
+                this.elsa.admin.updateMapping(destinationIndexConfig.getMappingClass());
                 break;
             case DESTINATION_INDEX_AND_MAPPINGS_ALREADY_EXIST:
                 break;

@@ -17,7 +17,7 @@
 package reindexer;
 
 import helpers.XJson;
-import model.ElsaModel;
+import model.IndexConfig;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class ReindexSettings {
 
     private static final Logger logger = LoggerFactory.getLogger(ReindexSettings.class);
     private final XContentBuilder xContentBuilder;
-    private final Class<? extends ElsaModel> modelClass;
+    private final IndexConfig destinationIndexConfig;
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -47,7 +47,7 @@ public class ReindexSettings {
      */
     private ReindexSettings(final ReindexSettingsBuilder builder) {
         this.xContentBuilder = this.createXContentBuilder(builder.xJson.toMap());
-        this.modelClass = builder.modelClass;
+        this.destinationIndexConfig = builder.destinationIndexConfig;
     }
 
     private XContentBuilder createXContentBuilder(final Map<String, Object> map) {
@@ -65,7 +65,7 @@ public class ReindexSettings {
 
     public static class ReindexSettingsBuilder {
         private final XJson xJson = new XJson();
-        private Class<? extends ElsaModel> modelClass;
+        private IndexConfig destinationIndexConfig;
 
         /**
          * (Optional) Proceed when conflict occur, just count them.
@@ -97,7 +97,7 @@ public class ReindexSettings {
         public ReindexSettingsBuilder configureDestination(final ReindexDestination.Configurator configurator) {
             final ReindexDestination reindexDestination = configurator.applyCustomConfig(configurator);
             this.xJson.field("dest", reindexDestination.getXJson().toMap());
-            this.modelClass = reindexDestination.getModelClass();
+            this.destinationIndexConfig = reindexDestination.getIndexConfig();
             return this;
         }
 
@@ -121,7 +121,7 @@ public class ReindexSettings {
         return this.xContentBuilder;
     }
 
-    public Class<? extends ElsaModel> getModelClass() {
-        return this.modelClass;
+    public IndexConfig getDestinationIndexConfig() {
+        return this.destinationIndexConfig;
     }
 }

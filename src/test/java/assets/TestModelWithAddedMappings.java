@@ -28,6 +28,7 @@ public class TestModelWithAddedMappings implements ElsaModel {
 
     public static IndexConfig indexConfig = new IndexConfig(c->c
             .indexName("elsa_test_index")
+            .mappingClass(TestModelWithAddedMappings.class)
             .shards(1)
             .replicas(0)
             .refreshInterval(TimeValue.timeValueSeconds(1)));

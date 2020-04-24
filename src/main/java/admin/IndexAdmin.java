@@ -22,9 +22,9 @@ import exceptions.ElsaElasticsearchException;
 import exceptions.ElsaException;
 import exceptions.ElsaIOException;
 import helpers.IndexName;
-import helpers.ModelClass;
 import helpers.RequestBody;
 import model.ElsaModel;
+import model.IndexConfig;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -55,16 +55,17 @@ public class IndexAdmin {
     // CREATE INDEX
     // ------------------------------------------------------------------------------------------ //
 
-    public CreateIndexResponse createIndex(final Class<? extends ElsaModel> modelClass, final RequestOptions options) throws ElsaException {
+    public CreateIndexResponse createIndex(final Class<? extends ElsaModel> modelClass,
+                                           final IndexConfig indexConfig,
+                                           final RequestOptions options) throws ElsaException {
         try {
-            final ElsaModel model = ModelClass.createEmpty(modelClass);
             final XContentBuilder mapping = MappingBuilder.buildMapping(modelClass, ElsaStatics.DUMMY_TYPE, ElsaStatics.DEFAULT_ID_FIELD_NAME, "");
             final CreateIndexRequest request = new CreateIndexRequest();
-            request.index(model.getIndexConfig().getIndexName());
+            request.index(indexConfig.getIndexName());
             final Settings settings = Settings.builder()
-                    .put("index.number_of_shards", model.getIndexConfig().getShards())
-                    .put("index.number_of_replicas", model.getIndexConfig().getReplicas())
-                    .put("index.refresh_interval", model.getIndexConfig().getRefreshInterval().toString())
+                    .put("index.number_of_shards", indexConfig.getShards())
+                    .put("index.number_of_replicas", indexConfig.getReplicas())
+                    .put("index.refresh_interval", indexConfig.getRefreshInterval().toString())
                     .build();
             request.settings(settings);
             request.mapping(ElsaStatics.DUMMY_TYPE, mapping);
@@ -77,8 +78,9 @@ public class IndexAdmin {
         }
     }
 
-    public CreateIndexResponse createIndex(final Class<? extends ElsaModel> modelClass) throws ElsaException {
-        return this.createIndex(modelClass, RequestOptions.DEFAULT);
+    public CreateIndexResponse createIndex(final Class<? extends ElsaModel> modelClass,
+                                           final IndexConfig indexConfig) throws ElsaException {
+        return this.createIndex(modelClass, indexConfig, RequestOptions.DEFAULT);
     }
 
 

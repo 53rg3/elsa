@@ -33,6 +33,7 @@ public class DateModel implements ElsaModel {
 
     public static IndexConfig indexConfig = new IndexConfig(c->c
             .indexName("elsa_gson_test")
+            .mappingClass(DateModel.class)
             .shards(1)
             .replicas(0)
             .refreshInterval(TimeValue.timeValueSeconds(1)));

@@ -16,35 +16,36 @@
 
 package reindexer;
 
-import helpers.IndexName;
-import helpers.ModelClass;
 import helpers.XJson;
-import model.ElsaModel;
+import model.IndexConfig;
 import org.elasticsearch.index.query.QueryBuilder;
 
+import java.util.Objects;
+
 public class ReindexSource {
-    
+
     // ------------------------------------------------------------------------------------------ //
     //  FIELDS
     // ------------------------------------------------------------------------------------------ //
 
     // None, build returns XJson. Class is just a wrapper.
-    
+
     // ------------------------------------------------------------------------------------------ //
     // CONFIGURATOR
     // ------------------------------------------------------------------------------------------ //
-    
+
     @FunctionalInterface
     public interface Configurator {
 
         default Config loadDefaults() {
             return new Config();
         }
-    
+
         void configure(Config builder);
-    
+
         default void validate(final Config builder) {
             builder.xJson.throwIfFieldNotExists("index", "Field 'index' in source must not be NULL.");
+            Objects.requireNonNull(builder.indexConfig, "'indexConfig' must not be NULL.");
         }
 
         default XJson applyCustomConfig(final Configurator configurator) {
@@ -54,8 +55,8 @@ public class ReindexSource {
             return builder.build();
         }
     }
-    
-    
+
+
     // ------------------------------------------------------------------------------------------ //
     // BUILD
     // ------------------------------------------------------------------------------------------ //
@@ -63,52 +64,60 @@ public class ReindexSource {
     private ReindexSource() {
         // NO OP
     }
-    
-    
+
+
     // ------------------------------------------------------------------------------------------ //
     // BUILDER
     // ------------------------------------------------------------------------------------------ //
-    
+
     public static class Config {
         private final XJson xJson = new XJson();
+        private IndexConfig indexConfig;
 
-        /** (Mandatory) Source index from which shall be reindexed */
-        public Config fromIndex(final String requiredSetting) {
-            xJson.field("index", requiredSetting);
+        /**
+         * (Mandatory) Source index from which shall be reindexed
+         */
+        public Config fromIndex(final IndexConfig indexConfig) {
+            this.xJson.field("index", indexConfig.getIndexName());
+            this.indexConfig = indexConfig;
             return this;
         }
 
-        /** (Mandatory) Source index from which shall be reindexed */
-        public Config fromIndex(final Class<? extends ElsaModel> modelClass) {
-            xJson.field("index", IndexName.of(modelClass));
-            return this;
-        }
-
-        /** (Optional) Select explicitly the fields of the source index which shall be moved */
+        /**
+         * (Optional) Select explicitly the fields of the source index which shall be moved
+         */
         public Config selectFields(final String... optionalSetting) {
-            xJson.field("_source", optionalSetting);
+            this.xJson.field("_source", optionalSetting);
             return this;
         }
 
-        /** (Optional) Query to select explicitly particular documents */
+        /**
+         * (Optional) Query to select explicitly particular documents
+         */
         public Config whereClause(final QueryBuilder optionalSetting) {
-            xJson.query(optionalSetting);
+            this.xJson.query(optionalSetting);
             return this;
         }
 
-        /** (Optional) Determines the batch size of a scroll operation, i.e. amount of documents to process at once. Default is 1000. */
+        /**
+         * (Optional) Determines the batch size of a scroll operation, i.e. amount of documents to process at once. Default is 1000.
+         */
         public Config batchSize(final Integer optionalSetting) {
-            xJson.field("size", optionalSetting);
+            this.xJson.field("size", optionalSetting);
             return this;
         }
 
-        /** (Optional) Determines the order in which documents will be reindex */
+        /**
+         * (Optional) Determines the order in which documents will be reindex
+         */
         public Config sortBy(final XJson optionalSetting) {
-            xJson.field("sort", optionalSetting.toMap());
+            this.xJson.field("sort", optionalSetting.toMap());
             return this;
         }
 
-        /** (Optional) Settings for reindexing from a remote Elasticsearch cluster */
+        /**
+         * (Optional) Settings for reindexing from a remote Elasticsearch cluster
+         */
         public Config remoteHost(final ReindexRemote.Configurator configurator) {
             this.xJson.field("remote", configurator.applyCustomConfig(configurator).toMap());
             return this;
@@ -118,5 +127,5 @@ public class ReindexSource {
             return this.xJson;
         }
     }
-    
+
 }

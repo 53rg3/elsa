@@ -35,6 +35,7 @@ public class FakerModelForExceptionTesting implements ElsaModel {
 
     private static IndexConfig indexConfig = new IndexConfig(c->c
             .indexName("exception_handler_test")
+            .mappingClass(FakerModelForExceptionTesting.class)
             .shards(1)
             .replicas(0)
             .refreshInterval(TimeValue.timeValueSeconds(1)));

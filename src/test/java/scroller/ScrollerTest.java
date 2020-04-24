@@ -46,7 +46,7 @@ public class ScrollerTest {
 
     @BeforeClass
     public static void setup() throws ElsaException {
-        elsa.admin.createIndex(FakerModel.class);
+        elsa.admin.createIndex(FakerModel.class, FakerModel.indexConfig);
         for (int i = 0; i < 100; i++) {
             final FakerModel fakerModel = FakerModel.createModelWithRandomData();
             fakerModel.setId(String.valueOf(i));

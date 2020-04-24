@@ -16,38 +16,51 @@
 
 package model;
 
+import assets.TestModel;
 import org.junit.Test;
 
 public class IndexConfigTest {
 
     @Test(expected = IllegalStateException.class)
     public void elsaIndexDataBuilder_indexNameNotSet_throw() {
-        new IndexConfig(c->c
+        new IndexConfig(c -> c
                 .indexName(null)
+                .mappingClass(TestModel.class)
+                .shards(1)
+                .replicas(1));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void elsaIndexDataBuilder_mappingClassNotSet_throw() {
+        new IndexConfig(c -> c
+                .indexName("some_index")
                 .shards(1)
                 .replicas(1));
     }
 
     @Test(expected = IllegalStateException.class)
     public void elsaIndexDataBuilder_indexNameEmpty_throw() {
-        new IndexConfig(c->c
+        new IndexConfig(c -> c
                 .indexName("")
+                .mappingClass(TestModel.class)
                 .shards(1)
                 .replicas(1));
     }
 
     @Test(expected = IllegalStateException.class)
     public void elsaIndexDataBuilder_shardsIsZero_throw() {
-        new IndexConfig(c->c
+        new IndexConfig(c -> c
                 .indexName("yxcv")
+                .mappingClass(TestModel.class)
                 .shards(0)
                 .replicas(1));
     }
 
     @Test(expected = IllegalStateException.class)
     public void elsaIndexDataBuilder_replicasIsNegative_throw() {
-        new IndexConfig(c->c
+        new IndexConfig(c -> c
                 .indexName("yxcv")
+                .mappingClass(TestModel.class)
                 .shards(1)
                 .replicas(-1));
     }

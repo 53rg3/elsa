@@ -142,6 +142,7 @@ public class ElsaClientTest {
     public void builder_modelHasInvalidIdGetterOrSetter_throw() {
         final IndexConfig indexConfig = new IndexConfig(c -> c
                 .indexName("some_index")
+                .mappingClass(InvalidModelIdAccessorsWrong.class)
                 .shards(1)
                 .replicas(0));
         new ElsaClient(c -> c

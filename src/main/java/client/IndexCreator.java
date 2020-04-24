@@ -42,7 +42,7 @@ public class IndexCreator {
             }
 
             if (!indexAdmin.indexExists(modelClass)) {
-                indexAdmin.createIndex(modelClass);
+                indexAdmin.createIndex(modelClass, daoConfig.getIndexConfig());
             } else {
                 indexAdmin.updateMapping(modelClass);
             }
