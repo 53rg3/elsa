@@ -45,11 +45,6 @@ public class DateModel implements ElsaModel {
     private Date date;
 
     @Override
-    public IndexConfig getIndexConfig() {
-        return indexConfig;
-    }
-
-    @Override
     public String getId() {
         return this.id;
     }

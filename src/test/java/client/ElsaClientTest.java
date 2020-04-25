@@ -83,15 +83,15 @@ public class ElsaClientTest {
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerDAO(new DaoConfig(TestDAO.class, TestModel.indexConfig)));
-        assertThat(elsa.admin.indexExists(TestModel.class), is(true));
+        assertThat(elsa.admin.indexExists(TestModel.indexConfig), is(true));
 
         new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerDAO(new DaoConfig(TestDAO.class, TestModelWithAddedMappings.indexConfig)));
         // Throws if invalid, no assertion
 
-        elsa.admin.deleteIndex(TestModel.class);
-        assertThat(elsa.admin.indexExists(TestModel.class), is(false));
+        elsa.admin.deleteIndex(TestModel.indexConfig);
+        assertThat(elsa.admin.indexExists(TestModel.indexConfig), is(false));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ElsaClientTest {
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerDAO(new DaoConfig(TestDAO.class, TestModel.indexConfig)));
-        assertThat(elsa.admin.indexExists(TestModel.class), is(true));
+        assertThat(elsa.admin.indexExists(TestModel.indexConfig), is(true));
 
         try {
             new ElsaClient(c -> c
@@ -110,8 +110,8 @@ public class ElsaClientTest {
             assertThat(e.getMessage(), is("Couldn't create indices or update mapping."));
         }
 
-        elsa.admin.deleteIndex(TestModel.class);
-        assertThat(elsa.admin.indexExists(TestModel.class), is(false));
+        elsa.admin.deleteIndex(TestModel.indexConfig);
+        assertThat(elsa.admin.indexExists(TestModel.indexConfig), is(false));
     }
 
     @Test(expected = IllegalStateException.class)

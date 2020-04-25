@@ -66,7 +66,7 @@ public class BulkProcessorTest {
         assertThat(this.totalRequests.get(), is(this.bulkSize * 10));
         assertThat(this.totalResponses.get(), is(this.bulkSize * 10));
 
-        this.elsa.admin.deleteIndex(FakerModel.class);
+        this.elsa.admin.deleteIndex(FakerModel.indexConfig);
     }
 
 }

@@ -47,7 +47,6 @@ class DaoCreator {
     ImmutableMap<Class<? extends ElsaModel>, ? extends ElsaDAO> createDaoMap(final Collection<DaoConfig> registeredDaos) {
         final Map<Class<? extends ElsaModel>, ElsaDAO> map = new HashMap<>();
         for (final DaoConfig daoConfig : registeredDaos) {
-            this.ensureElsaIndexDataInModelIsNotNull(daoConfig.getModelClass()); // todo delete
             this.ensureGetIdAndSetIdInModelWorkProperly(daoConfig.getModelClass());
             map.put(daoConfig.getModelClass(), this.createDAO(daoConfig));
         }
@@ -71,26 +70,21 @@ class DaoCreator {
     // PRIVATE
     // ------------------------------------------------------------------------------------------ //
 
-    private void ensureElsaIndexDataInModelIsNotNull(final Class<? extends ElsaModel> modelClass) {
-        try {
-            if (modelClass.newInstance().getIndexConfig() == null) {
-                throw new IllegalStateException("IndexConfig was not instantiated in model: " + modelClass);
-            }
-        } catch (final InstantiationException | IllegalAccessException e) {
-            logger.error("Can't instantiate ElsaModel for ElsaClient. Caused by " + modelClass);
-        }
-    }
-
     private void ensureGetIdAndSetIdInModelWorkProperly(final Class<? extends ElsaModel> modelClass) {
         try {
             final ElsaModel model = modelClass.newInstance();
             final String id = "qwer1234";
             model.setId(id);
-            if (!model.getId().equals(id)) {
+            try {
+                if (!model.getId().equals(id)) {
+                    throw new IllegalStateException("Methods getId() or setId() was not implemented properly in model: " + modelClass);
+                }
+            } catch (final Exception e) {
                 throw new IllegalStateException("Methods getId() or setId() was not implemented properly in model: " + modelClass);
             }
         } catch (final InstantiationException | IllegalAccessException e) {
-            logger.error("Can't instantiate ElsaModel for ElsaClient. Problem with " + modelClass);
+            logger.error("Can't instantiate ElsaModel for ElsaClient. Problem with " + modelClass, e);
+            throw new IllegalStateException("Can't instantiate ElsaModel for ElsaClient. Problem with " + modelClass, e);
         }
     }
 }

@@ -57,8 +57,8 @@ public class CrudDAOTest {
 
     @BeforeClass
     public static void createIndex() throws ElsaException {
-        if (elsa.admin.indexExists(TestModel.class)) {
-            elsa.admin.deleteIndex(TestModel.class);
+        if (elsa.admin.indexExists(TestModel.indexConfig)) {
+            elsa.admin.deleteIndex(TestModel.indexConfig);
         }
         elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
         testModelWithoutId.setStringField("modelWithoutId");
@@ -70,7 +70,7 @@ public class CrudDAOTest {
 
     @AfterClass
     public static void deleteIndex() throws ElsaException {
-        elsa.admin.deleteIndex(TestModel.class);
+        elsa.admin.deleteIndex(TestModel.indexConfig);
     }
 
     @After
@@ -134,7 +134,7 @@ public class CrudDAOTest {
         TestHelpers.sleep(500);
         final TestModel model2 = this.testDAO.searchAndMapFirstHit(
                 new SearchRequest()
-                        .indices(model1.getIndexConfig().getIndexName())
+                        .indices(testDAO.getIndexConfig().getIndexName())
                         .source(searchSource()
                                 .query(matchQuery("id", id))));
         assertThat(model2, nullValue());
@@ -145,7 +145,7 @@ public class CrudDAOTest {
         TestHelpers.sleep(500);
         final TestModel model3 = this.testDAO.searchAndMapFirstHit(
                 new SearchRequest()
-                        .indices(model1.getIndexConfig().getIndexName())
+                        .indices(testDAO.getIndexConfig().getIndexName())
                         .source(searchSource()
                                 .query(matchQuery("id", id))));
         assertThat(model3, nullValue());

@@ -21,7 +21,6 @@ import endpoints.Endpoint;
 import exceptions.ElsaElasticsearchException;
 import exceptions.ElsaException;
 import exceptions.ElsaIOException;
-import helpers.IndexName;
 import helpers.RequestBody;
 import model.ElsaModel;
 import model.IndexConfig;
@@ -88,11 +87,11 @@ public class IndexAdmin {
     // UPDATE MAPPING
     // ------------------------------------------------------------------------------------------ //
 
-    public ConfirmationResponse updateMapping(final Class<? extends ElsaModel> modelClass,
+    public ConfirmationResponse updateMapping(final IndexConfig indexConfig,
                                               final RequestOptions options) throws ElsaException {
         try {
-            final String indexName = IndexName.of(modelClass);
-            final XContentBuilder xContentBuilder = MappingBuilder.buildMapping(modelClass, "_doc", "", "");
+            final String indexName = indexConfig.getIndexName();
+            final XContentBuilder xContentBuilder = MappingBuilder.buildMapping(indexConfig.getMappingClass(), "_doc", "", "");
 
             final Request request = new Request(Method.PUT, Endpoint.INDEX_MAPPING.update(indexName));
             request.setEntity(RequestBody.asJson(xContentBuilder));
@@ -107,8 +106,8 @@ public class IndexAdmin {
         }
     }
 
-    public ConfirmationResponse updateMapping(final Class<? extends ElsaModel> modelClass) throws ElsaException {
-        return this.updateMapping(modelClass, RequestOptions.DEFAULT);
+    public ConfirmationResponse updateMapping(final IndexConfig indexConfig) throws ElsaException {
+        return this.updateMapping(indexConfig, RequestOptions.DEFAULT);
     }
 
 
@@ -130,12 +129,12 @@ public class IndexAdmin {
         return this.indexExists(indexName, RequestOptions.DEFAULT);
     }
 
-    public boolean indexExists(final Class<? extends ElsaModel> modelClass, final RequestOptions options) throws ElsaException {
-        return this.indexExists(IndexName.of(modelClass), options);
+    public boolean indexExists(final IndexConfig indexConfig, final RequestOptions options) throws ElsaException {
+        return this.indexExists(indexConfig.getIndexName(), options);
     }
 
-    public boolean indexExists(final Class<? extends ElsaModel> modelClass) throws ElsaException {
-        return this.indexExists(IndexName.of(modelClass), RequestOptions.DEFAULT);
+    public boolean indexExists(final IndexConfig indexConfig) throws ElsaException {
+        return this.indexExists(indexConfig.getIndexName(), RequestOptions.DEFAULT);
     }
 
 
@@ -153,11 +152,11 @@ public class IndexAdmin {
         return this.deleteIndex(indexName, RequestOptions.DEFAULT);
     }
 
-    public AcknowledgedResponse deleteIndex(final Class<? extends ElsaModel> modelClass, final RequestOptions options) throws ElsaException {
-        return this.deleteIndex(IndexName.of(modelClass), options);
+    public AcknowledgedResponse deleteIndex(final IndexConfig indexConfig, final RequestOptions options) throws ElsaException {
+        return this.deleteIndex(indexConfig.getIndexName(), options);
     }
 
-    public AcknowledgedResponse deleteIndex(final Class<? extends ElsaModel> modelClass) throws ElsaException {
-        return this.deleteIndex(IndexName.of(modelClass));
+    public AcknowledgedResponse deleteIndex(final IndexConfig indexConfig) throws ElsaException {
+        return this.deleteIndex(indexConfig.getIndexName());
     }
 }

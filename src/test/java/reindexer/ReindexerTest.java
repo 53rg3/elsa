@@ -53,8 +53,7 @@ public class ReindexerTest {
             .registerDAO(new DaoConfig(CrudDAO.class, FakerModel.indexConfig))
     );
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
-    private static final FakerModel fakerModel = new FakerModel();
-    private static final String oldIndex = fakerModel.getIndexConfig().getIndexName();
+    private static final String oldIndex = FakerModel.indexConfig.getIndexName();
     private static final String oldIndexCorrectMapping = oldIndex + "_correct_mapping";
     private static final int totalDocuments = 100;
     private static final String newIndex = "bulk_testing_create_new_index";

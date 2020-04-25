@@ -74,11 +74,6 @@ public class FakerModelInvalidMapping implements ElsaModel {
     }
 
     @Override
-    public IndexConfig getIndexConfig() {
-        return indexConfig;
-    }
-
-    @Override
     public String getId() {
         return this.id;
     }

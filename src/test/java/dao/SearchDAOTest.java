@@ -20,7 +20,6 @@ import assets.FakerModel;
 import assets.TestHelpers;
 import client.ElsaClient;
 import exceptions.ElsaException;
-import helpers.IndexName;
 import helpers.Search;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -48,7 +47,7 @@ public class SearchDAOTest {
     private static final CrudDAO<FakerModel> dao = elsa.getDAO(FakerModel.class);
 
     private final SearchRequest request = Search.req()
-            .indices(IndexName.of(FakerModel.class))
+            .indices(FakerModel.indexConfig.getIndexName())
             .source(src()
                     .size(3)
                     .query(QueryBuilders.rangeQuery("age")
@@ -69,7 +68,7 @@ public class SearchDAOTest {
 
     @AfterClass
     public static void teardown() throws ElsaException {
-        elsa.admin.deleteIndex(FakerModel.class);
+        elsa.admin.deleteIndex(FakerModel.indexConfig);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class SearchDAOTest {
     @Test
     public void searchHasNoResults() throws ElsaException {
         final SearchRequest ageHasNoResultsRequest = Search.req()
-                .indices(IndexName.of(FakerModel.class))
+                .indices(FakerModel.indexConfig.getIndexName())
                 .source(src()
                         .size(3)
                         .query(QueryBuilders.rangeQuery("age")

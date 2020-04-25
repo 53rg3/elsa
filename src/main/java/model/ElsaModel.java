@@ -18,8 +18,8 @@ package model;
 
 public interface ElsaModel {
 
-    IndexConfig getIndexConfig();
     String getId();
+
     void setId(String id);
 
 }

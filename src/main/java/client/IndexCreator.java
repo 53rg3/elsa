@@ -41,10 +41,10 @@ public class IndexCreator {
                 throw new IllegalArgumentException("Registering interface ElsaModel.class as model is not allowed. Create a model which implements it.");
             }
 
-            if (!indexAdmin.indexExists(modelClass)) {
+            if (!indexAdmin.indexExists(daoConfig.getIndexConfig())) {
                 indexAdmin.createIndex(modelClass, daoConfig.getIndexConfig());
             } else {
-                indexAdmin.updateMapping(modelClass);
+                indexAdmin.updateMapping(daoConfig.getIndexConfig());
             }
         }
     }

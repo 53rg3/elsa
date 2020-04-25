@@ -64,7 +64,7 @@ public class ScrollerTest {
 
     @AfterClass
     public static void teardown() throws ElsaException {
-        elsa.admin.deleteIndex(FakerModel.class);
+        elsa.admin.deleteIndex(FakerModel.indexConfig);
     }
 
     @Test

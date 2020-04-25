@@ -16,8 +16,8 @@
 
 package assets;
 
-import model.IndexConfig;
 import model.ElsaModel;
+import model.IndexConfig;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -56,18 +56,13 @@ public class InvalidModelIdAccessorsWrong implements ElsaModel {
     }
 
     @Override
-    public IndexConfig getIndexConfig() {
-        return indexConfig;
-    }
-
-    @Override
     public String getId() {
-        return this.id;
+        return null;
     }
 
     @Override
     public void setId(String id) {
-        this.id = id;
+
     }
 
     public String getStringField() {

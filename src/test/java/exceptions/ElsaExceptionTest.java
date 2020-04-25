@@ -47,7 +47,7 @@ public class ElsaExceptionTest {
             assertThat(e.getHttpStatus(), is(400));
         }
 
-        elsa.admin.deleteIndex(FakerModel.class);
+        elsa.admin.deleteIndex(FakerModel.indexConfig);
     }
 
     @Test

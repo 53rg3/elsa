@@ -54,7 +54,7 @@ public class Reindexer {
                 break;
             case ABORT_IF_MAPPING_INCORRECT:
                 this.ensureDestinationModelClassExists(destinationIndexConfig.getMappingClass());
-                this.elsa.admin.updateMapping(destinationIndexConfig.getMappingClass());
+                this.elsa.admin.updateMapping(destinationIndexConfig);
                 break;
             case DESTINATION_INDEX_AND_MAPPINGS_ALREADY_EXIST:
                 break;

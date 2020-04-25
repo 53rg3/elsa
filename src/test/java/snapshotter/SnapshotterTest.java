@@ -22,7 +22,6 @@ import client.ElsaClient;
 import dao.CrudDAO;
 import dao.DaoConfig;
 import exceptions.ElsaException;
-import helpers.IndexName;
 import helpers.XJson;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.junit.AfterClass;
@@ -147,7 +146,7 @@ public class SnapshotterTest {
         // snapshot1
         ConfirmationResponse createSnapshot = elsa.snapshotter.createSnapshot(
                 new CreateSnapshotRequest(c -> c
-                        .indices(IndexName.of(FakerModel.class))
+                        .indices(FakerModel.indexConfig.getIndexName())
                         .repositoryName(repository1)
                         .snapshotName(snapshot1)
                         .partial(true)));
@@ -157,7 +156,7 @@ public class SnapshotterTest {
         // snapshot2
         createSnapshot = elsa.snapshotter.createSnapshot(
                 new CreateSnapshotRequest(c -> c
-                        .indices(IndexName.of(FakerModel.class))
+                        .indices(FakerModel.indexConfig.getIndexName())
                         .repositoryName(repository1)
                         .snapshotName(snapshot2)
                         .partial(true)));
@@ -167,7 +166,7 @@ public class SnapshotterTest {
         try {
             elsa.snapshotter.createSnapshot(
                     new CreateSnapshotRequest(c -> c
-                            .indices(IndexName.of(FakerModel.class))
+                            .indices(FakerModel.indexConfig.getIndexName())
                             .repositoryName(repository_DOES_NOT_EXIST)
                             .snapshotName(snapshot2)
                             .partial(true)));
