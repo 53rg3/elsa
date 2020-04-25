@@ -44,7 +44,7 @@ public class IndexAdminTest {
 
     @Test
     public void createIndex_indexDoesNotExist_pass() throws ElsaException {
-        final CreateIndexResponse response = this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
+        final CreateIndexResponse response = this.elsa.admin.createIndex(TestModel.indexConfig);
         assertThat(response.isAcknowledged(), is(true));
         assertThat(response.isShardsAcknowledged(), is(true));
         assertThat(this.elsa.admin.indexExists(TestModel.indexConfig), is(true));
@@ -55,7 +55,7 @@ public class IndexAdminTest {
 
     @Test
     public void updateMapping_validMappingWithNestedObject_pass() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
+        this.elsa.admin.createIndex(TestModel.indexConfig);
         final ConfirmationResponse response = this.elsa.admin.updateMapping(TestModelWithAddedMappings.indexConfig);
         assertThat(response.hasSucceeded(), is(true));
 
@@ -65,7 +65,7 @@ public class IndexAdminTest {
 
     @Test
     public void updateMapping_tryingToOverrideExistingMapping_throw() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
+        this.elsa.admin.createIndex(TestModel.indexConfig);
 
         try {
             this.elsa.admin.updateMapping(TestModelWithInvalidlyModifiedMappings.indexConfig);
@@ -79,7 +79,7 @@ public class IndexAdminTest {
 
     @Test
     public void indexExists_createCheckDeleteCheck_pass() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
+        this.elsa.admin.createIndex(TestModel.indexConfig);
         assertThat(this.elsa.admin.indexExists(TestModel.indexConfig), is(true));
 
         this.elsa.admin.deleteIndex(TestModel.indexConfig);
@@ -88,7 +88,7 @@ public class IndexAdminTest {
 
     @Test
     public void deleteIndexViaClass_indexNewlyCreated_pass() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
+        this.elsa.admin.createIndex(TestModel.indexConfig);
 
         this.elsa.admin.deleteIndex(TestModel.indexConfig);
         assertThat(this.elsa.admin.indexExists(TestModel.indexConfig), is(false));
@@ -105,7 +105,7 @@ public class IndexAdminTest {
 
     @Test
     public void deleteIndexViaString_indexNewlyCreated_pass() throws ElsaException {
-        this.elsa.admin.createIndex(TestModel.class, TestModel.indexConfig);
+        this.elsa.admin.createIndex(TestModel.indexConfig);
 
         this.elsa.admin.deleteIndex(TestModel.indexConfig);
         assertThat(this.elsa.admin.indexExists(TestModel.indexConfig), is(false));
@@ -136,10 +136,10 @@ public class IndexAdminTest {
                 .replicas(0));
         assertThat(elsaTestIndexConfig.getIndexName(), is(elsa_test_index));
 
-        this.elsa.admin.createIndex(TestModel.class, elsaTestIndexConfig);
+        this.elsa.admin.createIndex(elsaTestIndexConfig);
         assertThat(this.elsa.admin.indexExists(elsa_test_index), is(true));
 
-        this.elsa.admin.createIndex(TestModel.class, newNameConfig);
+        this.elsa.admin.createIndex(newNameConfig);
         assertThat(this.elsa.admin.indexExists(new_name), is(true));
 
         this.elsa.admin.deleteIndex(elsa_test_index);

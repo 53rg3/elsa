@@ -50,7 +50,7 @@ public class ModelMapperTest {
 
     @BeforeClass
     public static void setup() throws ElsaException {
-        elsa.admin.createIndex(DateModel.class, DateModel.indexConfig);
+        elsa.admin.createIndex(DateModel.indexConfig);
     }
 
     @AfterClass

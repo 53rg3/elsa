@@ -123,7 +123,7 @@ public class ReindexerTest {
 
     @Test
     public void a2_create_modeAbortIfMappingIncorrect_responseHasException() throws ElsaException {
-        elsa.admin.createIndex(FakerModel.class, oldIndexCorrectMappingConfig);
+        elsa.admin.createIndex(oldIndexCorrectMappingConfig);
 
         final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
                 .configureSource(c -> c

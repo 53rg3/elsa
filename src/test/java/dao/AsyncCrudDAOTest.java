@@ -64,7 +64,7 @@ public class AsyncCrudDAOTest {
     @BeforeClass
     public static void createIndex() throws ElsaException {
 
-        elsa.admin.createIndex(FakerModelAsync.class, newIndexConfig);
+        elsa.admin.createIndex(newIndexConfig);
 
         model1.setId("1");
         model1.setName("Carl Smith");

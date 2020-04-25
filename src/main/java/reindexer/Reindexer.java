@@ -50,7 +50,7 @@ public class Reindexer {
         switch (reindexMode) {
             case CREATE_NEW_INDEX_FROM_MODEL_IN_DESTINATION:
                 this.ensureDestinationModelClassExists(destinationIndexConfig.getMappingClass());
-                this.elsa.admin.createIndex(destinationIndexConfig.getMappingClass(), destinationIndexConfig, options);
+                this.elsa.admin.createIndex(destinationIndexConfig, options);
                 break;
             case ABORT_IF_MAPPING_INCORRECT:
                 this.ensureDestinationModelClassExists(destinationIndexConfig.getMappingClass());

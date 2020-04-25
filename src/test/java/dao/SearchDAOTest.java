@@ -56,7 +56,7 @@ public class SearchDAOTest {
 
     @BeforeClass
     public static void setup() throws ElsaException {
-        elsa.admin.createIndex(FakerModel.class, FakerModel.indexConfig);
+        elsa.admin.createIndex(FakerModel.indexConfig);
         for (int i = 0; i < 1000; i++) {
             elsa.bulkProcessor.add(dao.buildIndexRequest(FakerModel.createModelWithRandomData()));
         }

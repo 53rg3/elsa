@@ -22,7 +22,6 @@ import exceptions.ElsaElasticsearchException;
 import exceptions.ElsaException;
 import exceptions.ElsaIOException;
 import helpers.RequestBody;
-import model.ElsaModel;
 import model.IndexConfig;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -54,11 +53,11 @@ public class IndexAdmin {
     // CREATE INDEX
     // ------------------------------------------------------------------------------------------ //
 
-    public CreateIndexResponse createIndex(final Class<? extends ElsaModel> modelClass,
-                                           final IndexConfig indexConfig,
+    public CreateIndexResponse createIndex(final IndexConfig indexConfig,
                                            final RequestOptions options) throws ElsaException {
         try {
-            final XContentBuilder mapping = MappingBuilder.buildMapping(modelClass, ElsaStatics.DUMMY_TYPE, ElsaStatics.DEFAULT_ID_FIELD_NAME, "");
+            final XContentBuilder mapping = MappingBuilder.buildMapping(indexConfig.getMappingClass(),
+                    ElsaStatics.DUMMY_TYPE, ElsaStatics.DEFAULT_ID_FIELD_NAME, "");
             final CreateIndexRequest request = new CreateIndexRequest();
             request.index(indexConfig.getIndexName());
             final Settings settings = Settings.builder()
@@ -77,9 +76,8 @@ public class IndexAdmin {
         }
     }
 
-    public CreateIndexResponse createIndex(final Class<? extends ElsaModel> modelClass,
-                                           final IndexConfig indexConfig) throws ElsaException {
-        return this.createIndex(modelClass, indexConfig, RequestOptions.DEFAULT);
+    public CreateIndexResponse createIndex(final IndexConfig indexConfig) throws ElsaException {
+        return this.createIndex(indexConfig, RequestOptions.DEFAULT);
     }
 
 
