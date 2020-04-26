@@ -1,5 +1,6 @@
 package dao;
 
+import com.google.gson.Gson;
 import model.ElsaModel;
 import model.IndexConfig;
 
@@ -10,6 +11,7 @@ public class DaoConfig {
     private final Class<? extends ElsaModel> modelClass;
     private final Class<? extends ElsaDAO> daoClass;
     private final IndexConfig indexConfig;
+    private final Gson gson;
 
     public DaoConfig(final Class<? extends ElsaDAO> daoClass,
                      final IndexConfig indexConfig) {
@@ -18,6 +20,18 @@ public class DaoConfig {
         this.modelClass = indexConfig.getMappingClass();
         this.daoClass = daoClass;
         this.indexConfig = indexConfig;
+        this.gson = null;
+    }
+
+    public DaoConfig(final Class<? extends ElsaDAO> daoClass,
+                     final IndexConfig indexConfig,
+                     final Gson gson) {
+        Objects.requireNonNull(daoClass, "daoClass must not be null");
+        Objects.requireNonNull(indexConfig, "indexConfig must not be null");
+        this.modelClass = indexConfig.getMappingClass();
+        this.daoClass = daoClass;
+        this.indexConfig = indexConfig;
+        this.gson = gson;
     }
 
     public Class<? extends ElsaModel> getModelClass() {
@@ -30,5 +44,9 @@ public class DaoConfig {
 
     public IndexConfig getIndexConfig() {
         return this.indexConfig;
+    }
+
+    public Gson getGson() {
+        return this.gson;
     }
 }

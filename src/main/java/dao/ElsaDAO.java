@@ -41,7 +41,7 @@ public class ElsaDAO<T extends ElsaModel> {
         this.indexConfig = daoConfig.getIndexConfig();
         this.elsa = elsa;
 
-        this.jsonMapper = new GsonAdapter<>(this.modelClass, elsa.gson);
+        this.jsonMapper = new GsonAdapter<>(this.modelClass, daoConfig.getGson() == null ? elsa.gson : daoConfig.getGson());
         this.searchResponseMapper = new SearchResponseMapper<>(this);
     }
 

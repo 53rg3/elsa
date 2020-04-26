@@ -19,12 +19,11 @@ package client;
 import assets.DateModel;
 import assets.DummyGsonUTCDateAdapter;
 import assets.TestHelpers;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dao.CrudDAO;
 import dao.DaoConfig;
-import exceptions.ElsaException;
 import org.elasticsearch.action.index.IndexResponse;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import statics.ElsaStatics;
 
@@ -39,27 +38,19 @@ import static org.junit.Assert.assertThat;
 
 public class ModelMapperTest {
 
-    private static final ElsaClient elsa = new ElsaClient(c -> c
-            .setClusterNodes(TEST_CLUSTER_HOSTS)
-            .registerDAO(new DaoConfig(CrudDAO.class, DateModel.indexConfig))
-            .configureGson(d -> d
-                    .registerTypeAdapter(Date.class, new DummyGsonUTCDateAdapter("yyyy", Locale.UK, "UTC")))
-            .createIndexesAndEnsureMappingConsistency(false)
-    );
-    private static final CrudDAO<DateModel> dao = elsa.getDAO(DateModel.class);
-
-    @BeforeClass
-    public static void setup() throws ElsaException {
-        elsa.admin.createIndex(DateModel.indexConfig);
-    }
-
-    @AfterClass
-    public static void tearDown() throws ElsaException {
-        elsa.admin.deleteIndex(DateModel.indexConfig);
-    }
-
     @Test
-    public void gsonDateAdapter_datesAreFormatted_pass() throws Exception {
+    public void customGsonDateAdapter_inELsaClientConfig_pass() throws Exception {
+        final ElsaClient elsa = new ElsaClient(c -> c
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
+                .registerDAO(new DaoConfig(CrudDAO.class, DateModel.indexConfig))
+                .configureGson(d -> d
+                        .registerTypeAdapter(Date.class, new DummyGsonUTCDateAdapter("yyyy", Locale.UK, "UTC")))
+                .createIndexesAndEnsureMappingConsistency(false)
+        );
+        final CrudDAO<DateModel> dao = elsa.getDAO(DateModel.class);
+
+        elsa.admin.createIndex(DateModel.indexConfig);
+
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         final DateModel model = new DateModel();
@@ -71,5 +62,34 @@ public class ModelMapperTest {
         final DateModel model2 = dao.get(response.getId());
 
         assertThat(ElsaStatics.UTC_FORMAT.format(model2.getDate()), is(expected));
+
+        elsa.admin.deleteIndex(DateModel.indexConfig);
+    }
+
+    @Test
+    public void customGsonDateAdapter_inDaoConfigConfig_pass() throws Exception {
+        final Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new DummyGsonUTCDateAdapter("yyyy", Locale.UK, "UTC")).create();
+        final ElsaClient elsa = new ElsaClient(c -> c
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
+                .registerDAO(new DaoConfig(CrudDAO.class, DateModel.indexConfig, gson))
+                .createIndexesAndEnsureMappingConsistency(false));
+        final CrudDAO<DateModel> dao = elsa.getDAO(DateModel.class);
+
+        elsa.admin.createIndex(DateModel.indexConfig);
+
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        final DateModel model = new DateModel();
+        model.setDate(dateFormat.parse("2018-03-07T13:13:41.664Z"));
+        final String expected = "2018-01-01T00:00:00.000Z";
+
+        final IndexResponse response = dao.index(model);
+        TestHelpers.sleep(100);
+        final DateModel model2 = dao.get(response.getId());
+
+        assertThat(ElsaStatics.UTC_FORMAT.format(model2.getDate()), is(expected));
+
+        elsa.admin.deleteIndex(DateModel.indexConfig);
     }
 }
