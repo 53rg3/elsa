@@ -86,7 +86,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
             return new IndexRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE)
                     .source(this.getJsonMapper().toJson(model), XContentType.JSON);
         } else {
-            return new IndexRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()))
+            return new IndexRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model))
                     .source(this.getJsonMapper().toJson(model), XContentType.JSON);
         }
     }
@@ -192,7 +192,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     }
 
     public DeleteRequest buildDeleteRequest(final T model) {
-        return new DeleteRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()));
+        return new DeleteRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model));
     }
 
 
@@ -223,7 +223,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     }
 
     public UpdateRequest buildUpdateRequest(final T model) {
-        return new UpdateRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model.getId()))
+        return new UpdateRequest(this.getIndexConfig().getIndexName(), ElsaStatics.DUMMY_TYPE, this.getIdOrThrow(model))
                 .doc(this.getJsonMapper().toJson(model), XContentType.JSON);
     }
 
@@ -232,9 +232,10 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     // PRIVATE METHODS
     // ------------------------------------------------------------------------------------------ //
 
-    private String getIdOrThrow(final String id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Action not possible. ID not set in model object.");
+    private String getIdOrThrow(final ElsaModel model) {
+        final String id = model.getId();
+        if (id == null || id.equals("")) {
+            throw new IllegalArgumentException("Action not possible. ID not set in model object. Got: '" + id + "'");
         } else {
             return id;
         }

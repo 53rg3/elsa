@@ -17,8 +17,8 @@
 package client;
 
 import admin.IndexAdmin;
+import bulkprocessor.BulkProcessorConfigurator;
 import bulkprocessor.DefaultBulkResponseListener;
-import client.BulkProcessorCreator.BulkProcessorConfigurator;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import dao.DaoConfig;
@@ -105,7 +105,7 @@ public class ElsaClient {
 
         // COMPONENTS
         this.admin = new IndexAdmin(this);
-        this.bulkProcessor = BulkProcessorCreator.createBulkProcessor(
+        this.bulkProcessor = this.createAnotherBulkProcessor(
                 this.client,
                 config.bulkResponseListener,
                 config.requestOptionsForBulkProcessor,
@@ -240,6 +240,24 @@ public class ElsaClient {
      */
     public <T extends ElsaDAO> T createDAO(final DaoConfig daoConfig) {
         return this.daoCreator.createDAO(daoConfig);
+    }
+
+    /**
+     * Just use the one which is automatically created in your ElsaClient. There seems to be no use for multiple
+     * BulkProcessors. Another instance will use the same ThreadPool in Elastic's client. If you want prioritize specific
+     * BulkRequests then put a PriorityQueue in front of it.
+     */
+    public BulkProcessor createAnotherBulkProcessor(final RestHighLevelClient client,
+                                                    final Listener bulkResponseListener,
+                                                    final RequestOptions requestOptions,
+                                                    final BulkProcessorConfigurator bulkProcessorConfigurator) {
+
+        final BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(
+                (request, bulkActionListener) -> client.bulkAsync(request, requestOptions, bulkActionListener), bulkResponseListener);
+        if (bulkProcessorConfigurator != null) {
+            return bulkProcessorConfigurator.configure(bulkProcessorBuilder).build();
+        }
+        return bulkProcessorBuilder.build();
     }
 
 }

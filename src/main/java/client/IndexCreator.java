@@ -42,9 +42,9 @@ public class IndexCreator {
             }
 
             if (!indexAdmin.indexExists(daoConfig.getIndexConfig())) {
-                indexAdmin.createIndex(daoConfig.getIndexConfig());
+                indexAdmin.createIndex(daoConfig.getIndexConfig()); // todo log
             } else {
-                indexAdmin.updateMapping(daoConfig.getIndexConfig());
+                indexAdmin.updateMapping(daoConfig.getIndexConfig()); // todo log
             }
         }
     }
