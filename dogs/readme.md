@@ -1,12 +1,12 @@
 <!--- PROJECT_TOC -->
 
-# Ruminations for 0.2
 
-- No pseudo-Optionals
 
-  - They're fake and gay. Throw a shit load of exceptions.
+## Elastic 7.0
 
-- Don't we have some exception mapping? Was that useful? Why not pass it as it is and let user decide what to do.
+- MappingBuilder of Spring doesn't work 7.0 (_doc field etc). 
+- They're working on it now and it will be implemented in 4.0.0. Today (26.04.2020) they're on RC1. 
+- Tests work fine with 6.8.8
 
 
 

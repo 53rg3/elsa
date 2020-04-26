@@ -101,12 +101,14 @@ public class AsyncCrudDAOTest {
                         .query(QueryBuilders.matchAllQuery()));
         this.sleep(100); // Needs time to make indexation...
         crudDAO.searchAsync(searchRequest, RequestOptions.DEFAULT, new AsyncSearchListener(this.searchCheck, elsa));
+        elsa.client.indices().flush(new FlushRequest(newIndexConfig.getIndexName()).force(true), RequestOptions.DEFAULT);
         this.sleep(100);
         assertThat(this.searchCheck.wasSuccessful(), is(true));
 
         // Update
         model1.setName("Jane");
         crudDAO.updateAsync(model1, RequestOptions.DEFAULT, new AsyncUpdateListener(this.updateCheck, elsa));
+        elsa.client.indices().flush(new FlushRequest(newIndexConfig.getIndexName()).force(true), RequestOptions.DEFAULT);
         this.sleep(100);
         final FakerModelAsync updatedResult = crudDAO.get("1");
         assertThat(this.updateCheck.wasSuccessful(), is(true));
@@ -114,6 +116,7 @@ public class AsyncCrudDAOTest {
 
         // Delete
         crudDAO.deleteAsync(updatedResult, RequestOptions.DEFAULT, new AsyncDeleteListener(this.deleteCheck, elsa));
+        elsa.client.indices().flush(new FlushRequest(newIndexConfig.getIndexName()).force(true), RequestOptions.DEFAULT);
         this.sleep(100);
         assertThat(this.deleteCheck.wasSuccessful(), is(true));
         final FakerModelAsync deletedResult = crudDAO.get("1");
