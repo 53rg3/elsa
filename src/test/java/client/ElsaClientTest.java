@@ -228,13 +228,13 @@ public class ElsaClientTest {
         elsa.getDAO(FakerModel.class);
     }
 
-    // todo add tests 1. class type not compatible, 2. params must not be null
     @Test(expected = ClassCastException.class)
     public void getDao_daoTypeIsNotCompatible_throw() {
         final ElsaClient elsa = new ElsaClient(c -> c
                 .setClusterNodes(TEST_CLUSTER_HOSTS)
                 .registerDAO(new DaoConfig(ElsaDAO.class, TestModel.indexConfig))
                 .createIndexesAndEnsureMappingConsistency(false));
-        final CrudDAO<TestModel> dao = elsa.getDAO(TestModel.class); // DON'T DELETE THE VARIABLE DECLARATION
+        // DON'T DELETE THE VARIABLE DECLARATION, otherwise exception isn't thrown.
+        final CrudDAO<TestModel> dao = elsa.getDAO(TestModel.class);
     }
 }

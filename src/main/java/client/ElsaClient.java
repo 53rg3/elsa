@@ -227,7 +227,7 @@ public class ElsaClient {
     /**
      * Convenience method for DAOs registered via ElsaClient instantiation. You can also use ElsaClient.createDAO()
      * if you need different IndexConfigs for working on multiple indices with the same model.
-     */ // todo how to check, see GenericsCrap AND test
+     */
     @SuppressWarnings("unchecked")
     public <T extends ElsaDAO> T getDAO(final Class<? extends ElsaModel> modelClass) {
         return Objects.requireNonNull((T) this.daoMap.get(modelClass), "Requested DAO for model class does not exist. " +
