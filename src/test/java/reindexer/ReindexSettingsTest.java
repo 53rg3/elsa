@@ -29,6 +29,9 @@ import reindexer.ReindexOptions.ScriptingLanguage;
 import reindexer.ReindexOptions.VersionType;
 import reindexer.ReindexSettings.ReindexSettingsBuilder;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class ReindexSettingsTest {
 
     private final IndexConfig fromIndexConfig = new IndexConfig(c -> c
@@ -77,44 +80,20 @@ public class ReindexSettingsTest {
 
     }
 
-//    @Test todo delete we use IndexConfig now
-//    public void build_withClassesAsArguments_pass() throws Exception {
-//
-//        final String expected = "{\"source\":{\"index\":\"" + IndexName.of(this.fromIndexClass) + "\"},\"dest\":{\"index\":\"" + IndexName.of(this.intoIndexClass) + "\"}}";
-//
-//        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
-//                .configureSource(c -> c
-//                        .fromIndex(this.fromIndexClass))
-//                .configureDestination(c -> c
-//                        .intoIndex(this.intoIndexClass))
-//                .build();
-//
-//        final String result = Strings.toString(reindexSettings.getXContentBuilder());
-//
-//        assertThat(result, is(expected));
-//
-//    }
-
-//    @Test(expected = IllegalArgumentException.class) todo delete we use IndexConfig now
-//    public void build_sourceIndexWithClassAndString_throw() {
-//        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
-//                .configureSource(c -> c
-//                        .fromIndex(this.fromIndexClass)
-//                        .fromIndex("asdf"))
-//                .configureDestination(c -> c
-//                        .intoIndex(this.intoIndexClass))
-//                .build();
-//    }
-
-//    @Test(expected = IllegalArgumentException.class) todo delete we use IndexConfig now
-//    public void build_destinationIndexWithClassAndString_throw() {
-//        final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
-//                .configureSource(c -> c
-//                        .fromIndex(this.fromIndexClass))
-//                .configureDestination(c -> c
-//                        .intoIndex(this.intoIndexClass)
-//                        .intoIndex("asdf"))
-//                .build();
-//    }
+    @Test
+    public void build_sourceIndexWithClassAndString_throw() {
+        try {
+            final ReindexSettings reindexSettings = new ReindexSettingsBuilder()
+                    .configureSource(c -> c
+                            .fromIndex(this.fromIndexConfig))
+                    .configureDestination(c -> c
+                            .intoIndex(this.fromIndexConfig))
+                    .build();
+        } catch (final Exception e) {
+            assertThat(e instanceof IllegalArgumentException, is(true));
+            assertThat(e.getMessage()
+                    .contains("IndexName of source index and destination index must not be equal"), is(true));
+        }
+    }
 
 }

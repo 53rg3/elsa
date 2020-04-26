@@ -28,7 +28,9 @@ public class ReindexSource {
     //  FIELDS
     // ------------------------------------------------------------------------------------------ //
 
-    // None, build returns XJson. Class is just a wrapper.
+    private final XJson xJson;
+    private final IndexConfig indexConfig;
+
 
     // ------------------------------------------------------------------------------------------ //
     // CONFIGURATOR
@@ -48,7 +50,7 @@ public class ReindexSource {
             Objects.requireNonNull(builder.indexConfig, "'indexConfig' must not be NULL.");
         }
 
-        default XJson applyCustomConfig(final Configurator configurator) {
+        default ReindexSource applyCustomConfig(final Configurator configurator) {
             final Config builder = configurator.loadDefaults();
             configurator.configure(builder);
             configurator.validate(builder);
@@ -61,8 +63,9 @@ public class ReindexSource {
     // BUILD
     // ------------------------------------------------------------------------------------------ //
 
-    private ReindexSource() {
-        // NO OP
+    private ReindexSource(final ReindexSource.Config config) {
+        this.xJson = config.xJson;
+        this.indexConfig = config.indexConfig;
     }
 
 
@@ -123,9 +126,16 @@ public class ReindexSource {
             return this;
         }
 
-        protected XJson build() {
-            return this.xJson;
+        protected ReindexSource build() {
+            return new ReindexSource(this);
         }
     }
 
+    public IndexConfig getIndexConfig() {
+        return this.indexConfig;
+    }
+
+    public XJson getXJson() {
+        return this.xJson;
+    }
 }

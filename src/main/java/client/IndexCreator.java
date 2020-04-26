@@ -20,12 +20,16 @@ import admin.IndexAdmin;
 import dao.DaoConfig;
 import exceptions.ElsaException;
 import model.ElsaModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
 public class IndexCreator {
     private IndexCreator() {
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(IndexCreator.class);
 
     protected static void createIndicesOrEnsureMappingConsistency(final boolean shouldProceed,
                                                                   final Collection<DaoConfig> daoConfigs,
@@ -34,17 +38,22 @@ public class IndexCreator {
             return;
         }
 
+        logger.info("Applying index updates because createIndicesOrEnsureMappingConsistency was set");
         for (final DaoConfig daoConfig : daoConfigs) {
             final Class<? extends ElsaModel> modelClass = daoConfig.getModelClass();
 
             if (modelClass.equals(ElsaModel.class)) {
-                throw new IllegalArgumentException("Registering interface ElsaModel.class as model is not allowed. Create a model which implements it.");
+                throw new IllegalArgumentException("Registering interface ElsaModel.class as model is not allowed. " +
+                        "Create a model which implements it.");
             }
 
             if (!indexAdmin.indexExists(daoConfig.getIndexConfig())) {
-                indexAdmin.createIndex(daoConfig.getIndexConfig()); // todo log
+                indexAdmin.createIndex(daoConfig.getIndexConfig());
+                logger.info("Created index: " + daoConfig.getIndexConfig().getIndexName());
             } else {
-                indexAdmin.updateMapping(daoConfig.getIndexConfig()); // todo log
+                indexAdmin.updateMapping(daoConfig.getIndexConfig());
+                logger.info("Updated mapping (this is idempotent if you didn't change mapping in the model): " +
+                        daoConfig.getIndexConfig().getIndexName());
             }
         }
     }

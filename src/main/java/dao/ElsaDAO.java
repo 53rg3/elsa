@@ -32,7 +32,7 @@ public class ElsaDAO<T extends ElsaModel> {
     private final JsonMapper<T> jsonMapper;
     private final SearchResponseMapper<T> searchResponseMapper;
 
-    @SuppressWarnings("unchecked") // todo is casting legit or must this be done differently?
+    @SuppressWarnings("unchecked")
     public ElsaDAO(final DaoConfig daoConfig, final ElsaClient elsa) {
         Objects.requireNonNull(daoConfig, "daoConfig must not be null");
         Objects.requireNonNull(elsa, "elsa must not be null");

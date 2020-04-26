@@ -146,16 +146,4 @@ public class IndexAdminTest {
         this.elsa.admin.deleteIndex(new_name);
     }
 
-//    @Test todo delete
-//    public void changeIndexName_appliesToInstancesOfModel_pass() {
-//        final TestModel testModel1 = new TestModel();
-//        final TestModel testModel2 = new TestModel();
-//        assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
-//
-//        testModel2.getIndexConfig().setIndexName("new_name");
-//        assertThat(testModel1.getIndexConfig().getIndexName(), is("new_name"));
-//
-//        testModel2.getIndexConfig().setIndexName("elsa_test_index");
-//        assertThat(testModel1.getIndexConfig().getIndexName(), is("elsa_test_index"));
-//    }
 }

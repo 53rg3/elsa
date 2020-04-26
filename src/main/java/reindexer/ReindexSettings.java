@@ -36,6 +36,7 @@ public class ReindexSettings {
     private static final Logger logger = LoggerFactory.getLogger(ReindexSettings.class);
     private final XContentBuilder xContentBuilder;
     private final IndexConfig destinationIndexConfig;
+    private final IndexConfig sourceIndexConfig;
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -46,8 +47,14 @@ public class ReindexSettings {
      * Use the builder
      */
     private ReindexSettings(final ReindexSettingsBuilder builder) {
+        if (builder.destinationIndexConfig.getIndexName()
+                .equals(builder.sourceIndexConfig.getIndexName())) {
+            throw new IllegalArgumentException("IndexName of source index and destination index must not be equal. " +
+                    "Both are: '" + builder.destinationIndexConfig.getIndexName() + "'");
+        }
         this.xContentBuilder = this.createXContentBuilder(builder.xJson.toMap());
         this.destinationIndexConfig = builder.destinationIndexConfig;
+        this.sourceIndexConfig = builder.sourceIndexConfig;
     }
 
     private XContentBuilder createXContentBuilder(final Map<String, Object> map) {
@@ -66,9 +73,10 @@ public class ReindexSettings {
     public static class ReindexSettingsBuilder {
         private final XJson xJson = new XJson();
         private IndexConfig destinationIndexConfig;
+        private IndexConfig sourceIndexConfig;
 
         /**
-         * (Optional) Proceed when conflict occur, just count them.
+         * (Optional) Proceed when conflicts occur, just count them.
          */
         public ReindexSettingsBuilder conflicts(final Conflicts optionalSetting) {
             this.xJson.field("conflicts", optionalSetting.toString());
@@ -87,7 +95,9 @@ public class ReindexSettings {
          * (Mandatory) Configuration for the source index which shall be reindexed
          */
         public ReindexSettingsBuilder configureSource(final ReindexSource.Configurator configurator) {
-            this.xJson.field("source", configurator.applyCustomConfig(configurator).toMap());
+            final ReindexSource reindexSource = configurator.applyCustomConfig(configurator);
+            this.xJson.field("source", reindexSource.getXJson().toMap());
+            this.sourceIndexConfig = reindexSource.getIndexConfig();
             return this;
         }
 
