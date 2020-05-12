@@ -12,39 +12,24 @@
 
 ## Conditional Builder?
 
-With the sexy functional builder we can't really create the builder (ElsaClient.Config) in a dynamic way. E.g.
-
 ```java
-Config config = new Config
-	.setValueOne("something");
-if(someParam) {
-    config.setValueTwo("for tests and shit");
-} else {
-    config.setValueTwo("for prod");
-}
-ElsaClient elsa = new ElsaClient(config);
-```
-
-To solve this we need a constructor for ElsaClient which accepts a builder. Problem is that we somehow need to overwrite the `Config loadDefaults()` (without duplicate code).
-
-A workaround is this:
-
-```java
-@Inject
 public Initializer(final ActorSystem actorSystem) {
-    this.parcon = new Parcon(defaultConfig());
+    // EITHER THIS
+    new Parcon(defaultConfig());
+    
+    // OR SIMPLY THIS
+    new Parcon(config -> {
+        if (true) {
+            config.parconConfig(null);
+        }
+    });
 }
 
 private Parcon.Configurator defaultConfig() {
-    return this.createConfigurator(c -> c.parconConfig(null));
-}
-
-private Parcon.Configurator createConfigurator(final Parcon.Configurator configurator){
-    return configurator;
+    return c -> c
+        .parconConfig(null);
 }
 ```
-
-So you have factory methods with different Configurators. 
 
 
 
