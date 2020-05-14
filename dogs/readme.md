@@ -2,6 +2,17 @@
 
 
 
+### TODO
+
+- What about Flush and Refresh?!
+
+```
+final FlushResponse flushResponse = ELSA.client.indices().flush(new FlushRequest(allTestIndices).force(true));
+ final RefreshResponse refreshResponse = ELSA.client.indices().refresh(new RefreshRequest(allTestIndices));
+```
+
+
+
 ## Elastic 7.0
 
 - MappingBuilder of Spring doesn't work 7.0 (_doc field etc). 

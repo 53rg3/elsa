@@ -60,8 +60,9 @@ class DaoCreator {
         try {
             return (T) daoClass.getConstructor(DaoConfig.class, ElsaClient.class).newInstance(daoConfig, this.elsa);
         } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            logger.error("Can't instantiate DAO. Problem with " + modelClass + " or " + daoClass, e);
-            throw new IllegalStateException("Can't instantiate DAO. Problem with " + modelClass + " or " + daoClass, e);
+            final String msg = "Can't instantiate DAO. Problem with " + modelClass + " or " + daoClass;
+            logger.error(msg, e);
+            throw new IllegalStateException(msg, e);
         }
     }
 
@@ -83,8 +84,10 @@ class DaoCreator {
                 throw new IllegalStateException("Methods getId() or setId() was not implemented properly in model: " + modelClass);
             }
         } catch (final InstantiationException | IllegalAccessException e) {
-            logger.error("Can't instantiate ElsaModel for ElsaClient. Problem with " + modelClass, e);
-            throw new IllegalStateException("Can't instantiate ElsaModel for ElsaClient. Problem with " + modelClass, e);
+            final String msg = "Can't instantiate ElsaModel for ElsaClient. Problem with " + modelClass + " - " +
+                    "Does it have a public constructor with zero arguments?";
+            logger.error(msg, e);
+            throw new IllegalStateException(msg, e);
         }
     }
 }

@@ -25,7 +25,7 @@ public class ModelClass {
     private ModelClass() {}
 
     private static final Logger logger = LoggerFactory.getLogger(ModelClass.class);
-
+    // todo urm? do we need that here?
     public static <T extends ElsaModel> T createEmpty(Class<T> modelClass) {
         try {
             return modelClass.newInstance();
