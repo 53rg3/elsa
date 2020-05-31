@@ -11,7 +11,7 @@ final FlushResponse flushResponse = ELSA.client.indices().flush(new FlushRequest
  final RefreshResponse refreshResponse = ELSA.client.indices().refresh(new RefreshRequest(allTestIndices));
 ```
 
-
+- How about deleteByQuery & updateByQuery?
 
 ## Elastic 7.0
 
