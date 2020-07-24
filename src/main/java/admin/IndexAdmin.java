@@ -43,9 +43,12 @@ import java.io.IOException;
 public class IndexAdmin {
 
     private final ElsaClient elsa;
+    private final MappingBuilder mappingBuilder;
 
     public IndexAdmin(final ElsaClient elsa) {
         this.elsa = elsa;
+        final MappingContextCreator mappingContextCreator = new MappingContextCreator();
+        this.mappingBuilder = mappingContextCreator.getMappingBuilder();
     }
 
 
@@ -56,8 +59,7 @@ public class IndexAdmin {
     public CreateIndexResponse createIndex(final IndexConfig indexConfig,
                                            final RequestOptions options) throws ElsaException {
         try {
-            final XContentBuilder mapping = MappingBuilder.buildMapping(indexConfig.getMappingClass(),
-                    ElsaStatics.DUMMY_TYPE, ElsaStatics.DEFAULT_ID_FIELD_NAME, "");
+            final XContentBuilder mapping = this.mappingBuilder.buildPropertyMapping(indexConfig.getMappingClass());
             final CreateIndexRequest request = new CreateIndexRequest();
             request.index(indexConfig.getIndexName());
             final Settings settings = Settings.builder()
@@ -89,7 +91,7 @@ public class IndexAdmin {
                                               final RequestOptions options) throws ElsaException {
         try {
             final String indexName = indexConfig.getIndexName();
-            final XContentBuilder xContentBuilder = MappingBuilder.buildMapping(indexConfig.getMappingClass(), "_doc", "", "");
+            final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(indexConfig.getMappingClass());
 
             final Request request = new Request(Method.PUT, Endpoint.INDEX_MAPPING.update(indexName));
             request.setEntity(RequestBody.asJson(xContentBuilder));

@@ -16,14 +16,16 @@
 
 package admin;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import java.io.IOException;
-
 import admin.entities.*;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 
 /**
@@ -35,64 +37,61 @@ import org.junit.Test;
 
 public class MappingBuilderTest {
 
-	@Test
-	public void testInfiniteLoopAvoidance() throws IOException {
-		final String expected = "{\"mapping\":{\"properties\":{\"message\":{\"store\":true,\"" +
-				"type\":\"text\",\"index\":false," +
-				"\"analyzer\":\"standard\"}}}}";
+    private final MappingBuilder mappingBuilder = new MappingContextCreator().getMappingBuilder();
 
-		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(SampleTransientEntity.class, "mapping", "id", null);
-		assertThat(Strings.toString(xContentBuilder), is(expected));
-	}
+    @Test
+    public void testInfiniteLoopAvoidance() throws IOException {
+        final String expected = "{\"properties\":{\"message\":{\"store\":true,\"type\":\"text\",\"index\":false,\"analyzer\":\"standard\"}}}";
 
-	@Test
-	public void shouldUseValueFromAnnotationType() throws IOException {
-		//Given
-		final String expected = "{\"mapping\":{\"properties\":{\"price\":{\"store\":false,\"type\":\"double\"}}}}";
+        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(SampleTransientEntity.class);
+        assertThat(Strings.toString(xContentBuilder), is(expected));
+    }
 
-		//When
-		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(StockPrice.class, "mapping", "id", null);
+    @Test
+    public void shouldUseValueFromAnnotationType() throws IOException {
+        //Given
+        final String expected = "{\"properties\":{\"price\":{\"type\":\"double\"}}}";
 
-		//Then
-		assertThat(Strings.toString(xContentBuilder), is(expected));
-	}
+        //When
+        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(StockPrice.class);
 
-	@Test
-	public void shouldCreateMappingForSpecifiedParentType() throws IOException {
-		final String expected = "{\"mapping\":{\"_parent\":{\"type\":\"parentType\"},\"properties\":{}}}";
-		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(MinimalEntity.class, "mapping", "id", "parentType");
-		assertThat(Strings.toString(xContentBuilder), is(expected));
-	}
+        //Then
+        assertThat(Strings.toString(xContentBuilder), is(expected));
+    }
 
-	@Test
-	public void shouldBuildMappingWithSuperclass() throws IOException {
-		final String expected = "{\"mapping\":{\"properties\":{\"message\":{\"store\":true,\"" +
-				"type\":\"text\",\"index\":false,\"analyzer\":\"standard\"}" +
-				",\"createdDate\":{\"store\":false," +
-				"\"type\":\"date\",\"index\":false}}}}";
+    @Test
+    public void shouldCreateMappingForSpecifiedParentType() throws IOException {
+        final String expected = "{\"properties\":{}}";
+        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(MinimalEntity.class);
+        assertThat(Strings.toString(xContentBuilder), is(expected));
+    }
 
-		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(SampleInheritedEntity.class, "mapping", "id", null);
-		assertThat(Strings.toString(xContentBuilder), is(expected));
-	}
+    @Test
+    public void shouldBuildMappingWithSuperclass() throws IOException {
+        final String expected = "{\"properties\":{\"message\":{\"store\":true,\"type\":\"text\",\"index\":false,\"analyzer\":\"standard\"},\"createdDate\":{\"type\":\"date\",\"format\":\"basic_date\",\"index\":false}}}";
 
-	@Test
-	public void mappingBuilder_EntityHasNoDocumentAnnotation_mustPass() throws IOException {
-		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(StockPrice.class, "mapping", "id", "parentType");
-	}
+        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(SampleInheritedEntity.class);
+        assertThat(Strings.toString(xContentBuilder), is(expected));
+    }
 
-	@Test
-	public void shouldBuildMappingsForGeoPoint() throws IOException {
-		//given
+    @Test
+    public void mappingBuilder_EntityHasNoDocumentAnnotation_mustPass() throws IOException {
+        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(StockPrice.class);
+    }
 
-		//when
-		XContentBuilder xContentBuilder = MappingBuilder.buildMapping(GeoEntity.class, "mapping", "id", null);
+    @Test
+    public void shouldBuildMappingsForGeoPoint() throws IOException {
+        //given
 
-		//then
-		final String result = Strings.toString(xContentBuilder);
+        //when
+        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(GeoEntity.class);
 
-		assertThat(result, containsString("\"pointA\":{\"type\":\"geo_point\""));
-		assertThat(result, containsString("\"pointB\":{\"type\":\"geo_point\""));
-		assertThat(result, containsString("\"pointC\":{\"type\":\"geo_point\""));
-		assertThat(result, containsString("\"pointD\":{\"type\":\"geo_point\""));
-	}
+        //then
+        final String result = Strings.toString(xContentBuilder);
+
+        assertThat(result, containsString("\"pointA\":{\"type\":\"geo_point\""));
+        assertThat(result, containsString("\"pointB\":{\"type\":\"geo_point\""));
+        assertThat(result, containsString("\"pointC\":{\"type\":\"geo_point\""));
+        assertThat(result, containsString("\"pointD\":{\"type\":\"geo_point\""));
+    }
 }

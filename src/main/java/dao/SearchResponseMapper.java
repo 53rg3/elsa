@@ -71,7 +71,7 @@ public class SearchResponseMapper<T extends ElsaModel> {
     }
 
     public static long getTotalHits(final SearchResponse searchResponse) {
-        return searchResponse.getHits().totalHits;
+        return searchResponse.getHits().getTotalHits().value;
     }
 
     public static long getHitsCount(final SearchResponse searchResponse) {
