@@ -15,36 +15,37 @@
  */
 package admin.entities;
 
-import java.util.Date;
-
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+
+import java.util.Date;
 
 /**
  * @author Kevin Letur
  */
 public class AbstractInheritedEntity {
 
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	@Field(type = FieldType.Date, index = false)
-	private Date createdDate;
+    @Field(type = FieldType.Date, index = false, format = DateFormat.basic_date)
+    private Date createdDate;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return this.id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(final String id) {
+        this.id = id;
+    }
 
-	public Date getCreatedDate() {
-		return createdDate;
-	}
+    public Date getCreatedDate() {
+        return this.createdDate;
+    }
 
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
+    public void setCreatedDate(final Date createdDate) {
+        this.createdDate = createdDate;
+    }
 }

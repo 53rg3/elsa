@@ -16,8 +16,6 @@
 
 package endpoints;
 
-import statics.ElsaStatics;
-
 public final class Endpoint {
 
     // ------------------------------------------------------------------------------------------ //
@@ -26,20 +24,20 @@ public final class Endpoint {
     public static final String REINDEX = "_reindex";
 
 
-
     // ------------------------------------------------------------------------------------------ //
     // MAPPINGS
     // ------------------------------------------------------------------------------------------ //
 
     public static final class INDEX_MAPPING {
-        private INDEX_MAPPING() {}
+        private INDEX_MAPPING() {
+        }
+
         private static final String ROOT = "_mappings";
 
         public static String update(final String indexName) {
-            return indexName + "/"+ROOT+"/" + ElsaStatics.DUMMY_TYPE;
+            return indexName + "/" + ROOT;
         }
     }
-
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -47,62 +45,68 @@ public final class Endpoint {
     // ------------------------------------------------------------------------------------------ //
 
     public static final class SNAPSHOT {
-        private SNAPSHOT() {}
+        private SNAPSHOT() {
+        }
+
         private static final String ROOT = "_snapshot";
 
 
         public static final class INFO {
-            private INFO() {}
+            private INFO() {
+            }
 
             public static String getRepositories() {
-                return ROOT+"/_all";
+                return ROOT + "/_all";
             }
 
-            public static String getRepositoryByName(String repositoryName) {
-                return ROOT+"/"+repositoryName;
+            public static String getRepositoryByName(final String repositoryName) {
+                return ROOT + "/" + repositoryName;
             }
 
-            public static String getSnapshotByName(String repositoryName, String snapshotName) {
-                return ROOT+"/"+repositoryName+"/"+snapshotName;
+            public static String getSnapshotByName(final String repositoryName, final String snapshotName) {
+                return ROOT + "/" + repositoryName + "/" + snapshotName;
             }
 
-            public static String getSnapshots(String repository) {
-                return ROOT+"/"+repository+"/_all";
+            public static String getSnapshots(final String repository) {
+                return ROOT + "/" + repository + "/_all";
             }
         }
 
 
         public static final class CREATE {
-            private CREATE() {}
-
-            public static String createRepository(String repositoryName) {
-                return ROOT+"/"+repositoryName;
+            private CREATE() {
             }
 
-            public static String createSnapshot(String repositoryName, String snapshotName) {
-                return ROOT+"/"+repositoryName+"/"+snapshotName;
+            public static String createRepository(final String repositoryName) {
+                return ROOT + "/" + repositoryName;
+            }
+
+            public static String createSnapshot(final String repositoryName, final String snapshotName) {
+                return ROOT + "/" + repositoryName + "/" + snapshotName;
             }
         }
 
 
         public static final class RESTORE {
-            private RESTORE() {}
+            private RESTORE() {
+            }
 
-            public static String restoreSnapshot(String repositoryName, String snapshotName) {
-                return ROOT+"/"+repositoryName+"/"+snapshotName+"/_restore";
+            public static String restoreSnapshot(final String repositoryName, final String snapshotName) {
+                return ROOT + "/" + repositoryName + "/" + snapshotName + "/_restore";
             }
         }
 
 
         public static final class DELETE {
-            private DELETE() {}
-
-            public static String deleteSnapshot(String repositoryName, String snapshotName) {
-                return ROOT+"/"+repositoryName+"/"+snapshotName;
+            private DELETE() {
             }
 
-            public static String deleteRepository(String repositoryName) {
-                return ROOT+"/"+repositoryName;
+            public static String deleteSnapshot(final String repositoryName, final String snapshotName) {
+                return ROOT + "/" + repositoryName + "/" + snapshotName;
+            }
+
+            public static String deleteRepository(final String repositoryName) {
+                return ROOT + "/" + repositoryName;
             }
         }
     }

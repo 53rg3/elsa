@@ -67,7 +67,6 @@ public class ElsaClientTest {
                 .configureLowLevelClient(d -> d
                         .setDefaultHeaders(defaultHeaders)
                         .setFailureListener(new FailureListener())
-                        .setMaxRetryTimeoutMillis(10000)
                         .setHttpClientConfigCallback(config -> config
                                 .setMaxConnTotal(1)
                                 .setUserAgent("MyUserAgent"))

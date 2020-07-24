@@ -15,65 +15,73 @@
  */
 package admin.entities;
 
-import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.lang.Nullable;
+
+import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
 
 /**
  * @author Jakub Vavrik
  */
-@Document(indexName = "test-index-recursive-mapping", type = "mapping", shards = 1, replicas = 0, refreshInterval = "-1")
+@Document(indexName = "test-index-recursive-mapping-mapping-builder", replicas = 0, refreshInterval = "-1")
 public class SampleTransientEntity {
 
-	@Id
-	private String id;
+    @Nullable
+    @Id
+    private String id;
 
-	@Field(type = Text, index = false, store = true, analyzer = "standard")
-	private String message;
+    @Nullable
+    @Field(type = Text, index = false, store = true, analyzer = "standard")
+    private String message;
 
-	@Transient
-	private NestedEntity nested;
+    @Nullable
+    @Transient
+    private SampleTransientEntity.NestedEntity nested;
 
-	public String getId() {
-		return id;
-	}
+    @Nullable
+    public String getId() {
+        return this.id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(final String id) {
+        this.id = id;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    @Nullable
+    public String getMessage() {
+        return this.message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(final String message) {
+        this.message = message;
+    }
 
-	static class NestedEntity {
+    static class NestedEntity {
 
-		@Field
-		private static NestedEntity someField = new NestedEntity();
-		@Field
-		private Boolean something;
+        @Field
+        private static SampleTransientEntity.NestedEntity someField = new SampleTransientEntity.NestedEntity();
+        @Nullable
+        @Field
+        private Boolean something;
 
-		public NestedEntity getSomeField() {
-			return someField;
-		}
+        public SampleTransientEntity.NestedEntity getSomeField() {
+            return someField;
+        }
 
-		public void setSomeField(NestedEntity someField) {
-			NestedEntity.someField = someField;
-		}
+        public void setSomeField(final SampleTransientEntity.NestedEntity someField) {
+            NestedEntity.someField = someField;
+        }
 
-		public Boolean getSomething() {
-			return something;
-		}
+        @Nullable
+        public Boolean getSomething() {
+            return this.something;
+        }
 
-		public void setSomething(Boolean something) {
-			this.something = something;
-		}
-	}
+        public void setSomething(final Boolean something) {
+            this.something = something;
+        }
+    }
 }

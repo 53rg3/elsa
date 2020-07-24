@@ -21,6 +21,7 @@ import model.ElsaModel;
 import model.IndexConfig;
 import org.elasticsearch.common.unit.TimeValue;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
@@ -41,7 +42,7 @@ public class DateModel implements ElsaModel {
     @Id
     private transient String id;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date, format = DateFormat.year)
     private Date date;
 
     @Override

@@ -62,6 +62,7 @@ public class ElsaStatics {
     /**
      * Temporary official recommendation for ES 6.x till 7.0,
      * see https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
+     * todo do we still need this?
      */
     public static final String DUMMY_TYPE = "_doc";
 
