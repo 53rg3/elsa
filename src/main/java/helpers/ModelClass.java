@@ -25,7 +25,7 @@ public class ModelClass {
     private ModelClass() {}
 
     private static final Logger logger = LoggerFactory.getLogger(ModelClass.class);
-    // todo urm? do we need that here?
+    // todo urm? do we need that here? Only used for a test??
     public static <T extends ElsaModel> T createEmpty(Class<T> modelClass) {
         try {
             return modelClass.newInstance();

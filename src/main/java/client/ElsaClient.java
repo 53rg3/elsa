@@ -166,6 +166,7 @@ public class ElsaClient {
         }
 
         public Config registerDAO(final DaoConfig daoConfig) {
+            Objects.requireNonNull(daoConfig, "daoConfig class must not be NULL.");
             Objects.requireNonNull(daoConfig.getModelClass(), "Model class must not be NULL.");
             Objects.requireNonNull(daoConfig.getDaoClass(), "DAO class must not be NULL.");
 

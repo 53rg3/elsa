@@ -236,4 +236,16 @@ public class ElsaClientTest {
         // DON'T DELETE THE VARIABLE DECLARATION, otherwise exception isn't thrown.
         final CrudDAO<TestModel> dao = elsa.getDAO(TestModel.class);
     }
+
+    @Test
+    public void registerDAO_null() {
+        try {
+            new ElsaClient(c -> c
+                    .setClusterNodes(TEST_CLUSTER_HOSTS)
+                    .registerDAO(null));
+        } catch (final Exception e) {
+            assertThat(e instanceof NullPointerException, is(true));
+            assertThat(e.getMessage(), is("daoConfig class must not be NULL."));
+        }
+    }
 }

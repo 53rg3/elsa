@@ -21,6 +21,7 @@ import assets.TestModel;
 import assets.TestModelWithAddedMappings;
 import assets.TestModelWithInvalidlyModifiedMappings;
 import client.ElsaClient;
+import com.google.common.io.ByteStreams;
 import dao.DaoConfig;
 import exceptions.ElsaException;
 import model.IndexConfig;
@@ -29,6 +30,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import responses.ConfirmationResponse;
+
+import java.net.URL;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.CoreMatchers.is;
@@ -144,6 +147,24 @@ public class IndexAdminTest {
 
         this.elsa.admin.deleteIndex(elsa_test_index);
         this.elsa.admin.deleteIndex(new_name);
+    }
+
+    @Test
+    public void customIndexSettings() throws Exception {
+        final String indexName = "test_index";
+        this.elsa.admin.createIndex(new IndexConfig(c -> c
+                .mappingClass(TestModel.class)
+                .indexName(indexName)
+                .replicas(0)
+                .shards(1)
+                .addIndexSetting("index.codec", "best_compression")));
+
+        final URL url = new URL("http://127.0.0.1:7777/" + indexName + "/_settings");
+        final byte[] bytes = ByteStreams.toByteArray(url.openConnection().getInputStream());
+        assertThat("Expected to find \"codec\":\"best_compression\" in index settings info. See " + url,
+                new String(bytes).contains("\"codec\":\"best_compression\""), is(true));
+
+        this.elsa.admin.deleteIndex(indexName);
     }
 
 }

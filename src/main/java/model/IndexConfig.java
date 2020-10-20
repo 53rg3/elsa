@@ -18,6 +18,8 @@ package model;
 
 import org.elasticsearch.common.unit.TimeValue;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class IndexConfig {
@@ -38,6 +40,7 @@ public class IndexConfig {
             evaluateShards(config.shards);
             evaluateReplicas(config.replicas);
             Objects.requireNonNull(config.mappingClass, "mappingClass must not be NULL");
+            Objects.requireNonNull(config.settings, "If you see this, then it's a bug in the library...");
         }
 
         default Config applyCustomConfig(final Configurator configurator) {
@@ -60,6 +63,7 @@ public class IndexConfig {
     private final Integer replicas;
     private final TimeValue refreshInterval;
     private final Class<? extends ElsaModel> mappingClass;
+    private final Map<String, Object> settings;
 
 
     // ------------------------------------------------------------------------------------------ //
@@ -73,6 +77,7 @@ public class IndexConfig {
         this.replicas = config.replicas;
         this.refreshInterval = config.refreshInterval;
         this.mappingClass = config.mappingClass;
+        this.settings = config.settings;
     }
 
 
@@ -89,6 +94,7 @@ public class IndexConfig {
         private Integer replicas;
         private TimeValue refreshInterval = TimeValue.timeValueSeconds(1);
         private Class<? extends ElsaModel> mappingClass;
+        private final Map<String, Object> settings = new HashMap<>();
 
         public Config indexName(final String mandatorySetting) {
             this.indexName = mandatorySetting;
@@ -112,6 +118,19 @@ public class IndexConfig {
 
         public Config refreshInterval(final TimeValue defaultIs1s) {
             this.refreshInterval = defaultIs1s;
+            return this;
+        }
+
+        /**
+         * Supported types are Boolean, Integer, Double, String. Rest will throw. Elastic Java API can handle more, but
+         * no idea what they used for.<br><br>
+         * For setting names see here: https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html
+         */
+        public Config addIndexSetting(final String settingName, final Object value) {
+            Objects.requireNonNull(settingName, "settingName must not be null");
+            Objects.requireNonNull(value, "value must not be null");
+
+            this.settings.put(settingName, value);
             return this;
         }
 
@@ -153,5 +172,9 @@ public class IndexConfig {
 
     public Class<? extends ElsaModel> getMappingClass() {
         return this.mappingClass;
+    }
+
+    public Map<String, Object> getSettings() {
+        return this.settings;
     }
 }

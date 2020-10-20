@@ -21,8 +21,6 @@ import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.get.GetResponse;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static sun.nio.cs.Surrogate.is;
 
 public class AsyncGetListener implements ActionListener<GetResponse> {
 

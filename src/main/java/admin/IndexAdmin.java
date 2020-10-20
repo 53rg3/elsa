@@ -62,11 +62,7 @@ public class IndexAdmin {
             final XContentBuilder mapping = this.mappingBuilder.buildPropertyMapping(indexConfig.getMappingClass());
             final CreateIndexRequest request = new CreateIndexRequest();
             request.index(indexConfig.getIndexName());
-            final Settings settings = Settings.builder()
-                    .put("index.number_of_shards", indexConfig.getShards())
-                    .put("index.number_of_replicas", indexConfig.getReplicas())
-                    .put("index.refresh_interval", indexConfig.getRefreshInterval().toString())
-                    .build();
+            final Settings settings = this.createSettings(indexConfig);
             request.settings(settings);
             request.mapping(ElsaStatics.DUMMY_TYPE, mapping);
             return this.elsa.client.indices().create(request, options);
@@ -76,6 +72,33 @@ public class IndexAdmin {
         } catch (final ElasticsearchException e) {
             throw new ElsaElasticsearchException(e);
         }
+    }
+
+    private Settings createSettings(final IndexConfig indexConfig) {
+        final Settings.Builder settings = Settings.builder()
+                .put("index.number_of_shards", indexConfig.getShards())
+                .put("index.number_of_replicas", indexConfig.getReplicas())
+                .put("index.refresh_interval", indexConfig.getRefreshInterval().toString());
+
+        // Add custom settings
+        indexConfig.getSettings().forEach((settingsName, value) -> {
+
+            if (value instanceof Boolean) {
+                settings.put(settingsName, (boolean) value);
+            } else if (value instanceof Integer) {
+                settings.put(settingsName, (int) value);
+            } else if (value instanceof Double) {
+                settings.put(settingsName, (double) value);
+            } else if (value instanceof String) {
+                String copy = (String) value;
+                copy = copy.trim();
+                settings.put(settingsName, copy);
+            } else {
+                throw new IllegalStateException("Unhandled type: " + value.getClass() + ", for setting " + settingsName);
+            }
+        });
+
+        return settings.build();
     }
 
     public CreateIndexResponse createIndex(final IndexConfig indexConfig) throws ElsaException {
