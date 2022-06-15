@@ -1,0 +1,27 @@
+version: '3'
+services:
+  elasticsearch-node1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elasticsearch-node1
+    environment:
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "elasticsearch_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the elasticsearch user, set to at least 65536 on modern systems
+        hard: 65536
+    volumes:
+      - elasticsearch-data1:/usr/share/elasticsearch/data
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9200:9200
+
+
+volumes:
+  elasticsearch-data1:
+

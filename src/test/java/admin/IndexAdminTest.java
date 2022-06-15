@@ -16,10 +16,7 @@
 
 package admin;
 
-import assets.TestDAO;
-import assets.TestModel;
-import assets.TestModelWithAddedMappings;
-import assets.TestModelWithInvalidlyModifiedMappings;
+import assets.*;
 import client.ElsaClient;
 import com.google.common.io.ByteStreams;
 import dao.DaoConfig;
@@ -152,6 +149,12 @@ public class IndexAdminTest {
     @Test
     public void customIndexSettings() throws Exception {
         final String indexName = "test_index";
+        try {
+            this.elsa.admin.deleteIndex(indexName);
+        } catch (ElsaException e) {
+            // NO OP
+        }
+
         this.elsa.admin.createIndex(new IndexConfig(c -> c
                 .mappingClass(TestModel.class)
                 .indexName(indexName)
@@ -159,7 +162,7 @@ public class IndexAdminTest {
                 .shards(1)
                 .addIndexSetting("index.codec", "best_compression")));
 
-        final URL url = new URL("http://127.0.0.1:7777/" + indexName + "/_settings");
+        final URL url = new URL("http://127.0.0.1:9200/" + indexName + "/_settings");
         final byte[] bytes = ByteStreams.toByteArray(url.openConnection().getInputStream());
         assertThat("Expected to find \"codec\":\"best_compression\" in index settings info. See " + url,
                 new String(bytes).contains("\"codec\":\"best_compression\""), is(true));

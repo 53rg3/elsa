@@ -21,25 +21,24 @@ import org.elasticsearch.client.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class TestHelpers {
 
-    public static final HttpHost[] TEST_CLUSTER_HOSTS = {new HttpHost("127.0.0.1", 7777, "http")};
+    public static final HttpHost[] TEST_CLUSTER_HOSTS = {new HttpHost("127.0.0.1", 9200, "http")};
 
-    public static void sleep(int ms) {
+    public static void sleep(final int ms) {
         try {
             Thread.sleep(ms);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public static String responseToString(Response response) {
+    public static String responseToString(final Response response) {
 
         BufferedReader br = null;
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         String line;
         try {
@@ -49,13 +48,13 @@ public class TestHelpers {
                 sb.append(line);
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         } finally {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
                 }
             }
