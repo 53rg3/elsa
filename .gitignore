@@ -4,7 +4,7 @@ logs/
 .settings/
 .project
 .classpath
-.idea/*
+.idea
 *.jar
 *.war
 *.iml
