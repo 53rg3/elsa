@@ -22,7 +22,8 @@ import com.google.common.io.ByteStreams;
 import dao.DaoConfig;
 import exceptions.ElsaException;
 import model.IndexConfig;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -71,10 +72,10 @@ public class IndexAdminTest {
             this.elsa.admin.updateMapping(TestModelWithInvalidlyModifiedMappings.indexConfig);
         } catch (final ElsaException e) {
             assertThat(e.getHttpStatus(), is(400));
+        } finally {
+            this.elsa.admin.deleteIndex(TestModel.indexConfig);
+            assertThat(this.elsa.admin.indexExists(TestModel.indexConfig), is(false));
         }
-
-        this.elsa.admin.deleteIndex(TestModel.indexConfig);
-        assertThat(this.elsa.admin.indexExists(TestModel.indexConfig), is(false));
     }
 
     @Test

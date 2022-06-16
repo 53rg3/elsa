@@ -19,19 +19,12 @@ package helpers;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
 import org.elasticsearch.common.Strings;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import statics.Messages.ExceptionMsg;
+import org.elasticsearch.xcontent.XContentBuilder;
 import statics.ElsaStatics;
 
-import java.io.IOException;
 
 public class RequestBody {
     private RequestBody() {}
-
-    private static final Logger logger = LoggerFactory.getLogger(RequestBody.class);
-
 
     public static NStringEntity asJson(final XContentBuilder xContentBuilder) {
         return new NStringEntity(Strings.toString(xContentBuilder), ContentType.APPLICATION_JSON);
@@ -39,6 +32,10 @@ public class RequestBody {
 
     public static NStringEntity asJson(final Object object) {
         return new NStringEntity(ElsaStatics.GSON.toJson(object), ContentType.APPLICATION_JSON);
+    }
+
+    public static NStringEntity asJson(final String string) {
+        return new NStringEntity(string, ContentType.APPLICATION_JSON);
     }
 
     public static NStringEntity asJson(final XJson xJson) {

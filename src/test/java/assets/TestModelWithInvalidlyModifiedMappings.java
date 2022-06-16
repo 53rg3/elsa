@@ -18,7 +18,7 @@ package assets;
 
 import model.IndexConfig;
 import model.ElsaModel;
-import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.core.TimeValue;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 

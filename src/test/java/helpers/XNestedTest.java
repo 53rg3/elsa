@@ -18,8 +18,8 @@ package helpers;
 
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.geo.GeoPoint;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentFactory;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;

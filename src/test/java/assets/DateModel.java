@@ -19,7 +19,7 @@ package assets;
 import com.github.javafaker.Faker;
 import model.ElsaModel;
 import model.IndexConfig;
-import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.core.TimeValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Field;

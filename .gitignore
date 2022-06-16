@@ -8,3 +8,4 @@ logs/
 *.jar
 *.war
 *.iml
+.attach_*

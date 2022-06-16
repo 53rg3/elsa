@@ -7,7 +7,7 @@
 //import helpers.ModelClass;
 //import org.apache.http.HttpHost;
 //import org.elasticsearch.action.search.SearchRequest;
-//import org.elasticsearch.common.unit.TimeValue;
+//import org.elasticsearch.core.TimeValue;
 //import org.junit.Test;
 //import responses.ElsaResponse;
 //

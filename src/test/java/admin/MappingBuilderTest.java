@@ -18,7 +18,7 @@ package admin;
 
 import admin.entities.*;
 import org.elasticsearch.common.Strings;
-import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentBuilder;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -37,46 +37,46 @@ import static org.junit.Assert.assertThat;
 
 public class MappingBuilderTest {
 
-    private final MappingBuilder mappingBuilder = new MappingContextCreator().getMappingBuilder();
+    private final MappingBuilder mappingBuilder = new MappingBuilder();
 
     @Test
     public void testInfiniteLoopAvoidance() throws IOException {
-        final String expected = "{\"properties\":{\"message\":{\"store\":true,\"type\":\"text\",\"index\":false,\"analyzer\":\"standard\"}}}";
+        final String expected = "{\"properties\":{\"_class\":{\"type\":\"keyword\",\"index\":false,\"doc_values\":false},\"message\":{\"store\":true,\"type\":\"text\",\"index\":false,\"analyzer\":\"standard\"}}}";
 
-        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(SampleTransientEntity.class);
-        assertThat(Strings.toString(xContentBuilder), is(expected));
+        final String mapping = this.mappingBuilder.createMapping(SampleTransientEntity.class);
+        assertThat(mapping, is(expected));
     }
 
     @Test
     public void shouldUseValueFromAnnotationType() throws IOException {
         //Given
-        final String expected = "{\"properties\":{\"price\":{\"type\":\"double\"}}}";
+        final String expected = "{\"properties\":{\"_class\":{\"type\":\"keyword\",\"index\":false,\"doc_values\":false},\"price\":{\"type\":\"double\"}}}";
 
         //When
-        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(StockPrice.class);
+        final String mapping = this.mappingBuilder.createMapping(StockPrice.class);
 
         //Then
-        assertThat(Strings.toString(xContentBuilder), is(expected));
+        assertThat(mapping, is(expected));
     }
 
     @Test
     public void shouldCreateMappingForSpecifiedParentType() throws IOException {
-        final String expected = "{\"properties\":{}}";
-        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(MinimalEntity.class);
-        assertThat(Strings.toString(xContentBuilder), is(expected));
+        final String expected = "{\"properties\":{\"_class\":{\"type\":\"keyword\",\"index\":false,\"doc_values\":false}}}";
+        final String mapping = this.mappingBuilder.createMapping(MinimalEntity.class);
+        assertThat(mapping, is(expected));
     }
 
     @Test
     public void shouldBuildMappingWithSuperclass() throws IOException {
-        final String expected = "{\"properties\":{\"message\":{\"store\":true,\"type\":\"text\",\"index\":false,\"analyzer\":\"standard\"},\"createdDate\":{\"type\":\"date\",\"format\":\"basic_date\",\"index\":false}}}";
+        final String expected = "{\"properties\":{\"_class\":{\"type\":\"keyword\",\"index\":false,\"doc_values\":false},\"message\":{\"store\":true,\"type\":\"text\",\"index\":false,\"analyzer\":\"standard\"},\"createdDate\":{\"type\":\"date\",\"format\":\"basic_date\",\"index\":false}}}";
 
-        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(SampleInheritedEntity.class);
-        assertThat(Strings.toString(xContentBuilder), is(expected));
+        final String mapping = this.mappingBuilder.createMapping(SampleInheritedEntity.class);
+        assertThat(mapping, is(expected));
     }
 
     @Test
     public void mappingBuilder_EntityHasNoDocumentAnnotation_mustPass() throws IOException {
-        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(StockPrice.class);
+        final String mapping = this.mappingBuilder.createMapping(StockPrice.class);
     }
 
     @Test
@@ -84,11 +84,9 @@ public class MappingBuilderTest {
         //given
 
         //when
-        final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(GeoEntity.class);
+        final String result = this.mappingBuilder.createMapping(GeoEntity.class);
 
         //then
-        final String result = Strings.toString(xContentBuilder);
-
         assertThat(result, containsString("\"pointA\":{\"type\":\"geo_point\""));
         assertThat(result, containsString("\"pointB\":{\"type\":\"geo_point\""));
         assertThat(result, containsString("\"pointC\":{\"type\":\"geo_point\""));

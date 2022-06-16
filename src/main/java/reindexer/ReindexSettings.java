@@ -18,13 +18,12 @@ package reindexer;
 
 import helpers.XJson;
 import model.IndexConfig;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reindexer.ReindexOptions.Conflicts;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class ReindexSettings {
@@ -33,7 +32,6 @@ public class ReindexSettings {
     //  FIELDS
     // ------------------------------------------------------------------------------------------ //
 
-    private static final Logger logger = LoggerFactory.getLogger(ReindexSettings.class);
     private final XContentBuilder xContentBuilder;
     private final IndexConfig destinationIndexConfig;
     private final IndexConfig sourceIndexConfig;
@@ -58,10 +56,10 @@ public class ReindexSettings {
     }
 
     private XContentBuilder createXContentBuilder(final Map<String, Object> map) {
-        try {
-            return XContentFactory.jsonBuilder().value(map);
-        } catch (final IOException e) {
-            throw new IllegalStateException("Couldn't create XContentBuilder.");
+        try (XContentBuilder xContentBuilder = XContentFactory.jsonBuilder()) {
+            return xContentBuilder.value(map);
+        } catch (Exception e) {
+            throw new IllegalStateException("Couldn't create XContentBuilder.", e);
         }
     }
 

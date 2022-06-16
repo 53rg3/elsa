@@ -26,7 +26,7 @@ import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Point;
 import org.springframework.data.geo.Polygon;
 
-@Document(indexName = "test-index-geo", type = "geo-test-index", shards = 1, replicas = 0, refreshInterval = "-1")
+@Document(indexName = "test-index-geo", shards = 1, replicas = 0, refreshInterval = "-1")
 public class GeoEntity {
 
 	@Id

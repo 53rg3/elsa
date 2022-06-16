@@ -70,7 +70,7 @@ public class ElsaExceptionTest {
         try {
             elsa.admin.deleteIndex("cluster_is_offline");
         } catch (final ElsaException e) {
-            assertThat(e.getHttpStatus(), is(503));
+            assertThat(e.getHttpStatus(), is(500));
         }
     }
 

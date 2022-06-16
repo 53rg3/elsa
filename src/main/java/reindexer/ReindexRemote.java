@@ -17,7 +17,7 @@
 package reindexer;
 
 import helpers.XJson;
-import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.core.TimeValue;
 
 import java.util.Objects;
 

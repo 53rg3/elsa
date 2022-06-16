@@ -23,7 +23,7 @@ import dao.CrudDAO;
 import dao.DaoConfig;
 import exceptions.ElsaException;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.core.TimeValue;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;

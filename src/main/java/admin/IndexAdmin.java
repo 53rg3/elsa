@@ -24,18 +24,18 @@ import exceptions.ElsaIOException;
 import helpers.RequestBody;
 import model.IndexConfig;
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.xcontent.XContentFactory;
+import org.elasticsearch.xcontent.XContentType;
 import responses.ConfirmationResponse;
 import responses.ResponseFactory;
-import statics.ElsaStatics;
 import statics.Method;
 
 import java.io.IOException;
@@ -47,8 +47,7 @@ public class IndexAdmin {
 
     public IndexAdmin(final ElsaClient elsa) {
         this.elsa = elsa;
-        final MappingContextCreator mappingContextCreator = new MappingContextCreator();
-        this.mappingBuilder = mappingContextCreator.getMappingBuilder();
+        this.mappingBuilder = new MappingBuilder();
     }
 
 
@@ -59,12 +58,12 @@ public class IndexAdmin {
     public CreateIndexResponse createIndex(final IndexConfig indexConfig,
                                            final RequestOptions options) throws ElsaException {
         try {
-            final XContentBuilder mapping = this.mappingBuilder.buildPropertyMapping(indexConfig.getMappingClass());
-            final CreateIndexRequest request = new CreateIndexRequest();
-            request.index(indexConfig.getIndexName());
+            final String mapping = this.mappingBuilder.createMapping(indexConfig.getMappingClass());
+            final CreateIndexRequest request = new CreateIndexRequest(indexConfig.getIndexName());
+            request.index();
             final Settings settings = this.createSettings(indexConfig);
             request.settings(settings);
-            request.mapping(ElsaStatics.DUMMY_TYPE, mapping);
+            request.mapping(mapping, XContentType.JSON);
             return this.elsa.client.indices().create(request, options);
 
         } catch (final IOException e) {
@@ -114,10 +113,10 @@ public class IndexAdmin {
                                               final RequestOptions options) throws ElsaException {
         try {
             final String indexName = indexConfig.getIndexName();
-            final XContentBuilder xContentBuilder = this.mappingBuilder.buildPropertyMapping(indexConfig.getMappingClass());
+            final String mapping = this.mappingBuilder.createMapping(indexConfig.getMappingClass());
 
             final Request request = new Request(Method.PUT, Endpoint.INDEX_MAPPING.update(indexName));
-            request.setEntity(RequestBody.asJson(xContentBuilder));
+            request.setEntity(RequestBody.asJson(mapping));
             request.setOptions(options);
             final Response response = this.elsa.client.getLowLevelClient().performRequest(request);
 
