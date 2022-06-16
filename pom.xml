@@ -22,7 +22,7 @@
 
     <groupId>io.github.53rg3</groupId>
     <artifactId>elsa</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.3</version>
     <packaging>jar</packaging>
 
     <name>ELSA</name>
