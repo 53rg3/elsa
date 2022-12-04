@@ -16,8 +16,8 @@
 
 package assets;
 
-import model.ElsaModel;
-import model.IndexConfig;
+import io.github.ss3rg3.elsa.model.ElsaModel;
+import io.github.ss3rg3.elsa.model.IndexConfig;
 import org.elasticsearch.core.TimeValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;

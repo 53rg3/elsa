@@ -22,7 +22,7 @@
 
     <groupId>io.github.ss3rg3</groupId>
     <artifactId>elsa</artifactId>
-    <version>0.2.3</version>
+    <version>0.2.4</version>
     <packaging>jar</packaging>
 
     <name>ELSA</name>
@@ -60,8 +60,8 @@
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.elasticsearch.io.github.ss3rg3.elsa.client/elasticsearch-rest-high-level-io.github.ss3rg3.elsa.client -->
         <dependency>
-            <groupId>org.elasticsearch.io.github.ss3rg3.elsa.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-io.github.ss3rg3.elsa.client</artifactId>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
             <version>7.17.3</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch -->

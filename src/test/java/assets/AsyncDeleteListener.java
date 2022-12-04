@@ -16,10 +16,9 @@
 
 package assets;
 
-import client.ElsaClient;
+import io.github.ss3rg3.elsa.ElsaClient;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.search.SearchResponse;
 
 public class AsyncDeleteListener implements ActionListener<DeleteResponse> {
 

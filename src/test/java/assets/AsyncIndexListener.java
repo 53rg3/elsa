@@ -16,7 +16,7 @@
 
 package assets;
 
-import client.ElsaClient;
+import io.github.ss3rg3.elsa.ElsaClient;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.index.IndexResponse;
 

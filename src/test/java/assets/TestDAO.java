@@ -16,9 +16,9 @@
 
 package assets;
 
-import client.ElsaClient;
-import dao.CrudDAO;
-import dao.DaoConfig;
+import io.github.ss3rg3.elsa.ElsaClient;
+import io.github.ss3rg3.elsa.dao.CrudDAO;
+import io.github.ss3rg3.elsa.dao.DaoConfig;
 
 public class TestDAO extends CrudDAO<TestModel> {
 

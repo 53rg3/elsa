@@ -19,7 +19,7 @@ package assets;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.search.Scroll;
-import scroller.ScrollManager;
+import io.github.ss3rg3.elsa.scroller.ScrollManager;
 
 import java.util.Objects;
 

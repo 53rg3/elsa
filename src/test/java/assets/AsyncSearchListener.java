@@ -16,8 +16,8 @@
 
 package assets;
 
-import client.ElsaClient;
-import dao.SearchResponseMapper;
+import io.github.ss3rg3.elsa.ElsaClient;
+import io.github.ss3rg3.elsa.dao.SearchResponseMapper;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchResponse;
 

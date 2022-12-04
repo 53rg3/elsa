@@ -16,19 +16,15 @@
 
 package assets;
 
-import com.github.javafaker.Faker;
-import model.ElsaModel;
-import model.IndexConfig;
+import io.github.ss3rg3.elsa.model.ElsaModel;
+import io.github.ss3rg3.elsa.model.IndexConfig;
 import org.elasticsearch.core.TimeValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class DateModel implements ElsaModel {
 

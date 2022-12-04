@@ -17,7 +17,6 @@
 package assets;
 
 import com.google.gson.*;
-import statics.ElsaStatics;
 
 import java.lang.reflect.Type;
 import java.text.DateFormat;
