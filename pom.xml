@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.53rg3</groupId>
+    <groupId>io.github.ss3rg3</groupId>
     <artifactId>elsa</artifactId>
     <version>0.2.3</version>
     <packaging>jar</packaging>
@@ -58,10 +58,10 @@
 
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client -->
+        <!-- https://mvnrepository.com/artifact/org.elasticsearch.io.github.ss3rg3.elsa.client/elasticsearch-rest-high-level-io.github.ss3rg3.elsa.client -->
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <groupId>org.elasticsearch.io.github.ss3rg3.elsa.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-io.github.ss3rg3.elsa.client</artifactId>
             <version>7.17.3</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch -->
@@ -122,31 +122,19 @@
             <version>1.7.36</version>
             <scope>test</scope>
         </dependency>
+
+
     </dependencies>
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/ss3rg3/elsa</url>
         </repository>
     </distributionManagement>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
