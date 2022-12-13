@@ -19,11 +19,15 @@ package assets;
 import io.github.ss3rg3.elsa.ElsaClient;
 import io.github.ss3rg3.elsa.dao.CrudDAO;
 import io.github.ss3rg3.elsa.dao.DaoConfig;
+import org.elasticsearch.action.bulk.BulkProcessor;
 
 public class TestDAO extends CrudDAO<TestModel> {
 
+    public final BulkProcessor bulkProcessor;
+
     public TestDAO(final DaoConfig daoConfig, final ElsaClient elsa) {
         super(daoConfig, elsa);
+        this.bulkProcessor = elsa.bulkProcessor;
     }
 
 }

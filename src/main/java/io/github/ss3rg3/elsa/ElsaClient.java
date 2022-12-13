@@ -99,8 +99,6 @@ public class ElsaClient {
         final Config config = Configurator.create(configurator);
         this.client = RestClientConfig.create(config.httpHosts, config.restClientConfig);
         this.gson = config.modelMapper.getGsonBuilder().create();
-        this.daoCreator = new DaoCreator(this);
-        this.daoMap = this.daoCreator.createDaoMap(config.daoConfigMap.values());
         final RepositoryBucket repositoryBucket = new RepositoryBucket(config.repositoryBucketConfig);
 
         // COMPONENTS
@@ -113,6 +111,10 @@ public class ElsaClient {
         this.scroller = new Scroller(this);
         this.reindexer = new Reindexer(this);
         this.snapshotter = new Snapshotter(this, repositoryBucket);
+
+        // DAOs
+        this.daoCreator = new DaoCreator(this);
+        this.daoMap = this.daoCreator.createDaoMap(config.daoConfigMap.values());
 
         // METHODS
         try {

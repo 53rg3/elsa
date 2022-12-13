@@ -17,12 +17,15 @@
 package io.github.ss3rg3.elsa.client;
 
 import assets.*;
+import io.github.ss3rg3.elsa.ElsaClient;
 import io.github.ss3rg3.elsa.dao.CrudDAO;
 import io.github.ss3rg3.elsa.dao.DaoConfig;
 import io.github.ss3rg3.elsa.dao.ElsaDAO;
 import io.github.ss3rg3.elsa.exceptions.ElsaException;
-import io.github.ss3rg3.elsa.ElsaClient;
 import io.github.ss3rg3.elsa.model.IndexConfig;
+import io.github.ss3rg3.elsa.responses.ConfirmationResponse;
+import io.github.ss3rg3.elsa.snapshotter.SnapshotRepository;
+import io.github.ss3rg3.elsa.statics.Headers;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
@@ -32,13 +35,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.MethodSorters;
-import io.github.ss3rg3.elsa.responses.ConfirmationResponse;
-import io.github.ss3rg3.elsa.snapshotter.SnapshotRepository;
-import io.github.ss3rg3.elsa.statics.Headers;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -76,6 +77,16 @@ public class ElsaClientTest {
                                 .setConnectTimeout(1000)))
                 .registerDAO(new DaoConfig(TestDAO.class, TestModel.indexConfig))
                 .createIndexesAndEnsureMappingConsistency(false));
+    }
+
+    @Test
+    public void checkIfDaosAreProperlyBuilt() {
+        final ElsaClient elsa = new ElsaClient(c -> c
+                .setClusterNodes(TEST_CLUSTER_HOSTS)
+                .registerDAO(new DaoConfig(TestDAO.class, TestModel.indexConfig))
+                .createIndexesAndEnsureMappingConsistency(false));
+        final TestDAO testDAO = elsa.getDAO(TestModel.class);
+        assertNotNull("bulkProcessor must not be null", testDAO.bulkProcessor);
     }
 
     @Test

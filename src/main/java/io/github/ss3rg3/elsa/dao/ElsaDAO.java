@@ -26,11 +26,11 @@ import java.util.Objects;
 
 public class ElsaDAO<T extends ElsaModel> {
 
-    private final Class<T> modelClass;
-    private final IndexConfig indexConfig;
-    private final ElsaClient elsa;
-    private final JsonMapper<T> jsonMapper;
-    private final SearchResponseMapper<T> searchResponseMapper;
+    protected final Class<T> modelClass;
+    protected final IndexConfig indexConfig;
+    protected final ElsaClient elsa;
+    protected final JsonMapper<T> jsonMapper;
+    protected final SearchResponseMapper<T> searchResponseMapper;
 
     @SuppressWarnings("unchecked")
     public ElsaDAO(final DaoConfig daoConfig, final ElsaClient elsa) {
