@@ -88,9 +88,7 @@ public class IndexAdmin {
             } else if (value instanceof Double) {
                 settings.put(settingsName, (double) value);
             } else if (value instanceof String) {
-                String copy = (String) value;
-                copy = copy.trim();
-                settings.put(settingsName, copy);
+                settings.put(settingsName, (String) value);
             } else {
                 throw new IllegalStateException("Unhandled type: " + value.getClass() + ", for setting " + settingsName);
             }
