@@ -1,6 +1,23 @@
 {:toc}
 
-# Usage
+# CRUD
+
+
+
+## How to make bulk UpdateRequests?
+
+The `BulkProcessor` also accepts `UpdateRequest` because it implements `DocWriteRequest`. Just use your `ElsaDAO` to create the request and add it to the `BulkProcessor`:
+
+```java
+UpdateRequest updateRequest = elsaDAO.buildUpdateRequest(task)
+bulkProcessor.add(updateRequest)
+```
+
+
+
+
+
+# Misc
 
 
 
