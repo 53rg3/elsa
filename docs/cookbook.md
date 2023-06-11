@@ -83,3 +83,18 @@ new ElsaClient(_0 -> _0
 
   
 
+# Deployment to GitHub Packages
+
+- Make sure all tests pass
+
+- Bump the version in `pom.xml` 
+
+- Commit in master with message of new version "release 0.3.2"
+
+- Deploy:
+
+  ```
+  mvn -DskipTests=true deploy
+  ```
+
+  
