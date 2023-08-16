@@ -38,6 +38,7 @@ import io.github.ss3rg3.elsa.responses.ResponseFactory;
 import io.github.ss3rg3.elsa.statics.Method;
 
 import java.io.IOException;
+import java.util.List;
 
 public class IndexAdmin {
 
@@ -72,6 +73,7 @@ public class IndexAdmin {
         }
     }
 
+    @SuppressWarnings("unchecked") // because of cast to List<String>
     private Settings createSettings(final IndexConfig indexConfig) {
         final Settings.Builder settings = Settings.builder()
                 .put("index.number_of_shards", indexConfig.getShards())
@@ -89,6 +91,8 @@ public class IndexAdmin {
                 settings.put(settingsName, (double) value);
             } else if (value instanceof String) {
                 settings.put(settingsName, (String) value);
+            }else if (value instanceof List) {
+                settings.putList(settingsName, (List<String>) value);
             } else {
                 throw new IllegalStateException("Unhandled type: " + value.getClass() + ", for setting " + settingsName);
             }

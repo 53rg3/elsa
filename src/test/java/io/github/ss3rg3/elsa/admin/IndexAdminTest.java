@@ -16,20 +16,23 @@
 
 package io.github.ss3rg3.elsa.admin;
 
-import assets.*;
-import io.github.ss3rg3.elsa.ElsaClient;
+import assets.TestDAO;
+import assets.TestModel;
+import assets.TestModelWithAddedMappings;
+import assets.TestModelWithInvalidlyModifiedMappings;
 import com.google.common.io.ByteStreams;
+import io.github.ss3rg3.elsa.ElsaClient;
 import io.github.ss3rg3.elsa.dao.DaoConfig;
 import io.github.ss3rg3.elsa.exceptions.ElsaException;
 import io.github.ss3rg3.elsa.model.IndexConfig;
-
+import io.github.ss3rg3.elsa.responses.ConfirmationResponse;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import io.github.ss3rg3.elsa.responses.ConfirmationResponse;
 
 import java.net.URL;
+import java.util.Arrays;
 
 import static assets.TestHelpers.TEST_CLUSTER_HOSTS;
 import static org.hamcrest.CoreMatchers.is;
@@ -152,7 +155,7 @@ public class IndexAdminTest {
         final String indexName = "test_index";
         try {
             this.elsa.admin.deleteIndex(indexName);
-        } catch (ElsaException e) {
+        } catch (final ElsaException e) {
             // NO OP
         }
 
@@ -161,12 +164,18 @@ public class IndexAdminTest {
                 .indexName(indexName)
                 .replicas(0)
                 .shards(1)
-                .addIndexSetting("index.codec", "best_compression")));
+                .addIndexSetting("analysis.analyzer.html_field_analyzer.tokenizer", "standard")
+                .addIndexSetting("analysis.analyzer.html_field_analyzer.filter", Arrays.asList("lowercase", "asciifolding"))
+                .addIndexSetting("analysis.analyzer.html_field_analyzer.char_filter", "replace_special_chars")
+                .addIndexSetting("analysis.char_filter.replace_special_chars.type", "pattern_replace")
+                .addIndexSetting("analysis.char_filter.replace_special_chars.pattern", "[^\\p{L}\\d\\s\\.]|(?<=\\D)\\.|\\.(?=\\D)")
+                .addIndexSetting("analysis.char_filter.replace_special_chars.replacement", " ")));
 
         final URL url = new URL("http://127.0.0.1:9200/" + indexName + "/_settings");
         final byte[] bytes = ByteStreams.toByteArray(url.openConnection().getInputStream());
-        assertThat("Expected to find \"codec\":\"best_compression\" in index settings info. See " + url,
-                new String(bytes).contains("\"codec\":\"best_compression\""), is(true));
+        final String response = new String(bytes);
+        assertThat("Failed to find expected string, response: " + response,
+                new String(bytes).contains("\"analysis\":{\"analyzer\":{\"html_field_analyzer\":{\"filter\":[\"lowercase\",\"asciifolding\"]"), is(true));
 
         this.elsa.admin.deleteIndex(indexName);
     }
