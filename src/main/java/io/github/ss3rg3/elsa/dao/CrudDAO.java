@@ -201,7 +201,7 @@ public class CrudDAO<T extends ElsaModel> extends SearchDAO<T> {
     // ------------------------------------------------------------------------------------------ //
 
     /**
-     * Updating a non-existing documents causes an exception.
+     * Updating a non-existing document causes an exception.
      */
     public UpdateResponse update(final T model) throws ElsaException {
         return this.update(model, RequestOptions.DEFAULT);

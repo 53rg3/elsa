@@ -89,7 +89,7 @@ new ElsaClient(_0 -> _0
 
 - Bump the version in `pom.xml` 
 
-- Commit in master with message of new version "release 0.3.2"
+- Commit in master with message of new version, e.g. "release 0.3.2"
 
 - Deploy:
 
